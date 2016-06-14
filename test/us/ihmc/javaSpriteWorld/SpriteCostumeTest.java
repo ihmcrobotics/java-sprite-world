@@ -25,7 +25,7 @@ public class SpriteCostumeTest
 //      String filename = "SampleImages/BackgammonBoard.jpg";
       
       SpriteCostume costume = SpriteCostume.createFromFile(filename);
-      Node node = costume.getJavaFXNode();
+      final Node node = costume.getJavaFXNode();
       
 //      System.out.println(costume.getImageHeightPixels());
 

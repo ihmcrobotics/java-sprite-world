@@ -25,7 +25,7 @@ public class SpriteJavaFXGroupTest
       JavaFXApplicationCreator.createAJavaFXApplication();
 
       Sprite sprite = SampleSprites.createSixSidedBlackPipsOnWhiteDie();
-      SpriteJavaFXGroup group = new SpriteJavaFXGroup(sprite);
+      final SpriteJavaFXGroup group = new SpriteJavaFXGroup(sprite);
 
       final Stage[] stage = new Stage[1];
 

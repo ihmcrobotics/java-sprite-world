@@ -25,11 +25,11 @@ public class JavaFXApplicationCreatorTest
       Thread.sleep(5000L);
    }
 
-   private void createACircleAnimation(int index)
+   private void createACircleAnimation(final int index)
    {
       JavaFXApplicationCreator.createAJavaFXApplication();
 
-      Translate circleTranslation = new Translate();
+      final Translate circleTranslation = new Translate();
 
       Platform.runLater(new Runnable()
       {
@@ -64,7 +64,7 @@ public class JavaFXApplicationCreatorTest
          }
       });
 
-      long startTime = System.nanoTime();
+      final long startTime = System.nanoTime();
 
       AnimationTimer animationTimer = new AnimationTimer()
       {
