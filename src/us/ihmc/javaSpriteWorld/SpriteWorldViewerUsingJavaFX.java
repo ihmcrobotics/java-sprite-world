@@ -14,16 +14,16 @@ import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 
 public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
-{   
+{
    private final String name;
    private final Group spriteWorldViewerJavaFXGroup = new Group();
    private SpriteWorldJavaFXGroup spriteWorldJavaFXGroup;
-   
+
    private int preferredWidth = 1000, preferredHeight = 1000;
    private boolean resizable = false;
-   
+
    private SpriteWorld spriteWorld;
-   
+
    private final Scale scaleForViewerPixelSize = new Scale();
 
    public SpriteWorldViewerUsingJavaFX(String name)
@@ -31,26 +31,26 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
       this.name = name;
       JavaFXApplicationCreator.createAJavaFXApplication();
    }
-   
+
    public void setPreferredSizeInPixels(int preferredWidth, int preferredHeight)
    {
       this.preferredWidth = preferredWidth;
       this.preferredHeight = preferredHeight;
    }
-   
+
    public void setSpriteWorld(SpriteWorld spriteWorld)
    {
       this.spriteWorld = spriteWorld;
-      
+
       spriteWorldJavaFXGroup = new SpriteWorldJavaFXGroup(spriteWorld);
       spriteWorldViewerJavaFXGroup.getChildren().add(spriteWorldJavaFXGroup);
    }
-   
+
    public void setResizable(boolean resizable)
    {
       this.resizable = resizable;
    }
-       
+
    public void createAndDisplayWindow()
    {
       final Stage[] stage = new Stage[1];
@@ -64,11 +64,11 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
          {
             ObservableList<Transform> transforms = spriteWorldViewerJavaFXGroup.getTransforms();
             transforms.clear();
-            
+
             scaleForViewerPixelSize.setX(preferredWidth);
             scaleForViewerPixelSize.setY(preferredHeight);
-            transforms.add(scaleForViewerPixelSize);      
-        
+            transforms.add(scaleForViewerPixelSize);
+
 //            spriteWorldJavaFXGroup.update();
 
             stage[0] = new Stage();
@@ -79,22 +79,24 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
 
             countDownLatch.countDown();
          }});
+
+      update();
    }
-   
+
 //   public void addButton(JButton button)
 //   {
 //      jFrame.getContentPane().add(button, BorderLayout.EAST);
-//      
+//
 //      jFrame.repaint();
 ////      jFrame.setSize(preferredWidth, preferredHeight);
-////      
+////
 ////      jFrame.setResizable(resizable);
 ////      jFrame.setVisible(true);
-////      
+////
 ////      jFrame.pack();
 //   }
-   
-   
+
+
    public void update()
    {
       final CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -141,6 +143,6 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
    }
 
    public void addButton(JButton realTimeButton)
-   {      
+   {
    }
 }
