@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
@@ -83,20 +84,6 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
       update();
    }
 
-//   public void addButton(JButton button)
-//   {
-//      jFrame.getContentPane().add(button, BorderLayout.EAST);
-//
-//      jFrame.repaint();
-////      jFrame.setSize(preferredWidth, preferredHeight);
-////
-////      jFrame.setResizable(resizable);
-////      jFrame.setVisible(true);
-////
-////      jFrame.pack();
-//   }
-
-
    public void update()
    {
       final CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -142,7 +129,13 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
       }
    }
 
+   @Override
    public void addButton(JButton realTimeButton)
+   {
+   }
+
+   @Override
+   public void addButton(Button button)
    {
    }
 }

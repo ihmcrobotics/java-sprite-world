@@ -6,6 +6,8 @@ import java.awt.Container;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
+import javafx.scene.control.Button;
+
 public class SpriteWorldViewerUsingSwing implements SpriteWorldViewer
 {
    private final String name;
@@ -95,10 +97,13 @@ public class SpriteWorldViewerUsingSwing implements SpriteWorldViewer
 //      jFrame.pack();
    }
 
+   @Override
+   public void addButton(Button button)
+   {
+   }
 
    public void update()
    {
       spriteWorldPanel.repaint();
    }
-
 }
