@@ -8,20 +8,26 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class SpriteCostume 
+public class SpriteCostume
 {
    private final Image image;
    private final Node javaFXNode;
-   
+
    private double xReferencePercent, yReferencePercent;
    private final double heightToWidthRatio;
 
    public static SpriteCostume createFromFile(String filename)
    {
       InputStream inputStream = SpriteCostume.class.getResourceAsStream(filename);
+//      InputStream inputStream = ClassLoader.getSystemResourceAsStream(filename);
+      if (inputStream == null)
+      {
+         System.err.println("Couldn't open resource as stream: " + filename);
+         return null;
+      }
       return createFromInputStream(inputStream);
    }
-   
+
    public static SpriteCostume createFromURL(URL url)
    {
       InputStream inputStream;
@@ -34,52 +40,52 @@ public class SpriteCostume
          System.err.println("Could not create inputStream from URL " + url);
          return null;
       }
-      
+
       return createFromInputStream(inputStream);
    }
-   
+
    public static SpriteCostume createFromInputStream(InputStream inputStream)
    {
       Image image = new Image(inputStream);
       SpriteCostume costume = new SpriteCostume(image);
-      return costume; 
+      return costume;
    }
-   
+
    public SpriteCostume(Image image)
    {
       this.image = image;
-      
+
       xReferencePercent = 0.5;
       yReferencePercent = 0.5;
-      
+
       if (image != null)
       {
-    	  this.heightToWidthRatio = image.getHeight() / image.getWidth();    	  
+    	  this.heightToWidthRatio = image.getHeight() / image.getWidth();
       }
       else
       {
-    	  this.heightToWidthRatio = 1.0;    	  
+    	  this.heightToWidthRatio = 1.0;
       }
-      
+
       ImageView imageView = new ImageView(image);
       javaFXNode = imageView;
    }
-   
+
    public Image getImage()
    {
       return image;
    }
-   
+
    public double getImageWidthPixels()
    {
       return image.getWidth();
    }
-   
+
    public double getImageHeightPixels()
    {
       return image.getHeight();
    }
-   
+
    public double getHeightToWidthRatio()
    {
       return heightToWidthRatio;
@@ -94,7 +100,7 @@ public class SpriteCostume
    {
       return yReferencePercent;
    }
-   
+
    public void setXReferencePercent(double xReferencePercent)
    {
       this.xReferencePercent = xReferencePercent;
@@ -109,12 +115,12 @@ public class SpriteCostume
    {
       return image.getWidth() * xReferencePercent;
    }
-   
+
    public double getImageCenterY()
    {
       return image.getHeight() * yReferencePercent;
    }
-   
+
    public Node getJavaFXNode()
    {
       return javaFXNode;
