@@ -9,22 +9,22 @@ public class SampleSprites
 	{
 		Sprite sprite = new Sprite("SixSidedBlackPipsOnWhiteDie");
 		
-		SpriteCostume spriteCostume = SpriteCostume.createFromFile("SampleImages/dice/SixSider/blackOne-300px.png");
+		SpriteCostume spriteCostume = SpriteCostume.createFromFile("sampleImages/dice/SixSider/blackOne-300px.png");
 		sprite.addCostume(spriteCostume);
 		
-		spriteCostume = SpriteCostume.createFromFile("SampleImages/dice/SixSider/blackTwo-300px.png");
+		spriteCostume = SpriteCostume.createFromFile("sampleImages/dice/SixSider/blackTwo-300px.png");
 		sprite.addCostume(spriteCostume);
 		
-		spriteCostume = SpriteCostume.createFromFile("SampleImages/dice/SixSider/blackThree-300px.png");
+		spriteCostume = SpriteCostume.createFromFile("sampleImages/dice/SixSider/blackThree-300px.png");
 		sprite.addCostume(spriteCostume);
 		
-		spriteCostume = SpriteCostume.createFromFile("SampleImages/dice/SixSider/blackFour-300px.png");
+		spriteCostume = SpriteCostume.createFromFile("sampleImages/dice/SixSider/blackFour-300px.png");
 		sprite.addCostume(spriteCostume);
 		
-		spriteCostume = SpriteCostume.createFromFile("SampleImages/dice/SixSider/blackFive-300px.png");
+		spriteCostume = SpriteCostume.createFromFile("sampleImages/dice/SixSider/blackFive-300px.png");
 		sprite.addCostume(spriteCostume);
 		
-		spriteCostume = SpriteCostume.createFromFile("SampleImages/dice/SixSider/blackSix-300px.png");
+		spriteCostume = SpriteCostume.createFromFile("sampleImages/dice/SixSider/blackSix-300px.png");
 		sprite.addCostume(spriteCostume);
 		
 		return sprite;
@@ -34,22 +34,22 @@ public class SampleSprites
 	{
 		Sprite sprite = new Sprite("SixSidedRedPipsOnWhiteDie");
 		
-		SpriteCostume spriteCostume = SpriteCostume.createFromFile("SampleImages/dice/SixSider/dado-1-300px.png");
+		SpriteCostume spriteCostume = SpriteCostume.createFromFile("sampleImages/dice/SixSider/dado-1-300px.png");
 		sprite.addCostume(spriteCostume);
 		
-		spriteCostume = SpriteCostume.createFromFile("SampleImages/dice/SixSider/dado-2-300px.png");
+		spriteCostume = SpriteCostume.createFromFile("sampleImages/dice/SixSider/dado-2-300px.png");
 		sprite.addCostume(spriteCostume);
 		
-		spriteCostume = SpriteCostume.createFromFile("SampleImages/dice/SixSider/dado-3-300px.png");
+		spriteCostume = SpriteCostume.createFromFile("sampleImages/dice/SixSider/dado-3-300px.png");
 		sprite.addCostume(spriteCostume);
 		
-		spriteCostume = SpriteCostume.createFromFile("SampleImages/dice/SixSider/dado-4-300px.png");
+		spriteCostume = SpriteCostume.createFromFile("sampleImages/dice/SixSider/dado-4-300px.png");
 		sprite.addCostume(spriteCostume);
 		
-		spriteCostume = SpriteCostume.createFromFile("SampleImages/dice/SixSider/dado-5-300px.png");
+		spriteCostume = SpriteCostume.createFromFile("sampleImages/dice/SixSider/dado-5-300px.png");
 		sprite.addCostume(spriteCostume);
 		
-		spriteCostume = SpriteCostume.createFromFile("SampleImages/dice/SixSider/dado-6-300px.png");
+		spriteCostume = SpriteCostume.createFromFile("sampleImages/dice/SixSider/dado-6-300px.png");
 		sprite.addCostume(spriteCostume);
 		
 		return sprite;
@@ -59,7 +59,7 @@ public class SampleSprites
 	{		
 		Sprite sprite = new Sprite("RocketOne");
 		
-		SpriteCostume spriteCostume = SpriteCostume.createFromFile("SampleImages/Rockets/purzen-A-cartoon-moon-rocket-800px.png");
+		SpriteCostume spriteCostume = SpriteCostume.createFromFile("sampleImages/Rockets/purzen-A-cartoon-moon-rocket-800px.png");
 		sprite.addCostume(spriteCostume);
 		
 		return sprite;
@@ -69,7 +69,7 @@ public class SampleSprites
 	{		
 		Sprite sprite = new Sprite("RocketFlame");
 		
-		SpriteCostume spriteCostume = SpriteCostume.createFromFile("SampleImages/Rockets/racing-flame-300px.png");
+		SpriteCostume spriteCostume = SpriteCostume.createFromFile("sampleImages/Rockets/racing-flame-300px.png");
 		spriteCostume.setXReferencePercent(0.5);
 		spriteCostume.setYReferencePercent(0.0); // top of flames
 		sprite.addCostume(spriteCostume);
@@ -99,7 +99,7 @@ public class SampleSprites
    public static Sprite createCheckeredBall(String name)
    {
       Sprite ballSprite = new Sprite(name);
-      SpriteCostume ballCostume = SpriteCostume.createFromFile("SampleImages/Balls/Checkerd-Ball-Arvin61r58-300px.png");
+      SpriteCostume ballCostume = SpriteCostume.createFromFile("sampleImages/Balls/Checkerd-Ball-Arvin61r58-300px.png");
 
       ballSprite.addCostume(ballCostume);
       return ballSprite;
@@ -108,7 +108,7 @@ public class SampleSprites
    public static Sprite createSoccerBall(String name)
    {
       Sprite ballSprite = new Sprite(name);
-      SpriteCostume ballCostume = SpriteCostume.createFromFile("SampleImages/Balls/Gioppino-Soccer-Ball-300px.png");
+      SpriteCostume ballCostume = SpriteCostume.createFromFile("sampleImages/Balls/Gioppino-Soccer-Ball-300px.png");
       
       ballSprite.addCostume(ballCostume);
       return ballSprite;
@@ -117,7 +117,7 @@ public class SampleSprites
    public static Sprite createBasketball(String name)
    {
       Sprite ballSprite = new Sprite(name);
-      SpriteCostume ballCostume = SpriteCostume.createFromFile("SampleImages/Balls/krepsinio-kamuolys-300px.png");
+      SpriteCostume ballCostume = SpriteCostume.createFromFile("sampleImages/Balls/krepsinio-kamuolys-300px.png");
       
       ballSprite.addCostume(ballCostume);
       return ballSprite;

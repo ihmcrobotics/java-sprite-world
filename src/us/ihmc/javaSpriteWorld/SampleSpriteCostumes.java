@@ -11,12 +11,12 @@ public class SampleSpriteCostumes
 {
    public static SpriteCostume getWhiteChessKing()
    {
-      return SpriteCostume.createFromFile("SampleImages/portablejim-Chess-tile-King-300px.png");
+      return SpriteCostume.createFromFile("sampleImages/portablejim-Chess-tile-King-300px.png");
    }
    
    public static SpriteCostume getCrossHairs()
    {
-      SpriteCostume crossHairs = SpriteCostume.createFromFile("SampleImages/Crosshairs-3456-300px.png");
+      SpriteCostume crossHairs = SpriteCostume.createFromFile("sampleImages/Crosshairs-3456-300px.png");
       crossHairs.setXReferencePercent(0.50667);
       crossHairs.setYReferencePercent(0.50667);
       return crossHairs;

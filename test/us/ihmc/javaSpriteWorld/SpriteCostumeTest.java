@@ -21,8 +21,8 @@ public class SpriteCostumeTest
    {
       JavaFXApplicationCreator.createAJavaFXApplication();
 
-      String filename = "SampleImages/dice/SixSider/blackOne-300px.png";
-//      String filename = "SampleImages/BackgammonBoard.jpg";
+      String filename = "sampleImages/dice/SixSider/blackOne-300px.png";
+//      String filename = "sampleImages/BackgammonBoard.jpg";
       
       SpriteCostume costume = SpriteCostume.createFromFile(filename);
       final Node node = costume.getJavaFXNode();
