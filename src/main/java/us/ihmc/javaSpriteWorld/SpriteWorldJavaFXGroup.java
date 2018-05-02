@@ -168,6 +168,16 @@ public class SpriteWorldJavaFXGroup extends Group
             spriteMouseListener.spriteDragged(sprite, xWorld, yWorld);
          }
       }
+      
+      else
+      {
+         ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
+         for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
+         {
+            spriteWorldMouseListener.worldDragged(xWorld, yWorld);
+         }
+      }
+      
    }
 
    public void mouseClicked(double xWorld, double yWorld, int clickCount, MouseEvent mouseEvent) 
@@ -183,11 +193,21 @@ public class SpriteWorldJavaFXGroup extends Group
             spriteMouseListener.spriteClicked(sprite, xWorld, yWorld, mouseEvent);
          }
       }
+      
+      else
+      {
+         ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
+         for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
+         {
+            spriteWorldMouseListener.worldClicked(xWorld, yWorld, mouseEvent);
+         }
+      }
    }
 
    public void mousePressed(double xWorld, double yWorld) 
    {
       Sprite sprite = findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
+      spriteCurrentlyBeingDragged = sprite;
       
       if (sprite != null)
       {
@@ -199,12 +219,21 @@ public class SpriteWorldJavaFXGroup extends Group
          }
       }
       
-      spriteCurrentlyBeingDragged = sprite;
+      else
+      {
+         ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
+         for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
+         {
+            spriteWorldMouseListener.worldPressed(xWorld, yWorld);
+         }
+      }
+      
    }
 
    public void mouseReleased(double xWorld, double yWorld) 
    {
       Sprite sprite = findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
+      spriteCurrentlyBeingDragged = null;
       
       if (sprite != null)
       {
@@ -215,8 +244,15 @@ public class SpriteWorldJavaFXGroup extends Group
             spriteMouseListener.spriteReleased(sprite, xWorld, yWorld);
          }
       }
+      else
+      {
+         ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
+         for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
+         {
+            spriteWorldMouseListener.worldReleased(xWorld, yWorld);
+         }
+      }
       
-      spriteCurrentlyBeingDragged = null;
    }
 
 }
