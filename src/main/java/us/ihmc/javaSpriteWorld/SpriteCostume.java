@@ -16,6 +16,14 @@ public class SpriteCostume
    private double xReferencePercent, yReferencePercent;
    private double heightToWidthRatio;
 
+   public SpriteCostume(SpriteCostume costumeToCopy)
+   {
+      this(costumeToCopy.image);
+      
+      setXReferencePercent(costumeToCopy.getXReferencePercent());
+      setYReferencePercent(costumeToCopy.getYReferencePercent());
+   }
+   
    public static SpriteCostume createFromFile(String filename)
    {
       InputStream inputStream = SpriteCostume.class.getResourceAsStream(filename);
@@ -72,7 +80,7 @@ public class SpriteCostume
     	  this.heightToWidthRatio = 1.0;
       }
 
-      ImageView imageView = new ImageView(image);
+      ImageView imageView = new PixelatedImageView(image);
       javaFXNode = imageView;
    }
 
