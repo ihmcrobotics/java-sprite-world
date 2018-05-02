@@ -10,11 +10,11 @@ import javafx.scene.image.ImageView;
 
 public class SpriteCostume
 {
-   private final Image image;
-   private final Node javaFXNode;
+   private Image image;
+   private Node javaFXNode;
 
    private double xReferencePercent, yReferencePercent;
-   private final double heightToWidthRatio;
+   private double heightToWidthRatio;
 
    public static SpriteCostume createFromFile(String filename)
    {
@@ -58,6 +58,11 @@ public class SpriteCostume
       xReferencePercent = 0.5;
       yReferencePercent = 0.5;
 
+      setImage(image);
+   }
+
+   private void setImage(Image image)
+   {
       if (image != null)
       {
     	  this.heightToWidthRatio = image.getHeight() / image.getWidth();
@@ -125,5 +130,4 @@ public class SpriteCostume
    {
       return javaFXNode;
    }
-
 }
