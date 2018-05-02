@@ -49,19 +49,10 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
       if (spriteWorld == null) return;
       
       SpriteStage stage = spriteWorld.getSpriteStage();
-      
-      double panelWidth = getWidth();
-      double panelHeight = getHeight();
-      
+
       if (stage != null)
       {
-         StageBackdrop backdrop = stage.getBackdrop();
-         if (backdrop != null)
-         {
-            Image image = backdrop.getImage();
-            BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
-            graphics.drawImage(bufferedImage, 0, 0, ((int) panelWidth), ((int) panelHeight), null);	
-         }
+         paintSprite(stage, graphics);
       }
 
       List<Sprite> sprites = spriteWorld.getSprites();
@@ -69,62 +60,70 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
       for (int i=0; i<sprites.size(); i++)
       {
          Sprite sprite = sprites.get(i);
-         if (sprite.isHidden()) continue;
-         
-         SpriteCostume currentCostume = sprite.getCostume();
-         Image fxImage = currentCostume.getImage();
-         
-         BufferedImage image = SwingFXUtils.fromFXImage(fxImage, null);
-         
-         if (image == null) continue;
-         
-         double leftBorderX = spriteWorld.getLeftBorderX();
-         double topBorderY = spriteWorld.getTopBorderY();
-         double rightBorderX = spriteWorld.getRightBorderX();
-         double bottomBorderY = spriteWorld.getBottomBorderY();
-
-         double imageWidthPixels = image.getWidth();
-         double imageHeightPixels = image.getHeight();
-
-         double xReferencePercent = currentCostume.getXReferencePercent();
-         double yReferencePercent = currentCostume.getYReferencePercent();
-
-         double imageCenterX = imageWidthPixels * xReferencePercent;
-         double imageCenterY = imageHeightPixels * yReferencePercent;
-
-         scaleForViewerPixelSize.setToScale((double) panelWidth, ((double) panelHeight));
-         
-         scaleForWorldSize.setToScale(1.0/(rightBorderX - leftBorderX), 1.0/(bottomBorderY - topBorderY));
-         translateForTopLeftCorner.setToTranslation(-leftBorderX, -topBorderY);
-         
-         translateForSpritePosition.setToTranslation(sprite.getX(), sprite.getY());
-        
-         spriteRotation.setToRotation(sprite.getRotationInRadians());
-         
-         double reflectX = 1.0;
-         double reflectY = 1.0;
-         
-         if (sprite.getReflectX()) reflectX = -1.0;
-         if (sprite.getReflectY()) reflectY = -1.0;
-         
-         spriteReflection.setToScale(reflectX, reflectY);
-         
-         scaleForSpriteSizeToImageSize.setToScale(sprite.getWidth() / imageWidthPixels, sprite.getHeight() / imageHeightPixels);
-         translateForImageCenter.setToTranslation(-imageCenterX, -imageCenterY);
-         
-         combinedTransform.setToIdentity();
-
-         combinedTransform.concatenate(scaleForViewerPixelSize);
-         combinedTransform.concatenate(scaleForWorldSize);
-         combinedTransform.concatenate(translateForTopLeftCorner);
-         combinedTransform.concatenate(translateForSpritePosition);
-         combinedTransform.concatenate(spriteRotation);
-         combinedTransform.concatenate(spriteReflection);
-         combinedTransform.concatenate(scaleForSpriteSizeToImageSize);
-         combinedTransform.concatenate(translateForImageCenter);
-         
-         graphics.drawImage(image, combinedTransform, null);
+         paintSprite(sprite, graphics);
       }
+   }
+   
+   private void paintSprite(Sprite sprite, Graphics2D graphics)
+   {
+      if (sprite.isHidden()) return;
+      
+      double panelWidth = getWidth();
+      double panelHeight = getHeight();
+      
+      SpriteCostume currentCostume = sprite.getCostume();
+      Image fxImage = currentCostume.getImage();
+      
+      BufferedImage image = SwingFXUtils.fromFXImage(fxImage, null);
+      
+      if (image == null) return;
+      
+      double leftBorderX = spriteWorld.getLeftBorderX();
+      double topBorderY = spriteWorld.getTopBorderY();
+      double rightBorderX = spriteWorld.getRightBorderX();
+      double bottomBorderY = spriteWorld.getBottomBorderY();
+
+      double imageWidthPixels = image.getWidth();
+      double imageHeightPixels = image.getHeight();
+
+      double xReferencePercent = currentCostume.getXReferencePercent();
+      double yReferencePercent = currentCostume.getYReferencePercent();
+
+      double imageCenterX = imageWidthPixels * xReferencePercent;
+      double imageCenterY = imageHeightPixels * yReferencePercent;
+
+      scaleForViewerPixelSize.setToScale((double) panelWidth, ((double) panelHeight));
+      
+      scaleForWorldSize.setToScale(1.0/(rightBorderX - leftBorderX), 1.0/(bottomBorderY - topBorderY));
+      translateForTopLeftCorner.setToTranslation(-leftBorderX, -topBorderY);
+      
+      translateForSpritePosition.setToTranslation(sprite.getX(), sprite.getY());
+     
+      spriteRotation.setToRotation(sprite.getRotationInRadians());
+      
+      double reflectX = 1.0;
+      double reflectY = 1.0;
+      
+      if (sprite.getReflectX()) reflectX = -1.0;
+      if (sprite.getReflectY()) reflectY = -1.0;
+      
+      spriteReflection.setToScale(reflectX, reflectY);
+      
+      scaleForSpriteSizeToImageSize.setToScale(sprite.getWidth() / imageWidthPixels, sprite.getHeight() / imageHeightPixels);
+      translateForImageCenter.setToTranslation(-imageCenterX, -imageCenterY);
+      
+      combinedTransform.setToIdentity();
+
+      combinedTransform.concatenate(scaleForViewerPixelSize);
+      combinedTransform.concatenate(scaleForWorldSize);
+      combinedTransform.concatenate(translateForTopLeftCorner);
+      combinedTransform.concatenate(translateForSpritePosition);
+      combinedTransform.concatenate(spriteRotation);
+      combinedTransform.concatenate(spriteReflection);
+      combinedTransform.concatenate(scaleForSpriteSizeToImageSize);
+      combinedTransform.concatenate(translateForImageCenter);
+      
+      graphics.drawImage(image, combinedTransform, null);
    }
    
    public double convertFromPanelPixelsToWorldX(int panelPixels)

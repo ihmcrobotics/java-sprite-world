@@ -51,12 +51,14 @@ public class SpriteWorldJavaFXGroup extends Group
       if (spriteStageJavaFXGroup == null)
       {
          SpriteStage spriteStage = spriteWorld.getSpriteStage();
-         spriteStageJavaFXGroup = new SpriteStageJavaFXGroup(spriteStage, spriteWorld);
-         this.getChildren().add(spriteStageJavaFXGroup);
+         if (spriteStage != null)
+         {
+            spriteStageJavaFXGroup = new SpriteStageJavaFXGroup(spriteStage, spriteWorld);
+            this.getChildren().add(spriteStageJavaFXGroup);
+            spriteStageJavaFXGroup.update();
+         }
       }
-      
-      spriteStageJavaFXGroup.update();
-      
+
       List<Sprite> sprites = spriteWorld.getSprites();
       
       for (Sprite sprite : sprites)

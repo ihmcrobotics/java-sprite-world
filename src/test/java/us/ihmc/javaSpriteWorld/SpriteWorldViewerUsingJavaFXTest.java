@@ -403,7 +403,7 @@ public class SpriteWorldViewerUsingJavaFXTest
 
 
       stage.addBackdrop(backgammonBoardBackdrop);
-      spriteWorld.setStage(stage);
+      spriteWorld.setStage(stage, true);
 
       Sprite rocket = SampleSprites.createRocketOne();
       rocket.setWidth(0.1);
