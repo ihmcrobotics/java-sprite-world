@@ -194,6 +194,15 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
 			   spriteMouseListener.spriteDragged(sprite, xWorld, yWorld); //, mouseEvent);
 		   }
 	   }
+	   else
+	   {
+	      ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
+	      
+	      for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
+         {
+	         spriteWorldMouseListener.worldDragged(xWorld, yWorld);
+         }
+	   }
    }
 
    @Override
@@ -216,6 +225,15 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
 			   spriteMouseListener.spriteClicked(sprite, xWorld, yWorld, javaFXMouseEvent);
 		   }
 	   }
+	   else
+      {
+         ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
+         
+         for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
+         {
+            spriteWorldMouseListener.worldClicked(xWorld, yWorld, javaFXMouseEvent);
+         }
+      }
    }
 
    @Override
@@ -227,6 +245,8 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
 	   Sprite sprite = findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
 //	   System.out.println("mouse pressed " + xWorld + ", " + yWorld + " sprite = " + sprite);
 	   
+	   spriteCurrentlyBeingDragged = sprite;
+	   
 	   if (sprite != null)
 	   {
 		   ArrayList<SpriteMouseListener> spriteMouseListeners = sprite.getSpriteMouseListeners();
@@ -236,8 +256,16 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
 			   spriteMouseListener.spritePressed(sprite, xWorld, yWorld); //, mouseEvent);
 		   }
 	   }
+	   else
+      {
+         ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
+         
+         for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
+         {
+            spriteWorldMouseListener.worldPressed(xWorld, yWorld);
+         }
+      }
 	   
-	   spriteCurrentlyBeingDragged = sprite;
    }
 
    @Override
@@ -249,6 +277,8 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
 	   Sprite sprite = findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
 //	   System.out.println("mouse released " + xWorld + ", " + yWorld + " sprite = " + sprite);
 	   
+	   spriteCurrentlyBeingDragged = null;
+	   
 	   if (sprite != null)
 	   {
 		   ArrayList<SpriteMouseListener> spriteMouseListeners = sprite.getSpriteMouseListeners();
@@ -258,8 +288,16 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
 			   spriteMouseListener.spriteReleased(sprite, xWorld, yWorld); //, mouseEvent);
 		   }
 	   }
+	   else
+      {
+         ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
+         
+         for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
+         {
+            spriteWorldMouseListener.worldReleased(xWorld, yWorld);
+         }
+      }
 	   
-	   spriteCurrentlyBeingDragged = null;
    }
    
    @Override
