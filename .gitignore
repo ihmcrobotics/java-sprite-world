@@ -5,16 +5,18 @@
 /out
 /target
 /pit-reports
+/install
 
 # Top level directories in sub-projects
+*/target
+*/pit-reports
+*/install
+
+# directories to always ignore
 **/classes
 **/bin
 **/out
-*/target
 **/build
-*/pit-reports
-
-# directories to always ignore
 **/.gradle
 **/.project
 **/.classpath
@@ -78,5 +80,7 @@
 **/Network Trash Folder
 **/Temporary Items
 **/.apdisk
+**/rebel.xml
+**/generatedTestSuites/*TestSuite.java
 
-!**/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.jar
