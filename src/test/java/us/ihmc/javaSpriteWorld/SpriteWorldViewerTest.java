@@ -43,7 +43,7 @@ public class SpriteWorldViewerTest
       
       
       stage.addBackdrop(backgammonBoardBackdrop);
-      spriteWorld.setStage(stage);
+      spriteWorld.setStage(stage, true);
 
       SpriteCollisionGroup collisionGroup = new SpriteCollisionGroup();
       

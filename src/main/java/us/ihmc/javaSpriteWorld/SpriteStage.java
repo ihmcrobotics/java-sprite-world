@@ -1,50 +1,52 @@
 package us.ihmc.javaSpriteWorld;
 
-import java.util.ArrayList;
-
-public class SpriteStage
+public class SpriteStage extends Sprite
 {
-   private ArrayList<StageBackdrop> backdrops = new ArrayList<>();
-   private int backdropNumber = -1;
-   private final String name;
-
    public SpriteStage(String name)
    {
-      this.name = name;
+      super(name);
    }
-
-   public String getName()
+   
+   public void setCenteredInSpriteWorld(SpriteWorld spriteWorld)
    {
-      return name;
+      double leftBorderX = spriteWorld.getLeftBorderX();
+      double rightBorderX = spriteWorld.getRightBorderX();
+      double topBorderY = spriteWorld.getTopBorderY();
+      double bottomBorderY = spriteWorld.getBottomBorderY();
+      
+      this.setRotationInDegrees(0.0);
+      this.setX(0.5 * (leftBorderX + rightBorderX));
+      this.setY(0.5 * (topBorderY + bottomBorderY));
+      
+      this.setWidth(Math.abs(rightBorderX - leftBorderX));
+      this.setHeight(Math.abs(topBorderY - bottomBorderY));
    }
 
    public int addBackdrop(String filename)
    {
-      StageBackdrop stageBackdrop = StageBackdrop.createFromFile(filename);
+      SpriteCostume costume = SpriteCostume.createFromFile(filename);
+      StageBackdrop stageBackdrop = new StageBackdrop(costume);
+      
       return this.addBackdrop(stageBackdrop);
    }
 
    public int addBackdrop(StageBackdrop stageBackdrop)
    {
-      backdrops.add(stageBackdrop);
-      int backdropNumber = backdrops.size() - 1;
-      if (backdropNumber == 0)
-         this.backdropNumber = 0;
-
-      return backdropNumber;
+      return this.addCostume(stageBackdrop);
    }
 
-   public void switchToBackDrop(int backDropNumber)
+   public void switchToBackdrop(int backdropNumber)
    {
-      this.backdropNumber = backDropNumber;
+      this.switchToCostume(backdropNumber);
    }
 
+   public StageBackdrop getBackdrop(int backdropNumber)
+   {
+      return (StageBackdrop) this.getCostume(backdropNumber);
+   }
+   
    public StageBackdrop getBackdrop()
    {
-      if ((backdropNumber >= 0) && (backdropNumber < backdrops.size()))
-         return backdrops.get(backdropNumber);
-
-      else
-         return null;
+      return (StageBackdrop) this.getCostume();
    }
 }

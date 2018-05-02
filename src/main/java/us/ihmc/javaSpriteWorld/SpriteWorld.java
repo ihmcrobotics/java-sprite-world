@@ -102,9 +102,14 @@ public class SpriteWorld
       sprites.add(sprite);
    }
 
-   public void setStage(SpriteStage spriteStage)
+   public void setStage(SpriteStage spriteStage, boolean centerStageInWorld)
    {
       this.spriteStage = spriteStage;
+      
+      if (centerStageInWorld)
+      {
+         spriteStage.setCenteredInSpriteWorld(this);
+      }
    }
 
    public void setLeftBorderX(double leftBorderX)
