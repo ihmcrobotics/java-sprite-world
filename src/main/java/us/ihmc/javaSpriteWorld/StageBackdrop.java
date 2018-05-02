@@ -115,6 +115,16 @@ public class StageBackdrop
    {
       this.yReferencePercent = yReferencePercent;
    }
+   
+   public double getImageCenterX()
+   {
+      return image.getWidth() * xReferencePercent;
+   }
+
+   public double getImageCenterY()
+   {
+      return image.getHeight() * yReferencePercent;
+   }
 
    public Node getJavaFXNode()
    {
