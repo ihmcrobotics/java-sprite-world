@@ -26,7 +26,7 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
    private SpriteWorld spriteWorld;
 
    private final Scale scaleForViewerPixelSize = new Scale();
-
+   
    public SpriteWorldViewerUsingJavaFX(String name)
    {
       this.name = name;

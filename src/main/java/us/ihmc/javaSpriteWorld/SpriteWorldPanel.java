@@ -7,7 +7,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -31,15 +30,22 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
    private final AffineTransform combinedTransform = new AffineTransform();
 
    private SpriteWorld spriteWorld;
-   
+   private GenericMouseEventHandler mouseEventHandler;
+
    public SpriteWorldPanel(SpriteWorld spriteWorld)
    {
-      this.spriteWorld = spriteWorld;
-      
+      setSpriteWorld(spriteWorld);
+
       this.addMouseListener(this);
       this.addMouseMotionListener(this);
    }
-   
+
+   public void setSpriteWorld(SpriteWorld spriteWorld) 
+   {
+      this.spriteWorld = spriteWorld;
+      this.mouseEventHandler = new GenericMouseEventHandler(spriteWorld);
+   }
+
    @Override
    public void paintComponent(Graphics g)
    {
@@ -125,7 +131,7 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
       
       graphics.drawImage(image, combinedTransform, null);
    }
-   
+
    public double convertFromPanelPixelsToWorldX(int panelPixels)
    {
 	   double panelWidth = getWidth();
@@ -146,93 +152,28 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
 	   return topBorderY + ((double) panelPixels) / panelHeight * (bottomBorderY - topBorderY);
    }
 
-   public void setSpriteWorld(SpriteWorld spriteWorld) 
+   @Override
+   public void mouseEntered(MouseEvent mouseEvent)
    {
-	   this.spriteWorld = spriteWorld;	
-   }
-
-   private Sprite findTopMostSpriteWithMouseListenersAt(double worldX, double worldY)
-   {
-	   List<Sprite> sprites = spriteWorld.getSprites();
-	   for (int i=sprites.size() - 1; i>=0; i--)
-	   {
-		   Sprite sprite = sprites.get(i);
-		   
-		   double spriteWidth = sprite.getWidth();
-		   double spriteHeight = sprite.getHeight();
-		   
-		   double spriteX = sprite.getX();
-		   double spriteY = sprite.getY();
-		   
-		   if ((worldX > spriteX - spriteWidth/2.0) && (worldX < spriteX + spriteWidth/2.0) && (worldY > spriteY - spriteHeight/2.0) && (worldY < spriteY + spriteHeight/2.0))
-		   {
-			   if (sprite.getSpriteMouseListeners().size() > 0) return sprite;
-		   }
-	   }
-	   
-	   return null;
+      double xWorld = convertFromPanelPixelsToWorldX(mouseEvent.getX());
+      double yWorld = convertFromPanelPixelsToWorldY(mouseEvent.getY());
+      mouseEventHandler.mouseEntered(xWorld, yWorld);  
    }
    
-   private Sprite spriteCurrentlyBeingDragged = null;
+   @Override
+   public void mouseMoved(MouseEvent mouseEvent)
+   {
+      double xWorld = convertFromPanelPixelsToWorldX(mouseEvent.getX());
+      double yWorld = convertFromPanelPixelsToWorldY(mouseEvent.getY());
+      mouseEventHandler.mouseMoved(xWorld, yWorld);
+   }
    
    @Override
-   public void mouseDragged(MouseEvent mouseEvent) 
-   {	   
-	   double xWorld = convertFromPanelPixelsToWorldX(mouseEvent.getX());
-	   double yWorld = convertFromPanelPixelsToWorldY(mouseEvent.getY());
-	   
-	   Sprite sprite = spriteCurrentlyBeingDragged;
-//	   System.out.println("mouse dragged " + xWorld + ", " + yWorld + " sprite = " + sprite);
-	   
-	   if (sprite != null)
-	   {
-		   ArrayList<SpriteMouseListener> spriteMouseListeners = sprite.getSpriteMouseListeners();
-		   
-		   for (SpriteMouseListener spriteMouseListener : spriteMouseListeners)
-		   {
-			   spriteMouseListener.spriteDragged(sprite, xWorld, yWorld); //, mouseEvent);
-		   }
-	   }
-	   else
-	   {
-	      ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
-	      
-	      for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
-         {
-	         spriteWorldMouseListener.worldDragged(xWorld, yWorld);
-         }
-	   }
-   }
-
-   @Override
-   public void mouseClicked(MouseEvent mouseEvent) 
+   public void mouseExited(MouseEvent mouseEvent)
    {
-	   double xWorld = convertFromPanelPixelsToWorldX(mouseEvent.getX());
-	   double yWorld = convertFromPanelPixelsToWorldY(mouseEvent.getY());
-	   
-	   Sprite sprite = findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
-//	   System.out.println("mouse clicked " + xWorld + ", " + yWorld + " sprite = " + sprite);
-	   
-	   javafx.scene.input.MouseEvent javaFXMouseEvent = null;
-	   
-	   if (sprite != null)
-	   {
-		   ArrayList<SpriteMouseListener> spriteMouseListeners = sprite.getSpriteMouseListeners();
-		   
-		   for (SpriteMouseListener spriteMouseListener : spriteMouseListeners)
-		   {
-			   spriteMouseListener.spriteClicked(sprite, xWorld, yWorld, javaFXMouseEvent);
-		   }
-	   }
-	   else
-      {
-         ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
-         
-         for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
-         {
-            spriteWorldMouseListener.worldClicked(xWorld, yWorld, javaFXMouseEvent);
-         }
-      }
+      double xWorld = convertFromPanelPixelsToWorldX(mouseEvent.getX());
+      double yWorld = convertFromPanelPixelsToWorldY(mouseEvent.getY());
+      mouseEventHandler.mouseExited(xWorld, yWorld);
    }
 
    @Override
@@ -240,90 +181,32 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
    {
 	   double xWorld = convertFromPanelPixelsToWorldX(mouseEvent.getX());
 	   double yWorld = convertFromPanelPixelsToWorldY(mouseEvent.getY());
-	   
-	   Sprite sprite = findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
-//	   System.out.println("mouse pressed " + xWorld + ", " + yWorld + " sprite = " + sprite);
-	   
-	   spriteCurrentlyBeingDragged = sprite;
-	   
-	   if (sprite != null)
-	   {
-		   ArrayList<SpriteMouseListener> spriteMouseListeners = sprite.getSpriteMouseListeners();
-		   
-		   for (SpriteMouseListener spriteMouseListener : spriteMouseListeners)
-		   {
-			   spriteMouseListener.spritePressed(sprite, xWorld, yWorld); //, mouseEvent);
-		   }
-	   }
-	   else
-      {
-         ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
-         
-         for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
-         {
-            spriteWorldMouseListener.worldPressed(xWorld, yWorld);
-         }
-      }
-	   
+	   mouseEventHandler.mousePressed(xWorld, yWorld);
    }
 
+   @Override
+   public void mouseDragged(MouseEvent mouseEvent) 
+   {     
+      double xWorld = convertFromPanelPixelsToWorldX(mouseEvent.getX());
+      double yWorld = convertFromPanelPixelsToWorldY(mouseEvent.getY());
+      mouseEventHandler.mouseDragged(xWorld, yWorld);
+   }
+   
    @Override
    public void mouseReleased(MouseEvent mouseEvent) 
    {
 	   double xWorld = convertFromPanelPixelsToWorldX(mouseEvent.getX());
 	   double yWorld = convertFromPanelPixelsToWorldY(mouseEvent.getY());
-	   
-	   Sprite sprite = findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
-//	   System.out.println("mouse released " + xWorld + ", " + yWorld + " sprite = " + sprite);
-	   
-	   spriteCurrentlyBeingDragged = null;
-	   
-	   if (sprite != null)
-	   {
-		   ArrayList<SpriteMouseListener> spriteMouseListeners = sprite.getSpriteMouseListeners();
-		   
-		   for (SpriteMouseListener spriteMouseListener : spriteMouseListeners)
-		   {
-			   spriteMouseListener.spriteReleased(sprite, xWorld, yWorld); //, mouseEvent);
-		   }
-	   }
-	   else
-      {
-         ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
-         
-         for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
-         {
-            spriteWorldMouseListener.worldReleased(xWorld, yWorld);
-         }
-      }
-	   
+	   mouseEventHandler.mouseReleased(xWorld, yWorld);
    }
    
    @Override
-   public void mouseMoved(MouseEvent mouseEvent) 
+   public void mouseClicked(MouseEvent mouseEvent) 
    {
-	   double xWorld = convertFromPanelPixelsToWorldX(mouseEvent.getX());
-	   double yWorld = convertFromPanelPixelsToWorldY(mouseEvent.getY());
-	   
-	   Sprite sprite = findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
-//	   System.out.println("mouse moved " + xWorld + ", " + yWorld + " sprite = " + sprite);
-   }
-   
-   @Override
-   public void mouseEntered(MouseEvent mouseEvent) 
-   {
-	   double xWorld = convertFromPanelPixelsToWorldX(mouseEvent.getX());
-	   double yWorld = convertFromPanelPixelsToWorldY(mouseEvent.getY());
-	   
-//	   System.out.println("mouse entered " + xWorld + ", " + yWorld);
+      double xWorld = convertFromPanelPixelsToWorldX(mouseEvent.getX());
+      double yWorld = convertFromPanelPixelsToWorldY(mouseEvent.getY());
+      int clickCount = mouseEvent.getClickCount();
+      mouseEventHandler.mouseClicked(xWorld, yWorld, clickCount);
    }
 
-   @Override
-   public void mouseExited(MouseEvent mouseEvent) 
-   {
-	   double xWorld = convertFromPanelPixelsToWorldX(mouseEvent.getX());
-	   double yWorld = convertFromPanelPixelsToWorldY(mouseEvent.getY());
-	   
-//	   System.out.println("mouse exited " + xWorld + ", " + yWorld);
-   }
 }
