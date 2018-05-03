@@ -1,12 +1,10 @@
 package us.ihmc.javaSpriteWorld;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javafx.event.EventHandler;
 import javafx.scene.Group;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
@@ -14,40 +12,47 @@ import javafx.scene.transform.Translate;
 public class SpriteWorldJavaFXGroup extends Group
 {
    private SpriteWorld spriteWorld;
+   private GenericMouseEventHandler mouseEventHandler;
+
    private final HashMap<Sprite, SpriteJavaFXGroup> spriteJavaFXGroups = new HashMap<>();
    private SpriteStageJavaFXGroup spriteStageJavaFXGroup = null;
-   
+
    private final Scale scaleForWorldSize = new Scale();
    private final Translate translateForTopLeftCorner = new Translate();
-      
+
    public SpriteWorldJavaFXGroup(SpriteWorld spriteWorld)
    {
-      this.spriteWorld = spriteWorld;
-      
+      setSpriteWorld(spriteWorld);
+
       this.getTransforms().clear();
       this.getTransforms().add(scaleForWorldSize);
       this.getTransforms().add(translateForTopLeftCorner);
-      
-      MouseClickedHandler mouseClickedHandler = new MouseClickedHandler();
-      MouseDraggedHandler mouseDraggedHandler = new MouseDraggedHandler();
-      MousePressedHandler mousePressedHandler = new MousePressedHandler();
-      MouseReleasedHandler mouseReleasedHandler = new MouseReleasedHandler();
-//      MouseReleasedHandler mouseMovedHandler = new MouseMovedHandler();
-//      MouseReleasedHandler mouseExitedHandler = new MouseExitedHandler();
-//      MouseReleasedHandler mouseEnteredHandler = new MouseEnteredHandler();
 
-      
-      this.setOnMouseClicked(mouseClickedHandler);
-//      this.setOnMouseMoved(mouseMovedHandler);
-      this.setOnMouseDragged(mouseDraggedHandler);
-//    this.setOnMouseEntered(mouseEnteredHandler);
-//    this.setOnMouseExited(mouseExitedHandler);
+      MouseEnteredHandler mouseEnteredHandler = new MouseEnteredHandler();
+      MouseMovedHandler mouseMovedHandler = new MouseMovedHandler();
+      MouseExitedHandler mouseExitedHandler = new MouseExitedHandler();
+      MousePressedHandler mousePressedHandler = new MousePressedHandler();
+      MouseDraggedHandler mouseDraggedHandler = new MouseDraggedHandler();
+      MouseReleasedHandler mouseReleasedHandler = new MouseReleasedHandler();
+      MouseClickedHandler mouseClickedHandler = new MouseClickedHandler();
+
+      this.setOnMouseEntered(mouseEnteredHandler);
+      this.setOnMouseMoved(mouseMovedHandler);
+      this.setOnMouseExited(mouseExitedHandler);
       this.setOnMousePressed(mousePressedHandler);
+      this.setOnMouseDragged(mouseDraggedHandler);
       this.setOnMouseReleased(mouseReleasedHandler);
+      this.setOnMouseClicked(mouseClickedHandler);
    }
-   
+
+   public void setSpriteWorld(SpriteWorld spriteWorld)
+   {
+      this.spriteWorld = spriteWorld;
+      this.mouseEventHandler = new GenericMouseEventHandler(spriteWorld);
+   }
+
    public void update()
-   {      
+   {
       if (spriteStageJavaFXGroup == null)
       {
          SpriteStage spriteStage = spriteWorld.getSpriteStage();
@@ -60,201 +65,104 @@ public class SpriteWorldJavaFXGroup extends Group
       }
 
       List<Sprite> sprites = spriteWorld.getSprites();
-      
+
       for (Sprite sprite : sprites)
       {
-//         if (sprite.isHidden()) continue;
-         
+         //         if (sprite.isHidden()) continue;
+
          SpriteJavaFXGroup spriteJavaFXGroup = spriteJavaFXGroups.get(sprite);
-         
+
          if (spriteJavaFXGroup == null)
          {
             spriteJavaFXGroup = new SpriteJavaFXGroup(sprite);
             spriteJavaFXGroups.put(sprite, spriteJavaFXGroup);
             this.getChildren().add(spriteJavaFXGroup);
          }
-         
+
          spriteJavaFXGroup.update();
       }
-      
+
       double leftBorderX = spriteWorld.getLeftBorderX();
       double rightBorderX = spriteWorld.getRightBorderX();
 
       double topBorderY = spriteWorld.getTopBorderY();
       double bottomBorderY = spriteWorld.getBottomBorderY();
 
-      scaleForWorldSize.setX(1.0/(rightBorderX - leftBorderX));
-      scaleForWorldSize.setY(1.0/(bottomBorderY - topBorderY));
+      scaleForWorldSize.setX(1.0 / (rightBorderX - leftBorderX));
+      scaleForWorldSize.setY(1.0 / (bottomBorderY - topBorderY));
 
       translateForTopLeftCorner.setX(-leftBorderX);
       translateForTopLeftCorner.setY(-topBorderY);
    }
-   
-   public void setSpriteWorld(SpriteWorld spriteWorld) 
+
+   private class MouseEnteredHandler implements EventHandler<MouseEvent>
    {
-      this.spriteWorld = spriteWorld;  
+      @Override
+      public void handle(MouseEvent mouseEvent)
+      {
+         mouseEventHandler.mouseEntered(mouseEvent.getX(), mouseEvent.getY());
+         mouseEvent.consume();
+      }
    }
 
-   private Sprite findTopMostSpriteWithMouseListenersAt(double worldX, double worldY)
-   {
-      List<Sprite> sprites = spriteWorld.getSprites();
-      
-      for (int i=sprites.size() - 1; i>=0; i--)
-      {
-         Sprite sprite = sprites.get(i);
-         
-         if (sprite.getSpriteMouseListeners().size() > 0)
-         {
-            if (sprite.isClickPointInside(worldX, worldY)) return sprite;
-         }
-      }
-      
-      return null;
-   }
-   
-   private Sprite spriteCurrentlyBeingDragged = null;
-   
-   private class MouseDraggedHandler implements EventHandler<MouseEvent>
+   private class MouseMovedHandler implements EventHandler<MouseEvent>
    {
       @Override
       public void handle(MouseEvent mouseEvent)
       {
-         mouseDragged(mouseEvent.getX(), mouseEvent.getY());
+         mouseEventHandler.mouseMoved(mouseEvent.getX(), mouseEvent.getY());
          mouseEvent.consume();
       }
    }
-   
-   private class MouseClickedHandler implements EventHandler<MouseEvent>
+
+   private class MouseExitedHandler implements EventHandler<MouseEvent>
    {
       @Override
       public void handle(MouseEvent mouseEvent)
       {
-         MouseButton button = mouseEvent.getButton();
-         mouseClicked(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getClickCount(), mouseEvent);
+         mouseEventHandler.mouseExited(mouseEvent.getX(), mouseEvent.getY());
          mouseEvent.consume();
       }
    }
-   
+
    private class MousePressedHandler implements EventHandler<MouseEvent>
    {
       @Override
       public void handle(MouseEvent mouseEvent)
       {
-         mousePressed(mouseEvent.getX(), mouseEvent.getY());
+         mouseEventHandler.mousePressed(mouseEvent.getX(), mouseEvent.getY());
          mouseEvent.consume();
       }
    }
-   
+
+   private class MouseDraggedHandler implements EventHandler<MouseEvent>
+   {
+      @Override
+      public void handle(MouseEvent mouseEvent)
+      {
+         mouseEventHandler.mouseDragged(mouseEvent.getX(), mouseEvent.getY());
+         mouseEvent.consume();
+      }
+   }
+
    private class MouseReleasedHandler implements EventHandler<MouseEvent>
    {
       @Override
       public void handle(MouseEvent mouseEvent)
       {
-         mouseReleased(mouseEvent.getX(), mouseEvent.getY());
+         mouseEventHandler.mouseReleased(mouseEvent.getX(), mouseEvent.getY());
          mouseEvent.consume();
       }
    }
-   
-   public void mouseDragged(double xWorld, double yWorld) 
-   {     
-//      System.out.println("Mouse Dragged! " + xWorld + spriteCurrentlyBeingDragged);
 
-      Sprite sprite = spriteCurrentlyBeingDragged;
-      
-      if (sprite != null)
-      {
-         ArrayList<SpriteMouseListener> spriteMouseListeners = sprite.getSpriteMouseListeners();
-         
-         for (SpriteMouseListener spriteMouseListener : spriteMouseListeners)
-         {
-            spriteMouseListener.spriteDragged(sprite, xWorld, yWorld);
-         }
-      }
-      
-      else
-      {
-         ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
-         for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
-         {
-            spriteWorldMouseListener.worldDragged(xWorld, yWorld);
-         }
-      }
-      
-   }
-
-   public void mouseClicked(double xWorld, double yWorld, int clickCount, MouseEvent mouseEvent) 
+   private class MouseClickedHandler implements EventHandler<MouseEvent>
    {
-      Sprite sprite = findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
-//      System.out.println("Mouse Clicked on sprite " + sprite + " at " + xWorld + ", " + yWorld);
-      
-      if (sprite != null)
+      @Override
+      public void handle(MouseEvent mouseEvent)
       {
-         ArrayList<SpriteMouseListener> spriteMouseListeners = sprite.getSpriteMouseListeners();
-         for (SpriteMouseListener spriteMouseListener : spriteMouseListeners)
-         {
-            spriteMouseListener.spriteClicked(sprite, xWorld, yWorld, mouseEvent);
-         }
+         mouseEventHandler.mouseClicked(mouseEvent.getX(), mouseEvent.getY(), mouseEvent.getClickCount());
+         mouseEvent.consume();
       }
-      
-      else
-      {
-         ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
-         for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
-         {
-            spriteWorldMouseListener.worldClicked(xWorld, yWorld, mouseEvent);
-         }
-      }
-   }
-
-   public void mousePressed(double xWorld, double yWorld) 
-   {
-      Sprite sprite = findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
-      spriteCurrentlyBeingDragged = sprite;
-      
-      if (sprite != null)
-      {
-         ArrayList<SpriteMouseListener> spriteMouseListeners = sprite.getSpriteMouseListeners();
-         
-         for (SpriteMouseListener spriteMouseListener : spriteMouseListeners)
-         {
-            spriteMouseListener.spritePressed(sprite, xWorld, yWorld);
-         }
-      }
-      
-      else
-      {
-         ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
-         for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
-         {
-            spriteWorldMouseListener.worldPressed(xWorld, yWorld);
-         }
-      }
-      
-   }
-
-   public void mouseReleased(double xWorld, double yWorld) 
-   {
-      Sprite sprite = findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
-      spriteCurrentlyBeingDragged = null;
-      
-      if (sprite != null)
-      {
-         ArrayList<SpriteMouseListener> spriteMouseListeners = sprite.getSpriteMouseListeners();
-         
-         for (SpriteMouseListener spriteMouseListener : spriteMouseListeners)
-         {
-            spriteMouseListener.spriteReleased(sprite, xWorld, yWorld);
-         }
-      }
-      else
-      {
-         ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
-         for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
-         {
-            spriteWorldMouseListener.worldReleased(xWorld, yWorld);
-         }
-      }
-      
    }
 
 }

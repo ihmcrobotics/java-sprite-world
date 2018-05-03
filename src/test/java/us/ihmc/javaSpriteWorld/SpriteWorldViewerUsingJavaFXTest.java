@@ -508,9 +508,9 @@ public class SpriteWorldViewerUsingJavaFXTest
       }
 
       @Override
-      public void spriteClicked(Sprite sprite, double xWorld, double yWorld, MouseEvent mouseEvent)
+      public void spriteClicked(Sprite sprite, double xWorld, double yWorld, int clickCount)
       {
-         System.out.println("Sprite " + sprite.getName() + " clicked at world " + xWorld + ", " + yWorld);
+         System.out.println("Sprite " + sprite.getName() + " clicked at world " + xWorld + ", " + yWorld + ". clickCount = " + clickCount);
       }
 
       @Override
