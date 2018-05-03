@@ -508,25 +508,25 @@ public class SpriteWorldViewerUsingJavaFXTest
       }
 
       @Override
-      public void spriteClicked(Sprite sprite, double xWorld, double yWorld, int clickCount)
+      public void spriteClicked(SpriteWorldViewer viewer, Sprite sprite, double xWorld, double yWorld, int clickCount)
       {
          System.out.println("Sprite " + sprite.getName() + " clicked at world " + xWorld + ", " + yWorld + ". clickCount = " + clickCount);
       }
 
       @Override
-      public void spritePressed(Sprite sprite, double xWorld, double yWorld) //, MouseEvent mouseEvent)
+      public void spritePressed(SpriteWorldViewer viewer, Sprite sprite, double xWorld, double yWorld) //, MouseEvent mouseEvent)
       {
          System.out.println("Sprite " + sprite.getName() + " pressed at world " + xWorld + ", " + yWorld);
       }
 
       @Override
-      public void spriteReleased(Sprite sprite, double xWorld, double yWorld) //, MouseEvent mouseEvent)
+      public void spriteReleased(SpriteWorldViewer viewer, Sprite sprite, double xWorld, double yWorld) //, MouseEvent mouseEvent)
       {
          System.out.println("Sprite " + sprite.getName() + " released at world " + xWorld + ", " + yWorld);
       }
 
       @Override
-      public void spriteDragged(Sprite sprite, double xWorld, double yWorld) //, MouseEvent mouseEvent)
+      public void spriteDragged(SpriteWorldViewer viewer, Sprite sprite, double xWorld, double yWorld) //, MouseEvent mouseEvent)
       {
          System.out.println("Sprite " + sprite.getName() + " dragged at world " + xWorld + ", " + yWorld);
          sprite.setX(xWorld);

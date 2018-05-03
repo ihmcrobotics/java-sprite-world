@@ -77,7 +77,7 @@ public class GenericMouseEventHandler
          ArrayList<SpriteMouseListener> spriteMouseListeners = sprite.getSpriteMouseListeners();
          for (SpriteMouseListener spriteMouseListener : spriteMouseListeners)
          {
-            spriteMouseListener.spriteClicked(sprite, xWorld, yWorld, clickCount);
+            spriteMouseListener.spriteClicked(viewer, sprite, xWorld, yWorld, clickCount);
          }
       }
 
@@ -102,7 +102,7 @@ public class GenericMouseEventHandler
 
          for (SpriteMouseListener spriteMouseListener : spriteMouseListeners)
          {
-            spriteMouseListener.spritePressed(sprite, xWorld, yWorld);
+            spriteMouseListener.spritePressed(viewer, sprite, xWorld, yWorld);
          }
       }
 
@@ -127,7 +127,7 @@ public class GenericMouseEventHandler
 
          for (SpriteMouseListener spriteMouseListener : spriteMouseListeners)
          {
-            spriteMouseListener.spriteReleased(sprite, xWorld, yWorld);
+            spriteMouseListener.spriteReleased(viewer, sprite, xWorld, yWorld);
          }
       }
       else
@@ -152,7 +152,7 @@ public class GenericMouseEventHandler
 
          for (SpriteMouseListener spriteMouseListener : spriteMouseListeners)
          {
-            spriteMouseListener.spriteDragged(sprite, xWorld, yWorld);
+            spriteMouseListener.spriteDragged(viewer, sprite, xWorld, yWorld);
          }
       }
 
