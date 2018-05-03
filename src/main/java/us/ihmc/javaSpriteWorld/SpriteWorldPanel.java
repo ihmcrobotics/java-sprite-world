@@ -72,7 +72,7 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
    
    private void paintSprite(Sprite sprite, Graphics2D graphics)
    {
-      if (sprite.isHidden()) return;
+      if (!sprite.isVisible()) return;
       
       double panelWidth = getWidth();
       double panelHeight = getHeight();
