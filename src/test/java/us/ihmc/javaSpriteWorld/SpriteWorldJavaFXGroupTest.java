@@ -30,7 +30,7 @@ public class SpriteWorldJavaFXGroupTest
       spriteWorld.addSprite(spriteOne);
       spriteWorld.addSprite(spriteTwo);
       
-      final SpriteWorldJavaFXGroup spriteWorldJavaFXGroup = new SpriteWorldJavaFXGroup(spriteWorld);
+      final SpriteWorldJavaFXGroup spriteWorldJavaFXGroup = new SpriteWorldJavaFXGroup(null, spriteWorld);
       
       
       final Stage[] stage = new Stage[1];

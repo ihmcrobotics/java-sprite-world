@@ -32,18 +32,18 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
    private SpriteWorld spriteWorld;
    private GenericMouseEventHandler mouseEventHandler;
 
-   public SpriteWorldPanel(SpriteWorld spriteWorld)
+   public SpriteWorldPanel(SpriteWorldViewer viewer, SpriteWorld spriteWorld)
    {
-      setSpriteWorld(spriteWorld);
+      setSpriteWorld(viewer, spriteWorld);
 
       this.addMouseListener(this);
       this.addMouseMotionListener(this);
    }
 
-   public void setSpriteWorld(SpriteWorld spriteWorld) 
+   public void setSpriteWorld(SpriteWorldViewer viewer, SpriteWorld spriteWorld) 
    {
       this.spriteWorld = spriteWorld;
-      this.mouseEventHandler = new GenericMouseEventHandler(spriteWorld);
+      this.mouseEventHandler = new GenericMouseEventHandler(viewer, spriteWorld);
    }
 
    @Override

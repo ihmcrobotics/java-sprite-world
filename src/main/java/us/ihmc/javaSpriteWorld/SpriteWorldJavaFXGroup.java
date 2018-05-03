@@ -20,9 +20,9 @@ public class SpriteWorldJavaFXGroup extends Group
    private final Scale scaleForWorldSize = new Scale();
    private final Translate translateForTopLeftCorner = new Translate();
 
-   public SpriteWorldJavaFXGroup(SpriteWorld spriteWorld)
+   public SpriteWorldJavaFXGroup(SpriteWorldViewer viewer, SpriteWorld spriteWorld)
    {
-      setSpriteWorld(spriteWorld);
+      setSpriteWorld(viewer, spriteWorld);
 
       this.getTransforms().clear();
       this.getTransforms().add(scaleForWorldSize);
@@ -45,10 +45,10 @@ public class SpriteWorldJavaFXGroup extends Group
       this.setOnMouseClicked(mouseClickedHandler);
    }
 
-   public void setSpriteWorld(SpriteWorld spriteWorld)
+   public void setSpriteWorld(SpriteWorldViewer viewer, SpriteWorld spriteWorld)
    {
       this.spriteWorld = spriteWorld;
-      this.mouseEventHandler = new GenericMouseEventHandler(spriteWorld);
+      this.mouseEventHandler = new GenericMouseEventHandler(viewer, spriteWorld);
    }
 
    public void update()
