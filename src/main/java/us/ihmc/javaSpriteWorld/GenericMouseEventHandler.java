@@ -5,11 +5,14 @@ import java.util.List;
 
 public class GenericMouseEventHandler
 {
+   private final SpriteWorldViewer viewer;
    private final SpriteWorld spriteWorld;
+   
    private Sprite spriteCurrentlyBeingDragged = null;
 
-   public GenericMouseEventHandler(SpriteWorld spriteWorld)
+   public GenericMouseEventHandler(SpriteWorldViewer viewer, SpriteWorld spriteWorld)
    {
+      this.viewer = viewer;
       this.spriteWorld = spriteWorld;
    }
 
@@ -38,7 +41,7 @@ public class GenericMouseEventHandler
       ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
       for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
       {
-         spriteWorldMouseListener.mouseEnteredWorld(spriteWorld, xWorld, yWorld);
+         spriteWorldMouseListener.mouseEnteredWorld(viewer, spriteWorld, xWorld, yWorld);
       }
    }
    
@@ -49,7 +52,7 @@ public class GenericMouseEventHandler
       ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
       for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
       {
-         spriteWorldMouseListener.mouseMovedInWorld(spriteWorld, xWorld, yWorld);
+         spriteWorldMouseListener.mouseMovedInWorld(viewer, spriteWorld, xWorld, yWorld);
       }
    }
    
@@ -60,7 +63,7 @@ public class GenericMouseEventHandler
       ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
       for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
       {
-         spriteWorldMouseListener.mouseExitedWorld(spriteWorld, xWorld, yWorld);
+         spriteWorldMouseListener.mouseExitedWorld(viewer, spriteWorld, xWorld, yWorld);
       }
    }
 
@@ -83,7 +86,7 @@ public class GenericMouseEventHandler
          ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
          for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
          {
-            spriteWorldMouseListener.mouseClickedInWorld(spriteWorld, xWorld, yWorld, clickCount);
+            spriteWorldMouseListener.mouseClickedInWorld(viewer, spriteWorld, xWorld, yWorld, clickCount);
          }
       }
    }
@@ -108,7 +111,7 @@ public class GenericMouseEventHandler
          ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
          for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
          {
-            spriteWorldMouseListener.mousePressedInWorld(spriteWorld, xWorld, yWorld);
+            spriteWorldMouseListener.mousePressedInWorld(viewer, spriteWorld, xWorld, yWorld);
          }
       }
    }
@@ -132,7 +135,7 @@ public class GenericMouseEventHandler
          ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
          for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
          {
-            spriteWorldMouseListener.mouseReleasedInWorld(spriteWorld, xWorld, yWorld);
+            spriteWorldMouseListener.mouseReleasedInWorld(viewer, spriteWorld, xWorld, yWorld);
          }
       }
    }
@@ -158,7 +161,7 @@ public class GenericMouseEventHandler
          ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
          for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
          {
-            spriteWorldMouseListener.mouseDraggedInWorld(spriteWorld, xWorld, yWorld);
+            spriteWorldMouseListener.mouseDraggedInWorld(viewer, spriteWorld, xWorld, yWorld);
          }
       }
 

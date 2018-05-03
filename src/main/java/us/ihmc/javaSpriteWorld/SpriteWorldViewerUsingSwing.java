@@ -42,7 +42,13 @@ public class SpriteWorldViewerUsingSwing implements SpriteWorldViewer
    public void setSpriteWorld(SpriteWorld spriteWorld)
    {
       this.spriteWorld = spriteWorld;
-      if (spriteWorldPanel != null) spriteWorldPanel.setSpriteWorld(spriteWorld);
+      if (spriteWorldPanel != null) spriteWorldPanel.setSpriteWorld(this, spriteWorld);
+   }
+   
+   @Override
+   public SpriteWorld getSpriteWorld()
+   {
+      return spriteWorld;
    }
 
    /* (non-Javadoc)
@@ -62,7 +68,7 @@ public class SpriteWorldViewerUsingSwing implements SpriteWorldViewer
    {
       jFrame = new JFrame(name);
 
-      spriteWorldPanel = new SpriteWorldPanel(spriteWorld);
+      spriteWorldPanel = new SpriteWorldPanel(this, spriteWorld);
 
       jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       Container contentPane = jFrame.getContentPane();

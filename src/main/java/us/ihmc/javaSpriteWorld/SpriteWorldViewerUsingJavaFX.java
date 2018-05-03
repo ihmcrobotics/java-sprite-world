@@ -39,12 +39,19 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
       this.preferredHeight = preferredHeight;
    }
 
+   @Override
    public void setSpriteWorld(SpriteWorld spriteWorld)
    {
       this.spriteWorld = spriteWorld;
 
-      spriteWorldJavaFXGroup = new SpriteWorldJavaFXGroup(spriteWorld);
+      spriteWorldJavaFXGroup = new SpriteWorldJavaFXGroup(this, spriteWorld);
       spriteWorldViewerJavaFXGroup.getChildren().add(spriteWorldJavaFXGroup);
+   }
+   
+   @Override
+   public SpriteWorld getSpriteWorld()
+   {
+      return spriteWorld;
    }
 
    public void setResizable(boolean resizable)
