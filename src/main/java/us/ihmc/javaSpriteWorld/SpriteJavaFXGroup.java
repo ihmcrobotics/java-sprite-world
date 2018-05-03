@@ -42,7 +42,7 @@ public class SpriteJavaFXGroup extends Group
    public void update()
    {
       SpriteCostume costume = sprite.getCostume();
-      if (sprite.isHidden()) costume = null;
+      if (!sprite.isVisible()) costume = null;
       
       if (currentCostume != costume)
       {

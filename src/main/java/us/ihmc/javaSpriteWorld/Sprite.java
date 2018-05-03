@@ -23,7 +23,7 @@ public class Sprite
 
    private int costumeNumber = -1;
    private double rotationInRadians = 0.0;
-   private boolean isHidden = false;
+   private boolean visible = true;
       
    private ArrayList<ConvexPolygon> defaultCollisionPolygons, transformedCollisionPolygons;
    private final AxisAlignedBoundingBox2D transformedBoundingBox = new AxisAlignedBoundingBox2D();
@@ -293,22 +293,22 @@ public class Sprite
 
    public void hide()
    {
-      this.isHidden  = true; 
+      this.visible  = false; 
    }
    
    public void show()
    {
-      this.isHidden = false; 
+      this.visible = true; 
    }
    
-   public void setIsHidden(boolean isHidden)
+   public void setVisible(boolean visible)
    {
-      this.isHidden = isHidden;
+      this.visible = visible;
    }
 
-   public boolean isHidden()
+   public boolean isVisible()
    {
-      return isHidden;
+      return visible;
    }
 
    public SpriteCostume getCostume(int i)
