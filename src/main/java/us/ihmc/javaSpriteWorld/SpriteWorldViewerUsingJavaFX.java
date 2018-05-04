@@ -26,6 +26,8 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
    private SpriteWorld spriteWorld;
 
    private final Scale scaleForViewerPixelSize = new Scale();
+   
+   private Scene scene;
    private Stage stage;
 
    private int startupLocationOnScreenX = -1;
@@ -40,6 +42,11 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
    public Stage getStage()
    {
       return stage;
+   }
+   
+   public Scene getScene()
+   {
+      return scene;
    }
 
    public void setPreferredSizeInPixels(int preferredWidth, int preferredHeight)
@@ -77,8 +84,7 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
       this.resizable = resizable;
    }
 
-   @Override
-   public void createAndDisplayWindow()
+   public void createScene()
    {
       final CountDownLatch countDownLatch = new CountDownLatch(1);
 
@@ -93,11 +99,40 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
             scaleForViewerPixelSize.setX(preferredWidth);
             scaleForViewerPixelSize.setY(preferredHeight);
             transforms.add(scaleForViewerPixelSize);
+            scene = new Scene(spriteWorldViewerJavaFXGroup, preferredWidth, preferredHeight, Color.WHITESMOKE);
 
-            //            spriteWorldJavaFXGroup.update();
+            countDownLatch.countDown();
+         }
+      });
 
-            //            printAndPause("Creating Stage", 2000L);
+      try
+      {
+         countDownLatch.await();
+      }
+      catch (InterruptedException e)
+      {
+      }
+      
+   }
+
+   @Override
+   public void createAndDisplayWindow()
+   {
+      if (scene == null)
+      {
+         createScene();
+      }
+      
+      final CountDownLatch countDownLatch = new CountDownLatch(1);
+
+      Platform.runLater(new Runnable()
+      {
+         @Override
+         public void run()
+         {
             stage = new Stage();
+            stage.setTitle(name);
+            stage.setScene(scene);
 
             if ((startupLocationOnScreenX != -1) && (startupLocationOnScreenY != -1))
             {
@@ -109,13 +144,7 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
                stage.centerOnScreen();
             }
 
-            Scene scene = new Scene(spriteWorldViewerJavaFXGroup, preferredWidth, preferredHeight, Color.WHITESMOKE);
-            stage.setScene(scene);
-
-            //            printAndPause("Showing Stage", 2000L);
             stage.show();
-
-            //            printAndPause("Done Showing Stage", 2000L);
 
             countDownLatch.countDown();
          }
@@ -123,38 +152,27 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
 
       try
       {
-
-         //            System.out.println("In SpriteWorldViewerUsingJavaFX.update(). Awaiting countDownLatch.");
-
          countDownLatch.await();
-
-         //            System.out.println("In SpriteWorldViewerUsingJavaFX.update(). Done awaiting countDownLatch.");
-
       }
       catch (InterruptedException e)
       {
-         //            System.err.println("Exception " + e);
       }
-
-      //      printAndPause("Updating Stage", 2000L);
 
       update();
 
-      //      printAndPause("Done Updating Stage", 2000L);
-
    }
 
-   private void printAndPause(String string, long pause)
-   {
-      System.out.println(string);
-      try
-      {
-         Thread.sleep(pause);
-      }
-      catch (InterruptedException e)
-      {
-      }
-   }
+   //   private void printAndPause(String string, long pause)
+   //   {
+   //      System.out.println(string);
+   //      try
+   //      {
+   //         Thread.sleep(pause);
+   //      }
+   //      catch (InterruptedException e)
+   //      {
+   //      }
+   //   }
 
    public void update()
    {
