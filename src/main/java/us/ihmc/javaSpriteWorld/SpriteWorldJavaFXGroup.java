@@ -51,8 +51,26 @@ public class SpriteWorldJavaFXGroup extends Group
       this.mouseEventHandler = new GenericMouseEventHandler(viewer, spriteWorld);
    }
 
+   private void printAndPause(String string, long pause)
+   {
+      System.out.println(string);
+      try
+      {
+         Thread.sleep(pause);
+      }
+      catch (InterruptedException e)
+      {
+      }
+   }
+   
    public void update()
    {
+      
+//      printAndPause("In SpriteWorldJavaFXGroup.update()", 1000L);
+//      boolean fxApplicationThread = Platform.isFxApplicationThread();
+
+//      System.out.println("fxApplicationThread = " + fxApplicationThread);
+      
       if (spriteStageJavaFXGroup == null)
       {
          SpriteStage spriteStage = spriteWorld.getSpriteStage();
@@ -93,6 +111,9 @@ public class SpriteWorldJavaFXGroup extends Group
 
       translateForTopLeftCorner.setX(-leftBorderX);
       translateForTopLeftCorner.setY(-topBorderY);
+      
+//      printAndPause("Leaving SpriteWorldJavaFXGroup.update()", 1000L);
+
    }
 
    private class MouseEnteredHandler implements EventHandler<MouseEvent>
