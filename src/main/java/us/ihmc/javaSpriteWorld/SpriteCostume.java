@@ -4,14 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import javafx.scene.Node;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 public class SpriteCostume
 {
    private Image image;
-   private Node javaFXNode;
 
    private double xReferencePercent, yReferencePercent;
    private double heightToWidthRatio;
@@ -79,9 +76,6 @@ public class SpriteCostume
       {
     	  this.heightToWidthRatio = 1.0;
       }
-
-      ImageView imageView = new PixelatedImageView(image);
-      javaFXNode = imageView;
    }
 
    public Image getImage()
@@ -134,8 +128,4 @@ public class SpriteCostume
       return image.getHeight() * yReferencePercent;
    }
 
-   public Node getJavaFXNode()
-   {
-      return javaFXNode;
-   }
 }

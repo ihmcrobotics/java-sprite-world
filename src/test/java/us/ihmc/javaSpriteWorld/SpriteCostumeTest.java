@@ -8,11 +8,9 @@ import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import us.ihmc.javaSpriteWorld.JavaFXApplicationCreator;
-import us.ihmc.javaSpriteWorld.SpriteCostume;
 
 public class SpriteCostumeTest
 {
@@ -25,7 +23,9 @@ public class SpriteCostumeTest
 //      String filename = "sampleImages/BackgammonBoard.jpg";
       
       SpriteCostume costume = SpriteCostume.createFromFile(filename);
-      final Node node = costume.getJavaFXNode();
+      
+      ImageView imageView = new PixelatedImageView(costume.getImage());
+      final Node node = imageView;
       
 //      System.out.println(costume.getImageHeightPixels());
 
