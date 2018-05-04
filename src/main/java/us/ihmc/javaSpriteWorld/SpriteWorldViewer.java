@@ -14,4 +14,5 @@ public interface SpriteWorldViewer
    public abstract void addButton(JButton button);
    public abstract void addButton(Button button);
    public abstract void update();
+   public abstract void setLocationOnScreen(int x, int y);
 }

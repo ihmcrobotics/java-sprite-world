@@ -1,8 +1,8 @@
 package us.ihmc.javaSpriteWorld;
 
-import org.junit.Test;
+import java.util.ArrayList;
 
-import javafx.scene.input.MouseEvent;
+import org.junit.Test;
 
 public class SpriteWorldViewerUsingJavaFXTest
 {
@@ -11,6 +11,9 @@ public class SpriteWorldViewerUsingJavaFXTest
    public void testSimpleSpriteWorldViewer() throws InterruptedException
    {
       SpriteWorldViewerUsingSwing viewerOne = new SpriteWorldViewerUsingSwing("Test Using Swing");
+      //      SpriteWorldViewerUsingSwing viewerTwo = new SpriteWorldViewerUsingSwing("Test Using Swing");
+
+      //      SpriteWorldViewerUsingJavaFX viewerOne = new SpriteWorldViewerUsingJavaFX("Test Using JavaFX");
       SpriteWorldViewerUsingJavaFX viewerTwo = new SpriteWorldViewerUsingJavaFX("Test Using JavaFX");
 
       viewerOne.setPreferredSizeInPixels(300, 300);
@@ -31,25 +34,10 @@ public class SpriteWorldViewerUsingJavaFXTest
       crossHairs.setWidth(300.0);
       crossHairs.setHeight(300.0);
 
-
-//      crossHairs.setX(0.0);
-//      crossHairs.setY(0.0);
-
       crossHairs.setX(150.0);
       crossHairs.setY(150.0);
 
-//      crossHairs.setX(299.0);
-//      crossHairs.setY(299.0);
-
-
       crossHairs.setRotationInDegrees(5.0);
-//      crossHairs.setRotationInDegrees(45.0);
-
-      double imageWidthPixels = crossHairs.getCostume().getImageWidthPixels();
-      double imageHeightPixels = crossHairs.getCostume().getImageHeightPixels();
-
-//      System.out.println("imageWidthPixels = " + imageWidthPixels);
-//      System.out.println("imageHeightPixels = " + imageHeightPixels);
 
       spriteWorld.addSprite(crossHairs);
 
@@ -59,9 +47,20 @@ public class SpriteWorldViewerUsingJavaFXTest
       viewerTwo.setSpriteWorld(spriteWorld);
       viewerTwo.createAndDisplayWindow();
 
-      while(true)
+      double rotation = 5.0;
+
+      while (true)
       {
+         rotation = rotation + 5.0;
+         crossHairs.setRotationInDegrees(rotation);
+         viewerOne.update();
          Thread.sleep(100L);
+
+         rotation = rotation + 5.0;
+         crossHairs.setRotationInDegrees(rotation);
+         viewerTwo.update();
+         Thread.sleep(100L);
+
       }
    }
 
@@ -84,10 +83,10 @@ public class SpriteWorldViewerUsingJavaFXTest
       spriteWorld.setRightBorderX(150.0);
       spriteWorld.setBottomBorderY(0.0);
 
-//      spriteWorld.setLeftBorderX(-50.0);
-//      spriteWorld.setTopBorderY(125.0);
-//      spriteWorld.setRightBorderX(50.0);
-//      spriteWorld.setBottomBorderY(25.0);
+      //      spriteWorld.setLeftBorderX(-50.0);
+      //      spriteWorld.setTopBorderY(125.0);
+      //      spriteWorld.setRightBorderX(50.0);
+      //      spriteWorld.setBottomBorderY(25.0);
 
       Sprite crossHairs = new Sprite("CrossHairs");
 
@@ -97,20 +96,20 @@ public class SpriteWorldViewerUsingJavaFXTest
 
       crossHairs.setReflectX(true);
 
-//      crossHairs.setX(0.0);
-//      crossHairs.setY(0.0);
+      //      crossHairs.setX(0.0);
+      //      crossHairs.setY(0.0);
 
       crossHairs.setX(100.0);
       crossHairs.setY(50.0);
 
-//      crossHairs.setRotationInDegrees(0.0);
+      //      crossHairs.setRotationInDegrees(0.0);
       crossHairs.setRotationInDegrees(30.0);
 
       double imageWidthPixels = crossHairs.getCostume().getImageWidthPixels();
       double imageHeightPixels = crossHairs.getCostume().getImageHeightPixels();
 
-//      System.out.println("imageWidthPixels = " + imageWidthPixels);
-//      System.out.println("imageHeightPixels = " + imageHeightPixels);
+      //      System.out.println("imageWidthPixels = " + imageWidthPixels);
+      //      System.out.println("imageHeightPixels = " + imageHeightPixels);
 
       spriteWorld.addSprite(crossHairs);
 
@@ -120,7 +119,7 @@ public class SpriteWorldViewerUsingJavaFXTest
       viewerTwo.setSpriteWorld(spriteWorld);
       viewerTwo.createAndDisplayWindow();
 
-      while(true)
+      while (true)
       {
          crossHairs.addRotationInRadians(0.01);
 
@@ -142,12 +141,12 @@ public class SpriteWorldViewerUsingJavaFXTest
       SpriteWorld spriteWorld = new SpriteWorld();
       spriteWorld.setTopBorderY(atmosphereHeight);
       spriteWorld.setBottomBorderY(0.0);
-      spriteWorld.setLeftBorderX(-worldWidth/2.0);
-      spriteWorld.setRightBorderX(worldWidth/2.0);
+      spriteWorld.setLeftBorderX(-worldWidth / 2.0);
+      spriteWorld.setRightBorderX(worldWidth / 2.0);
 
       Sprite crossHairs = SampleSprites.createCrossHairs();
-      crossHairs.setWidth(worldWidth/10.0);
-      crossHairs.setHeight(atmosphereHeight/10.0);
+      crossHairs.setWidth(worldWidth / 10.0);
+      crossHairs.setHeight(atmosphereHeight / 10.0);
       crossHairs.setX(x);
       crossHairs.setY(y);
       spriteWorld.addSprite(crossHairs);
@@ -155,8 +154,8 @@ public class SpriteWorldViewerUsingJavaFXTest
       int preferredHeight = 800;
       int preferredWidth = (int) (preferredHeight * worldWidth / atmosphereHeight);
 
-//      System.out.println("preferredHeight = " + preferredHeight);
-//      System.out.println("preferredWidth = " + preferredWidth);
+      //      System.out.println("preferredHeight = " + preferredHeight);
+      //      System.out.println("preferredWidth = " + preferredWidth);
 
       SpriteWorldViewer spriteWorldViewerOne = spriteWorld.createAndDisplaySpriteWorldViewerUsingJavaFX("Test", spriteWorld, preferredWidth, preferredHeight);
       SpriteWorldViewer spriteWorldViewerTwo = spriteWorld.createAndDisplaySpriteWorldViewerUsingSwing("Test", spriteWorld, preferredWidth, preferredHeight);
@@ -164,12 +163,11 @@ public class SpriteWorldViewerUsingJavaFXTest
       spriteWorldViewerOne.update();
       spriteWorldViewerTwo.update();
 
-      while(true)
+      while (true)
       {
          Thread.sleep(100L);
       }
    }
-
 
    @Test
    public void testCostumeReference() throws InterruptedException
@@ -182,19 +180,19 @@ public class SpriteWorldViewerUsingJavaFXTest
       SpriteWorld spriteWorld = new SpriteWorld();
       spriteWorld.setTopBorderY(atmosphereHeight);
       spriteWorld.setBottomBorderY(0.0);
-      spriteWorld.setLeftBorderX(-worldWidth/2.0);
-      spriteWorld.setRightBorderX(worldWidth/2.0);
+      spriteWorld.setLeftBorderX(-worldWidth / 2.0);
+      spriteWorld.setRightBorderX(worldWidth / 2.0);
 
       Sprite crossHairsOne = SampleSprites.createCrossHairs();
-      crossHairsOne.setWidth(worldWidth/10.0);
-      crossHairsOne.setHeight(atmosphereHeight/10.0);
+      crossHairsOne.setWidth(worldWidth / 10.0);
+      crossHairsOne.setHeight(atmosphereHeight / 10.0);
       crossHairsOne.setX(x);
       crossHairsOne.setY(y);
       spriteWorld.addSprite(crossHairsOne);
 
       Sprite crossHairsTwo = SampleSprites.createCrossHairs();
-      crossHairsTwo.setWidth(worldWidth/10.0);
-      crossHairsTwo.setHeight(atmosphereHeight/10.0);
+      crossHairsTwo.setWidth(worldWidth / 10.0);
+      crossHairsTwo.setHeight(atmosphereHeight / 10.0);
       crossHairsTwo.setX(x);
       crossHairsTwo.setY(y);
       crossHairsTwo.setReflectY(true);
@@ -203,8 +201,8 @@ public class SpriteWorldViewerUsingJavaFXTest
       int preferredHeight = 800;
       int preferredWidth = (int) (preferredHeight * worldWidth / atmosphereHeight);
 
-//      System.out.println("preferredHeight = " + preferredHeight);
-//      System.out.println("preferredWidth = " + preferredWidth);
+      //      System.out.println("preferredHeight = " + preferredHeight);
+      //      System.out.println("preferredWidth = " + preferredWidth);
 
       SpriteWorldViewer spriteWorldViewerOne = spriteWorld.createAndDisplaySpriteWorldViewerUsingJavaFX("Test", spriteWorld, preferredWidth, preferredHeight);
       SpriteWorldViewer spriteWorldViewerTwo = spriteWorld.createAndDisplaySpriteWorldViewerUsingSwing("Test", spriteWorld, preferredWidth, preferredHeight);
@@ -212,15 +210,17 @@ public class SpriteWorldViewerUsingJavaFXTest
       double xReferencePercent = 0.5;
       double yReferencePercent = 0.5;
 
-      while(true)
+      while (true)
       {
          spriteWorldViewerOne.update();
          spriteWorldViewerTwo.update();
 
-//         xReferencePercent+= 0.1;
-         yReferencePercent+= 0.1;
-         if (xReferencePercent > 1.0) xReferencePercent = 0.0;
-         if (yReferencePercent > 1.0) yReferencePercent = 0.0;
+         //         xReferencePercent+= 0.1;
+         yReferencePercent += 0.1;
+         if (xReferencePercent > 1.0)
+            xReferencePercent = 0.0;
+         if (yReferencePercent > 1.0)
+            yReferencePercent = 0.0;
 
          crossHairsTwo.getCostume().setXReferencePercent(xReferencePercent);
          crossHairsTwo.getCostume().setYReferencePercent(yReferencePercent);
@@ -240,15 +240,15 @@ public class SpriteWorldViewerUsingJavaFXTest
       SpriteWorld spriteWorld = new SpriteWorld();
       spriteWorld.setTopBorderY(atmosphereHeight);
       spriteWorld.setBottomBorderY(0.0);
-      spriteWorld.setLeftBorderX(-worldWidth/2.0);
-      spriteWorld.setRightBorderX(worldWidth/2.0);
+      spriteWorld.setLeftBorderX(-worldWidth / 2.0);
+      spriteWorld.setRightBorderX(worldWidth / 2.0);
 
       double x = 0.0;
       double y = 40.0;
 
       Sprite crossHairs = SampleSprites.createCrossHairs();
-      crossHairs.setWidth(worldWidth/10.0);
-      crossHairs.setHeight(worldWidth/10.0);
+      crossHairs.setWidth(worldWidth / 10.0);
+      crossHairs.setHeight(worldWidth / 10.0);
       crossHairs.setX(x);
       crossHairs.setY(y);
       spriteWorld.addSprite(crossHairs);
@@ -264,8 +264,8 @@ public class SpriteWorldViewerUsingJavaFXTest
       spriteWorld.addSprite(rocketSprite);
 
       Sprite rocketFlameSprite = SampleSprites.createRocketFlameOne();
-      rocketFlameSprite.setHeight(rocketHeight/4.0);
-      rocketFlameSprite.setWidth(rocketHeight/4.0);
+      rocketFlameSprite.setHeight(rocketHeight / 4.0);
+      rocketFlameSprite.setWidth(rocketHeight / 4.0);
       rocketFlameSprite.setReflectX(true);
       rocketFlameSprite.setReflectY(true);
       spriteWorld.addSprite(rocketFlameSprite);
@@ -273,35 +273,37 @@ public class SpriteWorldViewerUsingJavaFXTest
       int preferredHeight = 800;
       int preferredWidth = 3 * (int) (preferredHeight * worldWidth / atmosphereHeight);
 
-//      System.out.println("preferredHeight = " + preferredHeight);
-//      System.out.println("preferredWidth = " + preferredWidth);
+      //      System.out.println("preferredHeight = " + preferredHeight);
+      //      System.out.println("preferredWidth = " + preferredWidth);
 
-      SpriteWorldViewer spriteWorldViewerOne = spriteWorld.createAndDisplaySpriteWorldViewerUsingJavaFX("Test Rocket", spriteWorld, preferredWidth, preferredHeight);
-      SpriteWorldViewer spriteWorldViewerTwo = spriteWorld.createAndDisplaySpriteWorldViewerUsingSwing("Test Rocket", spriteWorld, preferredWidth, preferredHeight);
+      SpriteWorldViewer spriteWorldViewerOne = spriteWorld.createAndDisplaySpriteWorldViewerUsingJavaFX("Test Rocket", spriteWorld, preferredWidth,
+                                                                                                        preferredHeight);
+      SpriteWorldViewer spriteWorldViewerTwo = spriteWorld.createAndDisplaySpriteWorldViewerUsingSwing("Test Rocket", spriteWorld, preferredWidth,
+                                                                                                       preferredHeight);
 
       double rocketFlameAngle = 0.0;
       double rocketFlameHeight = 12.0;
 
       double rocketAngle = 0.0;
 
-      while(true)
+      while (true)
       {
          spriteWorldViewerOne.update();
          spriteWorldViewerTwo.update();
 
-//         rocketSprite.addX(0.1);
-//         rocketSprite.addY(1.0);
+         //         rocketSprite.addX(0.1);
+         //         rocketSprite.addY(1.0);
          rocketSprite.setRotationInRadians(rocketAngle);
          rocketAngle += 0.1;
 
          double distance = -6.5;
 
-         rocketFlameSprite.setX(rocketSprite.getX() - distance  * Math.sin(rocketSprite.getRotationInRadians()));
+         rocketFlameSprite.setX(rocketSprite.getX() - distance * Math.sin(rocketSprite.getRotationInRadians()));
          rocketFlameSprite.setY(rocketSprite.getY() + distance * Math.cos(rocketSprite.getRotationInRadians()));
 
          rocketFlameSprite.setRotationInRadians(rocketAngle + rocketFlameAngle);
          rocketFlameAngle -= 0.037;
-//         rocketFlameHeight += 0.1;
+         //         rocketFlameHeight += 0.1;
 
          crossHairs.setX(rocketFlameSprite.getX());
          crossHairs.setY(rocketFlameSprite.getY());
@@ -313,14 +315,13 @@ public class SpriteWorldViewerUsingJavaFXTest
       }
    }
 
-
    @Test
    public void testSimpleDragging() throws InterruptedException
    {
       SpriteWorldViewerUsingSwing viewerOne = new SpriteWorldViewerUsingSwing("Test Using Swing");
       SpriteWorldViewerUsingJavaFX viewerTwo = new SpriteWorldViewerUsingJavaFX("Test Using JavaFX");
 
-//      SpriteWorldViewer viewer = new SpriteWorldViewer("Test");
+      //      SpriteWorldViewer viewer = new SpriteWorldViewer("Test");
 
       viewerOne.setPreferredSizeInPixels(500, 900);
       viewerOne.setResizable(false);
@@ -374,21 +375,19 @@ public class SpriteWorldViewerUsingJavaFXTest
       }
    }
 
-
    @Test
    public void testSpriteWorldViewer() throws InterruptedException
    {
       SpriteWorldViewerUsingSwing viewerOne = new SpriteWorldViewerUsingSwing("Test Using Swing");
       SpriteWorldViewerUsingJavaFX viewerTwo = new SpriteWorldViewerUsingJavaFX("Test Using JavaFX");
 
-//      SpriteWorldViewer viewer = new SpriteWorldViewer("Test");
+      //      SpriteWorldViewer viewer = new SpriteWorldViewer("Test");
 
       viewerOne.setPreferredSizeInPixels(1000, 500);
       viewerOne.setResizable(false);
 
       viewerTwo.setPreferredSizeInPixels(1000, 500);
       viewerTwo.setResizable(false);
-
 
       SpriteWorld spriteWorld = new SpriteWorld();
       spriteWorld.setLeftBorderX(0.0);
@@ -400,7 +399,6 @@ public class SpriteWorldViewerUsingJavaFXTest
       StageBackdrop backgammonBoardBackdrop = SampleStageBackdrops.getBackgammonBoard();
       backgammonBoardBackdrop.setXReferencePercent(0.5);
       backgammonBoardBackdrop.setYReferencePercent(0.5);
-
 
       stage.addBackdrop(backgammonBoardBackdrop);
       spriteWorld.setStage(stage, true);
@@ -498,6 +496,102 @@ public class SpriteWorldViewerUsingJavaFXTest
       }
    }
 
+   @Test
+   public void testMultipleSpriteWorldViewers() throws InterruptedException
+   {
+      int numberOfSwingViewers = 6;
+      int numberOfJavaFXViewers = 6;
+
+      ArrayList<SpriteWorldViewer> viewers = new ArrayList<>();
+
+      for (int i = 0; i < numberOfSwingViewers; i++)
+      {
+         SpriteWorldViewer swingViewer = new SpriteWorldViewerUsingSwing("Test Using Swing");
+         swingViewer.setLocationOnScreen(i * 250, i*150);
+         viewers.add(swingViewer);
+      }
+
+      for (int i = 0; i < numberOfJavaFXViewers; i++)
+      {
+         SpriteWorldViewer javaFXViewer = new SpriteWorldViewerUsingJavaFX("Test Using JavaFX");
+         javaFXViewer.setLocationOnScreen(500 + i * 250, i*150);
+         viewers.add(javaFXViewer);
+      }
+
+      for (SpriteWorldViewer viewer : viewers)
+      {
+         viewer.setPreferredSizeInPixels(300, 300);
+         viewer.setResizable(false);
+      }
+
+      SpriteWorld spriteWorldOne = new SpriteWorld();
+      spriteWorldOne.setLeftBorderX(0.0);
+      spriteWorldOne.setTopBorderY(0.0);
+      spriteWorldOne.setRightBorderX(300.0);
+      spriteWorldOne.setBottomBorderY(300.0);
+      
+      SpriteWorld spriteWorldTwo = new SpriteWorld();
+      spriteWorldTwo.setLeftBorderX(0.0);
+      spriteWorldTwo.setTopBorderY(0.0);
+      spriteWorldTwo.setRightBorderX(300.0);
+      spriteWorldTwo.setBottomBorderY(300.0);
+
+      Sprite crossHairsOne = createCrossHairs();
+      Sprite crossHairsTwo = createCrossHairs();
+
+      crossHairsTwo.setHeight(0.5 * crossHairsTwo.getHeight());
+      crossHairsTwo.setWidth(0.5 * crossHairsTwo.getWidth());
+      
+      spriteWorldOne.addSprite(crossHairsOne);
+      spriteWorldTwo.addSprite(crossHairsTwo);
+
+      int count = 0;
+      for (SpriteWorldViewer viewer : viewers)
+      {
+         if (count % 2 == 0)
+         {
+            viewer.setSpriteWorld(spriteWorldOne);
+         }
+         else
+         {
+            viewer.setSpriteWorld(spriteWorldTwo);
+         }
+         
+         viewer.createAndDisplayWindow();
+         count++;
+      }
+
+      double rotation = 5.0;
+
+      while (true)
+      {
+         for (SpriteWorldViewer viewer : viewers)
+         {
+            Thread.sleep(10L);
+            rotation = rotation + 1.0;
+            crossHairsOne.setRotationInDegrees(rotation);
+            crossHairsTwo.setRotationInDegrees(-rotation);
+            viewer.update();
+         }
+      }
+   }
+   
+   private Sprite createCrossHairs()
+   {
+      Sprite crossHairs = new Sprite("CrossHairs");
+
+      crossHairs.addCostume(SampleSpriteCostumes.getCrossHairs());
+      crossHairs.setWidth(300.0);
+      crossHairs.setHeight(300.0);
+
+      crossHairs.setX(150.0);
+      crossHairs.setY(150.0);
+
+      crossHairs.setRotationInDegrees(5.0);
+      
+      return crossHairs;
+   }
+
    private class DragAlongSpriteMouseListener implements SpriteMouseListener
    {
       private final Sprite sprite;
@@ -534,6 +628,5 @@ public class SpriteWorldViewerUsingJavaFXTest
       }
 
    }
-
 
 }

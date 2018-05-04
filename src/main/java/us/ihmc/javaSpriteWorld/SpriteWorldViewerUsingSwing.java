@@ -20,6 +20,9 @@ public class SpriteWorldViewerUsingSwing implements SpriteWorldViewer
 
    private SpriteWorld spriteWorld;
 
+   private int startupLocationOnScreenX = -1;
+   private int startupLocationOnScreenY = -1;
+
    public SpriteWorldViewerUsingSwing(String name)
    {
       this.name = name;
@@ -68,6 +71,11 @@ public class SpriteWorldViewerUsingSwing implements SpriteWorldViewer
    {
       jFrame = new JFrame(name);
 
+      if ((startupLocationOnScreenX != -1) && (startupLocationOnScreenY != -1))
+      {
+         jFrame.setLocation(startupLocationOnScreenX, startupLocationOnScreenY);
+      }
+      
       spriteWorldPanel = new SpriteWorldPanel(this, spriteWorld);
 
       jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -111,5 +119,19 @@ public class SpriteWorldViewerUsingSwing implements SpriteWorldViewer
    public void update()
    {
       spriteWorldPanel.repaint();
+   }
+
+   @Override
+   public void setLocationOnScreen(int x, int y)
+   {
+      if (jFrame != null)
+      {
+         jFrame.setLocation(x, y);
+      }
+      else
+      {
+         startupLocationOnScreenX = x;
+         startupLocationOnScreenY = y;
+      }
    }
 }
