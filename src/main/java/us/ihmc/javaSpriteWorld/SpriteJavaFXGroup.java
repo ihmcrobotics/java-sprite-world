@@ -1,5 +1,8 @@
 package us.ihmc.javaSpriteWorld;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -7,11 +10,13 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
+import javafx.scene.image.ImageView;
 
 public class SpriteJavaFXGroup extends Group
 {
    private final Sprite sprite;
    private SpriteCostume currentCostume;
+   private HashMap<SpriteCostume, Node> mapFromCostumesToNodes = new LinkedHashMap<>();
    
    private final Translate translateForSpritePosition = new Translate();
    private final Rotate spriteRotation = new Rotate();
@@ -49,7 +54,17 @@ public class SpriteJavaFXGroup extends Group
          ObservableList<Node> children = this.getChildren();
          Node javaFXNode = null;
          
-         if (costume != null) javaFXNode = costume.getJavaFXNode();
+         if (costume != null)
+         {
+            javaFXNode = mapFromCostumesToNodes.get(costume);
+            
+            if (javaFXNode == null)
+            {
+                ImageView imageView = new PixelatedImageView(costume.getImage());
+                javaFXNode = imageView;
+                mapFromCostumesToNodes.put(costume, javaFXNode);
+            }
+         }
 
          boolean foundIt = false;
          
