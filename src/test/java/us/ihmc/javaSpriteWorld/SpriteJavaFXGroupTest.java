@@ -1,10 +1,10 @@
 package us.ihmc.javaSpriteWorld;
 
-import static org.junit.Assert.*;
+import static us.ihmc.robotics.Assert.*;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javafx.application.Platform;
 import javafx.scene.Group;

@@ -1,10 +1,10 @@
 package us.ihmc.javaSpriteWorld.geometry;
 
-import static org.junit.Assert.*;
+import static us.ihmc.robotics.Assert.*;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import us.ihmc.javaSpriteWorld.geometry.ConvexPolygon;
 import us.ihmc.javaSpriteWorld.geometry.ConvexPolygonIntersectionDetector;

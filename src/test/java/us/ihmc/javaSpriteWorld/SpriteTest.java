@@ -1,10 +1,10 @@
 package us.ihmc.javaSpriteWorld;
 
-import static org.junit.Assert.*;
+import static us.ihmc.robotics.Assert.*;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import us.ihmc.javaSpriteWorld.Sprite;
 import us.ihmc.javaSpriteWorld.geometry.AxisAlignedBoundingBox2D;

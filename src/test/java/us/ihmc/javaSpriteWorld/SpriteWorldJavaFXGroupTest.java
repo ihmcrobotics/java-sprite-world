@@ -2,7 +2,7 @@ package us.ihmc.javaSpriteWorld;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;

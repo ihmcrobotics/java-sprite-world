@@ -1,6 +1,6 @@
 package us.ihmc.javaSpriteWorld;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;

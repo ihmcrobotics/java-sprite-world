@@ -1,8 +1,8 @@
 package us.ihmc.javaSpriteWorld.geometry;
 
-import static org.junit.Assert.*;
+import static us.ihmc.robotics.Assert.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import us.ihmc.javaSpriteWorld.geometry.AxisAlignedBoundingBox2D;
 import us.ihmc.javaSpriteWorld.geometry.Point;
