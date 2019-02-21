@@ -2,10 +2,12 @@ package us.ihmc.javaSpriteWorld.geometry;
 
 import static us.ihmc.robotics.Assert.*;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import us.ihmc.javaSpriteWorld.geometry.Point;
 
+@Tag("gui")
 public class PointTest
 {
 

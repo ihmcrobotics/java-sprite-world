@@ -1,5 +1,6 @@
 package us.ihmc.javaSpriteWorld;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javafx.scene.input.MouseEvent;
@@ -19,6 +20,7 @@ import us.ihmc.javaSpriteWorld.geometry.ConvexPolygon;
 import us.ihmc.javaSpriteWorld.geometry.Point;
 import us.ihmc.javaSpriteWorld.geometry.Vector;
 
+@Tag("gui")
 public class SpriteWorldViewerTest
 {
 

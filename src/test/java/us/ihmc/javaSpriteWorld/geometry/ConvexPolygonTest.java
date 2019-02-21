@@ -4,12 +4,14 @@ import static us.ihmc.robotics.Assert.*;
 
 import java.util.ArrayList;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import us.ihmc.javaSpriteWorld.geometry.ConvexPolygon;
 import us.ihmc.javaSpriteWorld.geometry.Point;
 import us.ihmc.javaSpriteWorld.geometry.Vector;
 
+@Tag("gui")
 public class ConvexPolygonTest
 {
 

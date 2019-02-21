@@ -2,6 +2,7 @@ package us.ihmc.javaSpriteWorld;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javafx.application.Platform;
@@ -14,6 +15,7 @@ import us.ihmc.javaSpriteWorld.Sprite;
 import us.ihmc.javaSpriteWorld.SpriteWorld;
 import us.ihmc.javaSpriteWorld.SpriteWorldJavaFXGroup;
 
+@Tag("gui")
 public class SpriteWorldJavaFXGroupTest
 {
 

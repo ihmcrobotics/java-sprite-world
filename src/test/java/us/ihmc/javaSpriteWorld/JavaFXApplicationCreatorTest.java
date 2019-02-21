@@ -1,5 +1,6 @@
 package us.ihmc.javaSpriteWorld;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javafx.animation.AnimationTimer;
@@ -12,6 +13,7 @@ import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import us.ihmc.javaSpriteWorld.JavaFXApplicationCreator;
 
+@Tag("gui")
 public class JavaFXApplicationCreatorTest
 {
    @Test

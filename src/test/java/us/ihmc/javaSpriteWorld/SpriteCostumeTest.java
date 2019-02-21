@@ -2,6 +2,7 @@ package us.ihmc.javaSpriteWorld;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javafx.application.Platform;
@@ -12,6 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+@Tag("gui")
 public class SpriteCostumeTest
 {
    @Test

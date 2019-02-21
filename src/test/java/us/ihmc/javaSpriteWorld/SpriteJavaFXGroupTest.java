@@ -4,6 +4,7 @@ import static us.ihmc.robotics.Assert.*;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javafx.application.Platform;
@@ -16,6 +17,7 @@ import us.ihmc.javaSpriteWorld.SampleSprites;
 import us.ihmc.javaSpriteWorld.Sprite;
 import us.ihmc.javaSpriteWorld.SpriteJavaFXGroup;
 
+@Tag("gui")
 public class SpriteJavaFXGroupTest
 {
 

@@ -4,6 +4,7 @@ import static us.ihmc.robotics.Assert.*;
 
 import java.util.ArrayList;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import us.ihmc.javaSpriteWorld.Sprite;
@@ -12,6 +13,7 @@ import us.ihmc.javaSpriteWorld.geometry.ConvexPolygon;
 import us.ihmc.javaSpriteWorld.geometry.ConvexPolygonIntersectionDetector;
 import us.ihmc.javaSpriteWorld.geometry.Point;
 
+@Tag("gui")
 public class SpriteTest
 {
 

@@ -2,8 +2,10 @@ package us.ihmc.javaSpriteWorld;
 
 import java.util.ArrayList;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+@Tag("gui")
 public class SpriteWorldViewerUsingJavaFXTest
 {
 
