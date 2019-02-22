@@ -141,7 +141,9 @@ public class SpriteWorldViewerTest
       
       spriteWorld.addSpriteCollisionGroup(collisionGroup);
       
-      while(true)
+      int numberOfLoops = 20;
+      
+      for (int i=0; i<numberOfLoops; i++)
       {
          try
          {

@@ -51,7 +51,9 @@ public class SpriteWorldViewerUsingJavaFXTest
 
       double rotation = 5.0;
 
-      while (true)
+      int numberOfLoops = 20;
+      
+      for (int i=0; i<numberOfLoops; i++)
       {
          rotation = rotation + 5.0;
          crossHairs.setRotationInDegrees(rotation);
@@ -121,7 +123,9 @@ public class SpriteWorldViewerUsingJavaFXTest
       viewerTwo.setSpriteWorld(spriteWorld);
       viewerTwo.createAndDisplayWindow();
 
-      while (true)
+      int numberOfLoops = 20;
+      
+      for (int i=0; i<numberOfLoops; i++)
       {
          crossHairs.addRotationInRadians(0.01);
 
@@ -165,7 +169,9 @@ public class SpriteWorldViewerUsingJavaFXTest
       spriteWorldViewerOne.update();
       spriteWorldViewerTwo.update();
 
-      while (true)
+      int numberOfLoops = 20;
+      
+      for (int i=0; i<numberOfLoops; i++)
       {
          Thread.sleep(100L);
       }
@@ -212,7 +218,9 @@ public class SpriteWorldViewerUsingJavaFXTest
       double xReferencePercent = 0.5;
       double yReferencePercent = 0.5;
 
-      while (true)
+      int numberOfLoops = 20;
+      
+      for (int i=0; i<numberOfLoops; i++)
       {
          spriteWorldViewerOne.update();
          spriteWorldViewerTwo.update();
@@ -288,7 +296,9 @@ public class SpriteWorldViewerUsingJavaFXTest
 
       double rocketAngle = 0.0;
 
-      while (true)
+      int numberOfLoops = 20;
+      
+      for (int i=0; i<numberOfLoops; i++)
       {
          spriteWorldViewerOne.update();
          spriteWorldViewerTwo.update();
@@ -366,7 +376,11 @@ public class SpriteWorldViewerUsingJavaFXTest
 
       viewerTwo.setSpriteWorld(spriteWorld);
       viewerTwo.createAndDisplayWindow();
-      while (true)
+      
+
+      int numberOfLoops = 20;
+      
+      for (int i=0; i<numberOfLoops; i++)
       {
          blackDie.nextCostume();
          redDie.previousCostume();
@@ -479,7 +493,9 @@ public class SpriteWorldViewerUsingJavaFXTest
       double rotation = 0.0;
       double kingHeight = whiteKing.getHeight();
 
-      while (true)
+      int numberOfLoops = 20;
+      
+      for (int i=0; i<numberOfLoops; i++)
       {
          crossHairs.setRotationInRadians(rotation);
          rotation += 0.2;
@@ -565,7 +581,9 @@ public class SpriteWorldViewerUsingJavaFXTest
 
       double rotation = 5.0;
 
-      while (true)
+      int numberOfLoops = 20;
+      
+      for (int i=0; i<numberOfLoops; i++)
       {
          for (SpriteWorldViewer viewer : viewers)
          {
