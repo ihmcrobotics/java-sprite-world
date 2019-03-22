@@ -23,8 +23,8 @@ public class SpriteCostume
    
    public static SpriteCostume createFromFile(String filename)
    {
-      InputStream inputStream = SpriteCostume.class.getResourceAsStream(filename);
-//      InputStream inputStream = ClassLoader.getSystemResourceAsStream(filename);
+//      InputStream inputStream = SpriteCostume.class.getResourceAsStream(filename);
+      InputStream inputStream = ClassLoader.getSystemResourceAsStream("us/ihmc/javaSpriteWorld/" + filename);
       if (inputStream == null)
       {
          System.err.println("Couldn't open resource as stream: " + filename);
