@@ -18,6 +18,13 @@ mainDependencies {
    api("org.apache.commons:commons-lang3:3.7")
    api("commons-io:commons-io:2.6")
 
+   api("org.openjfx:javafx-base:13.0.1:win")
+   api("org.openjfx:javafx-controls:13.0.1:win")
+   api("org.openjfx:javafx-graphics:13.0.1:win")
+   api("org.openjfx:javafx-graphics:13.0.1:mac")
+   api("org.openjfx:javafx-graphics:13.0.1:linux")
+   api("org.openjfx:javafx-fxml:13.0.1:win")
+   api("org.openjfx:javafx-swing:13.0.1:win")
 }
 
 testDependencies {
