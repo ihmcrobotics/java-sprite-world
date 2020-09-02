@@ -1,20 +1,22 @@
-package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
+package us.ihmc.javaSpriteWorld.examples.robotChallenge02;
 
 import us.ihmc.javaSpriteWorld.SampleSprites;
 import us.ihmc.javaSpriteWorld.Sprite;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge01.Food01;
 import us.ihmc.javaSpriteWorld.geometry.ConvexPolygon;
 import us.ihmc.javaSpriteWorld.geometry.Point;
 import us.ihmc.javaSpriteWorld.geometry.Vector;
 
-public class Robot01
+public class Robot02
 {
    private final Sprite sprite;
    private final double xMax, yMax;
 
    private double x, y;
-   private double xDot, yDot;
+   private double heading, velocity;
+   private double acceleration, turnRate;
 
-   public Robot01(double xMax, double yMax)
+   public Robot02(double xMax, double yMax)
    {
       this.xMax = xMax;
       this.yMax = yMax;
@@ -50,25 +52,44 @@ public class Robot01
       this.y = y;
    }
 
-
-   public double getXDot()
+   public double getHeading()
    {
-      return xDot;
-   }
-   
-   public double getYDot()
-   {
-      return yDot;
+      return heading;
    }
 
-   public void setXDot(double xDot)
+   public void setHeading(double heading)
    {
-      this.xDot = xDot;
+      this.heading = heading;
    }
-   
-   public void setYDot(double yDot)
+
+   public double getVelocity()
    {
-      this.yDot = yDot;
+      return velocity;
+   }
+
+   public void setVelocity(double velocity)
+   {
+      this.velocity = velocity;
+   }
+
+   public double getAcceleration()
+   {
+      return acceleration;
+   }
+
+   public void setAcceleration(double acceleration)
+   {
+      this.acceleration = acceleration;
+   }
+
+   public double getTurnRate()
+   {
+      return turnRate;
+   }
+
+   public void setTurnRate(double turnRate)
+   {
+      this.turnRate = turnRate;
    }
 
    public Sprite getSprite()
@@ -78,6 +99,12 @@ public class Robot01
 
    public void doDynamicsAndUpdateSprite(double dt)
    {
+      velocity += acceleration * dt;
+      heading += turnRate * dt;
+
+      double xDot = -velocity * Math.sin(heading);
+      double yDot = velocity * Math.cos(heading);
+
       x += xDot * dt;
       y += yDot * dt;
 
@@ -88,12 +115,16 @@ public class Robot01
 
       sprite.setX(x);
       sprite.setY(y);
+
+      sprite.setRotationInRadians(heading);
    }
 
    private void teleportHome()
    {
       setX(0.5);
       setY(0.5);
+      setVelocity(0.0);
+      setHeading(0.0);
    }
 
    private boolean isOutOfBounds()
@@ -114,7 +145,6 @@ public class Robot01
    public void eatFood(Food01 food)
    {
       System.out.println("Yummy food!");
-      
    }
 
 }

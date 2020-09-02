@@ -16,6 +16,6 @@ public interface Robot01Behavior
 
    public abstract void senseMousePressed(double mousePressedX, double mousePressedY);
 
-   public abstract double[] getAccelerationAndTurnRate();
+   double[] getXYVelocity();
 
 }

@@ -31,11 +31,9 @@ public class SimpleRobot01Behavior implements Robot01Behavior
    }
 
    @Override
-   public double[] getAccelerationAndTurnRate()
+   public double[] getXYVelocity()
    {
-      double acceleration = 0.5;
-      double turnRate = -0.2;
-      return new double[] {acceleration, turnRate};
+      return new double[] {1.0, 1.0};
    }
 
    @Override

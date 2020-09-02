@@ -137,16 +137,14 @@ public class RobotChallenge01
                mousePressed = false;
             }
             robot01Behavior.senseGlobalLocation(robot.getX(), robot.getY());
-            robot01Behavior.senseVelocity(robot.getVelocity());
-            robot01Behavior.senseHeading(robot.getHeading());
 
             ArrayList<Vector2D> locationOfAllFood = foodList.getLocationOfAllFood();
             robot01Behavior.senseFood(locationOfAllFood);
 
-            double[] accelerationAndTurnRate = robot01Behavior.getAccelerationAndTurnRate();
+            double[] xyVelocity = robot01Behavior.getXYVelocity();
 
-            robot.setAcceleration(accelerationAndTurnRate[0]);
-            robot.setTurnRate(accelerationAndTurnRate[1]);
+            robot.setXDot(xyVelocity[0]);
+            robot.setYDot(xyVelocity[1]);
          }
 
          foodList.doDynamicsAndUpdateSprites(dt);
