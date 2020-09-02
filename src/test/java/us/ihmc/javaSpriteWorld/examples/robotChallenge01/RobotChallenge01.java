@@ -25,7 +25,7 @@ public class RobotChallenge01
    private final Robot01 robot;
    private final FoodList01 foodList = new FoodList01();
 
-   private Robot01Behavior robot01Behavior;
+   private RobotChallengeRules robotChallengeRules;
    private SpriteCollisionGroup collisionGroup;
 
    private boolean mousePressed;
@@ -131,26 +131,15 @@ public class RobotChallenge01
 
       while (true)
       {
-         if (robot01Behavior != null)
+         if (mousePressed)
          {
-            if (mousePressed)
-            {
-               robot01Behavior.senseMousePressed(mousePressedX, mousePressedY);
-               mousePressed = false;
-            }
-            robot01Behavior.senseGlobalLocation(robot.getX(), robot.getY());
-
-            ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
-            robot01Behavior.senseFood(locationOfAllFood);
-
-            double[] xyVelocity = robot01Behavior.getXYVelocity();
-
-            robot.setXDot(xyVelocity[0]);
-            robot.setYDot(xyVelocity[1]);
+            robotChallengeRules.senseMousePressed(mousePressedX, mousePressedY);
+            mousePressed = false;
          }
+         
+         robotChallengeRules.executeRules();
 
          foodList.doDynamicsAndUpdateSprites(dt);
-
          robot.doDynamicsAndUpdateSprite(dt);
          collisionGroup.doCheckCollisions();
 
@@ -166,18 +155,35 @@ public class RobotChallenge01
       }
    }
 
-   public void setRobot01Behavior(Robot01Behavior robot01Behavior)
+   
+   public void setRootChallengeRules(RobotChallengeRules robotChallengeRules)
    {
-      this.robot01Behavior = robot01Behavior;
+      this.robotChallengeRules = robotChallengeRules;
    }
 
+   private FoodList01 getFoodList()
+   {
+      return foodList;
+   }
+
+   private Robot01 getRobot()
+   {
+      return robot;
+   }
+   
    public static void main(String[] args)
    {
       Random random = new Random();
       RobotChallenge01 robotChallenge01 = new RobotChallenge01(random, 10.0, 10.0);
       robotChallenge01.createSomeFood(10);
+  
       Robot01Behavior simpleBehavior = new SimpleRobot01Behavior();
-      robotChallenge01.setRobot01Behavior(simpleBehavior);
+      RobotChallengeRules01 rules = new  RobotChallengeRules01(robotChallenge01.getRobot(), robotChallenge01.getFoodList(), simpleBehavior);
+      
+   
+      robotChallenge01.setRootChallengeRules(rules);
       robotChallenge01.runSimulation();
    }
+
+
 }
