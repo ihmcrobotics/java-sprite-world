@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.Sprite;
 import us.ihmc.javaSpriteWorld.SpriteCollisionGroup;
 import us.ihmc.javaSpriteWorld.SpriteWorld;
@@ -65,6 +66,20 @@ public class FoodList01
       {
          food.doDynamicsAndUpdateSprite(dt);
       }
+   }
+
+   public ArrayList<Vector2D> getLocationOfAllFood()
+   {
+      ArrayList<Vector2D> locations = new ArrayList<Vector2D>();
+      
+      for (Food01 food : foodInPlay)
+      {
+         Vector2D location = new Vector2D(food.getX(), food.getY());
+         locations.add(location);
+      }
+      
+      return locations;
+      
    }
 
 }

@@ -2,6 +2,7 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 
 import java.util.Random;
 
+import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.Sprite;
 import us.ihmc.javaSpriteWorld.SpriteCollisionGroup;
 import us.ihmc.javaSpriteWorld.SpriteCollisionListener;
@@ -64,6 +65,7 @@ public class CollisionProcessor01 implements SpriteCollisionListener
       double xTwo = foodTwo.getX();
       double yTwo = foodTwo.getY();
       
+      Vector2D v;
       double deltaX = xTwo - xOne;
       double deltaY = yTwo - yOne;
       

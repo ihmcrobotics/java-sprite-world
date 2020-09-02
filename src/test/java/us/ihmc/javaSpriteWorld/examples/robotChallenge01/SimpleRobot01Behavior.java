@@ -1,13 +1,12 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 
+import java.util.ArrayList;
+
+import us.ihmc.euclid.tuple2D.Vector2D;
+
 public class SimpleRobot01Behavior implements Robot01Behavior
 {
    public SimpleRobot01Behavior()
-   {
-   }
-
-   @Override
-   public void senseFood(double x, double y)
    {
    }
 
@@ -27,6 +26,11 @@ public class SimpleRobot01Behavior implements Robot01Behavior
    }
 
    @Override
+   public void senseFood(ArrayList<Vector2D> locationOfAllFood)
+   {
+   }
+
+   @Override
    public double[] getAccelerationAndTurnRate()
    {
       double acceleration = 0.5;
@@ -39,4 +43,5 @@ public class SimpleRobot01Behavior implements Robot01Behavior
    {
       System.out.println("Mouse pressed at " + mousePressedX + ", " + mousePressedY);
    }
+
 }

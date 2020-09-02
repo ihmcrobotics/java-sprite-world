@@ -1,7 +1,9 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 
+import java.util.ArrayList;
 import java.util.Random;
 
+import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.SpriteCollisionGroup;
 import us.ihmc.javaSpriteWorld.SpriteStage;
 import us.ihmc.javaSpriteWorld.SpriteWorld;
@@ -26,7 +28,7 @@ public class RobotChallenge01
 
    private boolean mousePressed;
    private double mousePressedX, mousePressedY;
-   
+
    public RobotChallenge01(Random random, double xMax, double yMax)
    {
       this.random = random;
@@ -63,14 +65,14 @@ public class RobotChallenge01
 
       CollisionProcessor01 collisionProcessor = new CollisionProcessor01(robot, foodList, random, xMax, yMax, spriteWorld, collisionGroup);
       collisionGroup.addSpriteCollisionListener(collisionProcessor);
-      
+
       spriteWorldMouseListener = new SpriteWorldMouseListener()
       {
          @Override
          public void mouseReleasedInWorld(SpriteWorldViewer viewer, SpriteWorld spriteWorld, double xWorld, double yWorld)
-         {            
+         {
          }
-         
+
          @Override
          public void mousePressedInWorld(SpriteWorldViewer viewer, SpriteWorld spriteWorld, double xWorld, double yWorld)
          {
@@ -78,33 +80,33 @@ public class RobotChallenge01
             mousePressedY = yWorld;
             mousePressed = true;
          }
-         
+
          @Override
          public void mouseMovedInWorld(SpriteWorldViewer viewer, SpriteWorld spriteWorld, double xWorld, double yWorld)
          {
          }
-         
+
          @Override
          public void mouseExitedWorld(SpriteWorldViewer viewer, SpriteWorld spriteWorld, double xWorld, double yWorld)
          {
          }
-         
+
          @Override
          public void mouseEnteredWorld(SpriteWorldViewer viewer, SpriteWorld spriteWorld, double xWorld, double yWorld)
          {
          }
-         
+
          @Override
          public void mouseDraggedInWorld(SpriteWorldViewer viewer, SpriteWorld spriteWorld, double xWorld, double yWorld)
          {
          }
-         
+
          @Override
          public void mouseClickedInWorld(SpriteWorldViewer viewer, SpriteWorld spriteWorld, double xWorld, double yWorld, int clickCount)
          {
          }
       };
-      
+
       spriteWorld.attacheSpriteWorldMouseListener(spriteWorldMouseListener);
    }
 
@@ -137,7 +139,10 @@ public class RobotChallenge01
             robot01Behavior.senseGlobalLocation(robot.getX(), robot.getY());
             robot01Behavior.senseVelocity(robot.getVelocity());
             robot01Behavior.senseHeading(robot.getHeading());
-            
+
+            ArrayList<Vector2D> locationOfAllFood = foodList.getLocationOfAllFood();
+            robot01Behavior.senseFood(locationOfAllFood);
+
             double[] accelerationAndTurnRate = robot01Behavior.getAccelerationAndTurnRate();
 
             robot.setAcceleration(accelerationAndTurnRate[0]);
