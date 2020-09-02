@@ -156,7 +156,7 @@ public class RobotChallenge01
       this.robotChallengeRules = robotChallengeRules;
    }
 
-   private FoodList01 getFoodList()
+   public FoodList01 getFoodList()
    {
       return foodList;
    }

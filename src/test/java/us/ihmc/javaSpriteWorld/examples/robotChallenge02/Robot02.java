@@ -3,11 +3,12 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge02;
 import us.ihmc.javaSpriteWorld.SampleSprites;
 import us.ihmc.javaSpriteWorld.Sprite;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.Food01;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeRobot;
 import us.ihmc.javaSpriteWorld.geometry.ConvexPolygon;
 import us.ihmc.javaSpriteWorld.geometry.Point;
 import us.ihmc.javaSpriteWorld.geometry.Vector;
 
-public class Robot02
+public class Robot02 implements RobotChallengeRobot
 {
    private final Sprite sprite;
    private final double xMax, yMax;
