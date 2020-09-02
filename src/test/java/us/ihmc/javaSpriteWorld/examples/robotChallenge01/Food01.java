@@ -13,7 +13,7 @@ public class Food01
    private final double xMax, yMax;
    private final Sprite sprite;
    private final Random random;
-   
+
    private double x, y;
    private double heading, speed;
    private double acceleration, turnRate;
@@ -102,7 +102,7 @@ public class Food01
    {
       acceleration = -1.0 + 2.0 * random.nextDouble();
       turnRate = -1.0 + 2.0 * random.nextDouble();
-      
+
       speed += acceleration * dt;
       heading += turnRate * dt;
 
@@ -128,8 +128,8 @@ public class Food01
       setX(random.nextDouble() * xMax);
       setY(random.nextDouble() * yMax);
 
-      setSpeed(0.0);
-      setHeading(0.0);
+      setSpeed(random.nextDouble() * 1.0);
+      setHeading(random.nextDouble() * 2.0 * Math.PI);
    }
 
    private boolean isOutOfBounds()

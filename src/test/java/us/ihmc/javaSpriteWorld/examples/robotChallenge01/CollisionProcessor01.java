@@ -78,8 +78,8 @@ public class CollisionProcessor01 implements SpriteCollisionListener
       deltaY = deltaY / magnitude;
       
       double heading = Math.atan2(deltaY, deltaX);
-      foodOne.setHeading(heading);
-      foodTwo.setHeading(Math.PI + heading);
+      foodOne.setHeading(Math.PI + heading);
+      foodTwo.setHeading(heading);
       foodOne.setSpeed(1.0); //Math.abs(foodOne.getVelocity()));
       foodTwo.setSpeed(1.0); //Math.abs(foodTwo.getVelocity()));
    }
