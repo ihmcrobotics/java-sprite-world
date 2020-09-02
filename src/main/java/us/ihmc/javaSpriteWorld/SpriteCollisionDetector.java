@@ -14,6 +14,9 @@ public class SpriteCollisionDetector
 
    public boolean areSpritesColliding(Sprite spriteOne, Sprite spriteTwo)
    {
+      if (!spriteOne.isVisible()) return false;
+      if (!spriteTwo.isVisible()) return false;
+
       collisionPolygonsOne.clear();
       spriteOne.getCollisionPolygons(collisionPolygonsOne);
 
