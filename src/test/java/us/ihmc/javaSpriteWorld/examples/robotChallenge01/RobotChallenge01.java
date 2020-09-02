@@ -3,6 +3,8 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.SpriteCollisionGroup;
 import us.ihmc.javaSpriteWorld.SpriteStage;
@@ -138,7 +140,7 @@ public class RobotChallenge01
             }
             robot01Behavior.senseGlobalLocation(robot.getX(), robot.getY());
 
-            ArrayList<Vector2D> locationOfAllFood = foodList.getLocationOfAllFood();
+            ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
             robot01Behavior.senseFood(locationOfAllFood);
 
             double[] xyVelocity = robot01Behavior.getXYVelocity();

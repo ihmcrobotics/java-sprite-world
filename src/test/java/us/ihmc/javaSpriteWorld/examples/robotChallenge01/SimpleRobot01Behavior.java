@@ -2,6 +2,8 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import us.ihmc.euclid.tuple2D.Vector2D;
 
 public class SimpleRobot01Behavior implements Robot01Behavior
@@ -26,7 +28,7 @@ public class SimpleRobot01Behavior implements Robot01Behavior
    }
 
    @Override
-   public void senseFood(ArrayList<Vector2D> locationOfAllFood)
+   public void senseFood(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood)
    {
    }
 

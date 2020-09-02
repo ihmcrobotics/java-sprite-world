@@ -2,7 +2,6 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 
 import java.util.Random;
 
-import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.Sprite;
 import us.ihmc.javaSpriteWorld.SpriteCollisionGroup;
 import us.ihmc.javaSpriteWorld.SpriteCollisionListener;
@@ -10,14 +9,14 @@ import us.ihmc.javaSpriteWorld.SpriteWorld;
 
 public class CollisionProcessor01 implements SpriteCollisionListener
 {
-   private final Robot01 robot;
+   private final RobotChallengeRobot robot;
    private final FoodList01 foodList;
    private final Random random;
    private final double xMax, yMax;
    private final SpriteWorld spriteWorld;
    private final SpriteCollisionGroup collisionGroup;
 
-   public CollisionProcessor01(Robot01 robot, FoodList01 foodList, Random random, double xMax, double yMax, SpriteWorld spriteWorld,
+   public CollisionProcessor01(RobotChallengeRobot robot, FoodList01 foodList, Random random, double xMax, double yMax, SpriteWorld spriteWorld,
                                SpriteCollisionGroup collisionGroup)
    {
       this.robot = robot;
@@ -81,12 +80,11 @@ public class CollisionProcessor01 implements SpriteCollisionListener
       double heading = Math.atan2(deltaY, deltaX);
       foodOne.setHeading(heading);
       foodTwo.setHeading(Math.PI + heading);
-      foodOne.setVelocity(1.0); //Math.abs(foodOne.getVelocity()));
-      foodTwo.setVelocity(1.0); //Math.abs(foodTwo.getVelocity()));
-      
+      foodOne.setSpeed(1.0); //Math.abs(foodOne.getVelocity()));
+      foodTwo.setSpeed(1.0); //Math.abs(foodTwo.getVelocity()));
    }
 
-   private void processRobotCollision(Robot01 robot, Sprite sprite)
+   private void processRobotCollision(RobotChallengeRobot robot, Sprite sprite)
    {
       Food01 food = foodList.findFood(sprite);
 
@@ -97,7 +95,7 @@ public class CollisionProcessor01 implements SpriteCollisionListener
 
    }
 
-   private void processRobotAndFoodCollision(Robot01 robot, Food01 food)
+   private void processRobotAndFoodCollision(RobotChallengeRobot robot, Food01 food)
    {
       robot.eatFood(food);
 

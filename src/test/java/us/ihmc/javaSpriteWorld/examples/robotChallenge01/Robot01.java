@@ -7,7 +7,7 @@ import us.ihmc.javaSpriteWorld.geometry.ConvexPolygon;
 import us.ihmc.javaSpriteWorld.geometry.Point;
 import us.ihmc.javaSpriteWorld.geometry.Vector;
 
-public class Robot01
+public class Robot01 implements RobotChallengeRobot
 {
    private final Sprite sprite;
    private final double xMax, yMax;

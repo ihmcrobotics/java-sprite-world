@@ -15,7 +15,7 @@ public class Food01
    private final Random random;
    
    private double x, y;
-   private double heading, velocity;
+   private double heading, speed;
    private double acceleration, turnRate;
 
    public Food01(Random random, double xMax, double yMax)
@@ -25,9 +25,9 @@ public class Food01
       this.yMax = yMax;
 
       sprite = SampleSprites.createSixSidedBlackPipsOnWhiteDie();
-      sprite.setHeightPreserveScale(0.5, 0);
+      sprite.setHeightPreserveScale(0.3, 0);
 
-      ConvexPolygon collisionPolygon = ConvexPolygon.createRectangle(new Point(-0.25, -0.25), new Vector(0.5, 0.5));
+      ConvexPolygon collisionPolygon = ConvexPolygon.createRectangle(new Point(-0.15, -0.15), new Vector(0.3, 0.3));
       sprite.addCollisionPolygon(collisionPolygon);
 
       teleportToRandomLocation(random);
@@ -63,14 +63,14 @@ public class Food01
       this.heading = heading;
    }
 
-   public double getVelocity()
+   public double getSpeed()
    {
-      return velocity;
+      return speed;
    }
 
-   public void setVelocity(double velocity)
+   public void setSpeed(double speed)
    {
-      this.velocity = velocity;
+      this.speed = speed;
    }
 
    public double getAcceleration()
@@ -103,11 +103,11 @@ public class Food01
       acceleration = -1.0 + 2.0 * random.nextDouble();
       turnRate = -1.0 + 2.0 * random.nextDouble();
       
-      velocity += acceleration * dt;
+      speed += acceleration * dt;
       heading += turnRate * dt;
 
-      double xDot = -velocity * Math.sin(heading);
-      double yDot = velocity * Math.cos(heading);
+      double xDot = speed * Math.cos(heading);
+      double yDot = speed * Math.sin(heading);
 
       x += xDot * dt;
       y += yDot * dt;
@@ -128,7 +128,7 @@ public class Food01
       setX(random.nextDouble() * xMax);
       setY(random.nextDouble() * yMax);
 
-      setVelocity(0.0);
+      setSpeed(0.0);
       setHeading(0.0);
    }
 
