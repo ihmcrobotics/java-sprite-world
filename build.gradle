@@ -21,4 +21,5 @@ mainDependencies {
 }
 
 testDependencies {
+	api("us.ihmc:euclid:+")
 }
