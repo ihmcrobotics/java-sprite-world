@@ -9,4 +9,6 @@ public interface RobotChallengeRobot
 
    public abstract Sprite getSprite();
 
+   public abstract void doDynamicsAndUpdateSprite(double dt);
+
 }

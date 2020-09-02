@@ -1,11 +1,7 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 
-import java.util.ArrayList;
 import java.util.Random;
 
-import org.apache.commons.lang3.tuple.Pair;
-
-import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.SpriteCollisionGroup;
 import us.ihmc.javaSpriteWorld.SpriteStage;
 import us.ihmc.javaSpriteWorld.SpriteWorld;
@@ -22,7 +18,7 @@ public class RobotChallenge01
    private final SpriteWorldMouseListener spriteWorldMouseListener;
    private final SpriteWorld spriteWorld;
    private final SpriteStage stage;
-   private final Robot01 robot;
+   private final RobotChallengeRobot robot;
    private final FoodList01 foodList = new FoodList01();
 
    private RobotChallengeRules robotChallengeRules;
@@ -31,8 +27,9 @@ public class RobotChallenge01
    private boolean mousePressed;
    private double mousePressedX, mousePressedY;
 
-   public RobotChallenge01(Random random, double xMax, double yMax)
+   public RobotChallenge01(RobotChallengeRobot robot, Random random, double xMax, double yMax)
    {
+      this.robot = robot;
       this.random = random;
       this.xMax = xMax;
       this.yMax = yMax;
@@ -56,7 +53,6 @@ public class RobotChallenge01
       //      stage.addBackdrop(backgammonBoardBackdrop);
       //      spriteWorld.setStage(stage, true);
 
-      robot = new Robot01(xMax, yMax);
       spriteWorld.addSprite(robot.getSprite());
 
       collisionGroup = new SpriteCollisionGroup();
@@ -136,7 +132,7 @@ public class RobotChallenge01
             robotChallengeRules.senseMousePressed(mousePressedX, mousePressedY);
             mousePressed = false;
          }
-         
+
          robotChallengeRules.executeRules();
 
          foodList.doDynamicsAndUpdateSprites(dt);
@@ -155,7 +151,6 @@ public class RobotChallenge01
       }
    }
 
-   
    public void setRootChallengeRules(RobotChallengeRules robotChallengeRules)
    {
       this.robotChallengeRules = robotChallengeRules;
@@ -166,24 +161,22 @@ public class RobotChallenge01
       return foodList;
    }
 
-   private Robot01 getRobot()
-   {
-      return robot;
-   }
-   
    public static void main(String[] args)
    {
       Random random = new Random();
-      RobotChallenge01 robotChallenge01 = new RobotChallenge01(random, 10.0, 10.0);
-      robotChallenge01.createSomeFood(10);
-  
-      Robot01Behavior simpleBehavior = new SimpleRobot01Behavior();
-      RobotChallengeRules01 rules = new  RobotChallengeRules01(robotChallenge01.getRobot(), robotChallenge01.getFoodList(), simpleBehavior);
+      double xMax = 10.0;
+      double yMax = 10.0;
       
-   
+      Robot01 robot = new Robot01(xMax, yMax);
+
+      RobotChallenge01 robotChallenge01 = new RobotChallenge01(robot, random, xMax, yMax);
+      robotChallenge01.createSomeFood(10);
+
+      Robot01Behavior simpleBehavior = new SimpleRobot01Behavior();
+      RobotChallengeRules rules = new RobotChallengeRules01(robot, robotChallenge01.getFoodList(), simpleBehavior);
+
       robotChallenge01.setRootChallengeRules(rules);
       robotChallenge01.runSimulation();
    }
-
 
 }
