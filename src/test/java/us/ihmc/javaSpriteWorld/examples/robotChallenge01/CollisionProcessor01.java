@@ -32,7 +32,7 @@ public class CollisionProcessor01 implements SpriteCollisionListener
    @Override
    public void spritesAreColliding(Sprite spriteOne, Sprite spriteTwo)
    {
-      System.out.println(spriteOne.getName() + " colliding with " + spriteTwo.getName());
+//      System.out.println(spriteOne.getName() + " colliding with " + spriteTwo.getName());
 
       if (spriteOne == robot.getSprite())
       {
@@ -65,7 +65,6 @@ public class CollisionProcessor01 implements SpriteCollisionListener
       double xTwo = foodTwo.getX();
       double yTwo = foodTwo.getY();
       
-      Vector2D v;
       double deltaX = xTwo - xOne;
       double deltaY = yTwo - yOne;
       

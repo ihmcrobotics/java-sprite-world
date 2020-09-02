@@ -33,7 +33,7 @@ public class SimpleRobot01Behavior implements Robot01Behavior
    @Override
    public double[] getXYVelocity()
    {
-      return new double[] {1.0, 1.0};
+      return new double[] {3.0, 3.0};
    }
 
    @Override
