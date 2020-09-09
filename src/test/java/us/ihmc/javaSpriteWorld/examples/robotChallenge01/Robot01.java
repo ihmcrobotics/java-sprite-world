@@ -167,5 +167,29 @@ public class Robot01 implements RobotChallengeRobot
    {
       return new Vector2D(xDot, yDot);
    }
+   
+   @Override
+   public Vector2D getHeadingVector()
+   {
+      Vector2D velocityVector = getVelocityVector();
+      if (velocityVector.length() < 0.0001)
+      {
+         return new Vector2D(1.0, 0.0);
+      }
+      
+      velocityVector.normalize();
+      return velocityVector;
+   }
+
+   @Override
+   public Flag dropFlag()
+   {
+      return null;
+   }
+
+   @Override
+   public void capturedFlag(Flag flag)
+   {      
+   }
 
 }

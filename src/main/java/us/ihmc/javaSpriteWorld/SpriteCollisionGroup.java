@@ -13,6 +13,11 @@ public class SpriteCollisionGroup
    {
       this.sprites.add(sprite);
    }
+   
+   public void removeSprite(Sprite sprite)
+   {
+      this.sprites.remove(sprite);
+   }
 
    public void addSpriteCollisionListener(SpriteCollisionListener listener)
    {
@@ -53,5 +58,6 @@ public class SpriteCollisionGroup
          spriteCollisionListeners.get(i).spritesAreColliding(spriteOne, spriteTwo);
       }
    }
+
 
 }

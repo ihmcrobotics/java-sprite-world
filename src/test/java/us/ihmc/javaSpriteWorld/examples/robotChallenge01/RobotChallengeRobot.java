@@ -19,5 +19,12 @@ public interface RobotChallengeRobot
    
    public abstract Vector2D getVelocityVector();
 
+   public abstract Vector2D getHeadingVector();
+
+   public abstract Flag dropFlag();
+
+   public abstract void capturedFlag(Flag flag);
+
+
 
 }

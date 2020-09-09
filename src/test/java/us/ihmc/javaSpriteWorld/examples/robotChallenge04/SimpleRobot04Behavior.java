@@ -1,4 +1,4 @@
-package us.ihmc.javaSpriteWorld.examples.robotChallenge03;
+package us.ihmc.javaSpriteWorld.examples.robotChallenge04;
 
 import java.util.ArrayList;
 
@@ -7,13 +7,13 @@ import org.apache.commons.lang3.tuple.Pair;
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Vector2D;
 
-public class SimpleRobot03Behavior implements Robot03Behavior
+public class SimpleRobot04Behavior implements Robot04Behavior
 {
    private double mousePressedX = 5.0, mousePressedY = 5.0;
    private double x = 0.0, y = 0.0;
    private double heading = 0.0;
 
-   public SimpleRobot03Behavior()
+   public SimpleRobot04Behavior()
    {
    }
 
@@ -79,6 +79,17 @@ public class SimpleRobot03Behavior implements Robot03Behavior
       double acceleration = 4.0 * dot;
 
       return new double[] {acceleration, turnRate};
+   }
+
+   @Override
+   public void senseFlags(ArrayList<Pair<Vector2D, Integer>> locationAndIdsOfAllFlags)
+   {
+   }
+
+   @Override
+   public boolean getDropFlag()
+   {
+      return ((x > 8.0) && (y > 8.0));
    }
 
 }
