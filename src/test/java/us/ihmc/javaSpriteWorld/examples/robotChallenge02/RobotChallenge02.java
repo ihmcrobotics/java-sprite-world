@@ -8,6 +8,7 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeRules;
 
 public class RobotChallenge02 extends RobotChallenge01
 {
+   public static final String PLAYER = System.getProperty("player", "Simple");
 
    public RobotChallenge02(RobotChallengeRobot robot, Random random, double xMax, double yMax)
    {
@@ -25,7 +26,13 @@ public class RobotChallenge02 extends RobotChallenge01
       RobotChallenge02 robotChallenge = new RobotChallenge02(robot, random, xMax, yMax);
       robotChallenge.createSomeFood(10);
 
-      Robot02Behavior simpleBehavior = new SimpleRobot02Behavior();
+      Robot02Behavior simpleBehavior;
+      if (PLAYER.equals("Duncan"))
+         simpleBehavior = new DuncansRobot02Behavior();
+      else if (PLAYER.equals("Stephen"))
+         simpleBehavior = new SimpleRobot02Behavior(); // TODO: Stephen adds behavior here
+      else
+         simpleBehavior = new SimpleRobot02Behavior();
       RobotChallengeRules rules = new RobotChallengeRules02(robot, robotChallenge.getFoodList(), simpleBehavior);
 
       robotChallenge.setRootChallengeRules(rules);
