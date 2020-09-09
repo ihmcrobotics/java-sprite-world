@@ -24,7 +24,6 @@ public class RobotChallengeRules03 implements RobotChallengeRules
       this.predatorList = predatorList;
       this.robotBehavior = robotBehavior;
    }
-  
 
    @Override
    public void senseMousePressed(double mousePressedX, double mousePressedY)
@@ -38,6 +37,8 @@ public class RobotChallengeRules03 implements RobotChallengeRules
       if (robotBehavior != null)
       {
          robotBehavior.senseGlobalLocation(robot.getX(), robot.getY());
+         robotBehavior.senseHeading(robot.getHeading());
+         robotBehavior.senseVelocity(robot.getVelocity());
 
          ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
          robotBehavior.senseFood(locationOfAllFood);

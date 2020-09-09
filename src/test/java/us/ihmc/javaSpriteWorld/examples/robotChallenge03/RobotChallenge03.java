@@ -28,7 +28,7 @@ public class RobotChallenge03 extends RobotChallenge02
       double maximumPredatorSpeed = 1.5;
       robotChallenge.createSomePredators(3, maximumPredatorSpeed);
 
-      Robot03Behavior simpleBehavior = new SimpleRobot03Behavior();
+      Robot03Behavior simpleBehavior = new VectorFieldBehavior03(); // new ExperimentalBehavior03(); // new SimpleRobot03Behavior(); //
       RobotChallengeRules rules = new RobotChallengeRules03(robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), simpleBehavior);
 
       robotChallenge.setRootChallengeRules(rules);
