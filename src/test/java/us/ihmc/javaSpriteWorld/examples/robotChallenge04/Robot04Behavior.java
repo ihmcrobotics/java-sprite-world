@@ -22,8 +22,6 @@ public interface Robot04Behavior
 
    public abstract void senseFlags(ArrayList<Pair<Vector2D, Integer>> locationAndIdsOfAllFlags);
 
-   public abstract void senseTreasure(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllTreasure);
-
    public abstract double[] getAccelerationAndTurnRate();
 
    public abstract boolean getDropFlag();

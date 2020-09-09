@@ -20,8 +20,6 @@ public interface Robot03Behavior
 
    public abstract void sensePredators(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators);
 
-   public abstract void senseTreasure(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllTreasure);
-
    public abstract double[] getAccelerationAndTurnRate();
 
 }

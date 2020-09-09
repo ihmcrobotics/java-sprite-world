@@ -46,11 +46,6 @@ public class SimpleRobot04Behavior implements Robot04Behavior
    }
 
    @Override
-   public void senseTreasure(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllTreasure)
-   {
-   }
-
-   @Override
    public void senseMousePressed(double mousePressedX, double mousePressedY)
    {
       this.mousePressedX = mousePressedX;
