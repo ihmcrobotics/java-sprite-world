@@ -189,16 +189,18 @@ public class RobotChallenge01
       Random random = new Random();
       double xMax = 10.0;
       double yMax = 10.0;
-      
+
       Robot01 robot = new Robot01(xMax, yMax);
 
       RobotChallenge01 robotChallenge01 = new RobotChallenge01("RobotChallenge01", robot, random, xMax, yMax);
       robotChallenge01.createSomeFood(10);
 
       Robot01Behavior simpleBehavior = new SimpleRobot01Behavior();
-      RobotChallengeRules rules = new RobotChallengeRules01(robot, robotChallenge01.getFoodList(), simpleBehavior);
+      ExperimentalBehavior01 behavior01 = new ExperimentalBehavior01();
 
+      RobotChallengeRules rules = new RobotChallengeRules01(robot, robotChallenge01.getFoodList(), behavior01);
       robotChallenge01.setRootChallengeRules(rules);
+
       robotChallenge01.runSimulation();
    }
 

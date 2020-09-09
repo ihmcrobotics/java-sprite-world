@@ -21,5 +21,5 @@ mainDependencies {
 }
 
 testDependencies {
-	api("us.ihmc:euclid:+")
+	api("us.ihmc:euclid:0.15.1")
 }
