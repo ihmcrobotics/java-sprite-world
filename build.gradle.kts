@@ -21,5 +21,6 @@ mainDependencies {
 
 testDependencies {
    api("us.ihmc:euclid:0.15.1")
+   api("us.ihmc:euclid-geometry:0.15.1")
    api("us.ihmc:log-tools:0.5.0")
 }
