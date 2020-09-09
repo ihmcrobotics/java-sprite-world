@@ -26,7 +26,9 @@ public class RobotChallenge02 extends RobotChallenge01
       robotChallenge.createSomeFood(10);
 
       Robot02Behavior simpleBehavior = new SimpleRobot02Behavior();
-      RobotChallengeRules rules = new RobotChallengeRules02(robot, robotChallenge.getFoodList(), simpleBehavior);
+      Robot02Behavior experimentalBehavior = new ExperimentalBehavior02();
+
+      RobotChallengeRules rules = new RobotChallengeRules02(robot, robotChallenge.getFoodList(), experimentalBehavior);
 
       robotChallenge.setRootChallengeRules(rules);
       robotChallenge.runSimulation();
