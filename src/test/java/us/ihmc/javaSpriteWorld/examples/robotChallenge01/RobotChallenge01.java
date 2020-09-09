@@ -19,7 +19,8 @@ public class RobotChallenge01
    private final SpriteWorld spriteWorld;
    private final SpriteStage stage;
    private final RobotChallengeRobot robot;
-   private final FoodList01 foodList = new FoodList01();
+   private final FoodList01 foodList;
+   private final PredatorList01 predatorList;
 
    private RobotChallengeRules robotChallengeRules;
    private SpriteCollisionGroup collisionGroup;
@@ -27,14 +28,17 @@ public class RobotChallenge01
    private boolean mousePressed;
    private double mousePressedX, mousePressedY;
 
-   public RobotChallenge01(RobotChallengeRobot robot, Random random, double xMax, double yMax)
+   public RobotChallenge01(String name, RobotChallengeRobot robot, Random random, double xMax, double yMax)
    {
       this.robot = robot;
       this.random = random;
       this.xMax = xMax;
       this.yMax = yMax;
 
-      viewer = new SpriteWorldViewerUsingSwing("RobotChallenge01");
+      foodList = new FoodList01(xMax, yMax);
+      predatorList = new PredatorList01();
+      
+      viewer = new SpriteWorldViewerUsingSwing(name);
 
       viewer.setPreferredSizeInPixels(1000, 1000);
       viewer.setResizable(false);
@@ -45,7 +49,7 @@ public class RobotChallenge01
       spriteWorld.setRightBorderX(xMax);
       spriteWorld.setTopBorderY(yMax);
 
-      stage = new SpriteStage("Robot Challenge01 Stage");
+      stage = new SpriteStage(name + " Stage");
       //      StageBackdrop backgammonBoardBackdrop = SampleStageBackdrops.getBackgammonBoard();
       //      backgammonBoardBackdrop.setXReferencePercent(0.5);
       //      backgammonBoardBackdrop.setYReferencePercent(0.5);
@@ -61,7 +65,7 @@ public class RobotChallenge01
       viewer.setSpriteWorld(spriteWorld);
       viewer.createAndDisplayWindow();
 
-      CollisionProcessor01 collisionProcessor = new CollisionProcessor01(robot, foodList, random, xMax, yMax, spriteWorld, collisionGroup);
+      CollisionProcessor01 collisionProcessor = new CollisionProcessor01(robot, foodList, predatorList, random, xMax, yMax, spriteWorld, collisionGroup);
       collisionGroup.addSpriteCollisionListener(collisionProcessor);
 
       spriteWorldMouseListener = new SpriteWorldMouseListener()
@@ -121,6 +125,19 @@ public class RobotChallenge01
       foodList.createSomeFood(random, xMax, yMax, spriteWorld, collisionGroup);
    }
 
+   public void createSomePredators(int numberOfPredators, double maximumPredatorSpeed)
+   {
+      for (int i = 0; i < numberOfPredators; i++)
+      {
+         createAPredator(maximumPredatorSpeed);
+      }
+   }
+
+   private void createAPredator(double maximumPredatorSpeed)
+   {
+      predatorList.createAPredator(random, xMax, yMax, maximumPredatorSpeed, spriteWorld, collisionGroup);
+   }
+   
    public void runSimulation()
    {
       double dt = 0.01;
@@ -136,6 +153,7 @@ public class RobotChallenge01
          robotChallengeRules.executeRules();
 
          foodList.doDynamicsAndUpdateSprites(dt);
+         predatorList.doDynamicsAndUpdateSprites(robot.getPosition(), robot.getVelocityVector(), dt);
          robot.doDynamicsAndUpdateSprite(dt);
          collisionGroup.doCheckCollisions();
 
@@ -161,6 +179,11 @@ public class RobotChallenge01
       return foodList;
    }
 
+   public PredatorList01 getPredatorList()
+   {
+      return predatorList;
+   }
+
    public static void main(String[] args)
    {
       Random random = new Random();
@@ -169,7 +192,7 @@ public class RobotChallenge01
       
       Robot01 robot = new Robot01(xMax, yMax);
 
-      RobotChallenge01 robotChallenge01 = new RobotChallenge01(robot, random, xMax, yMax);
+      RobotChallenge01 robotChallenge01 = new RobotChallenge01("RobotChallenge01", robot, random, xMax, yMax);
       robotChallenge01.createSomeFood(10);
 
       Robot01Behavior simpleBehavior = new SimpleRobot01Behavior();

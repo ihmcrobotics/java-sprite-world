@@ -14,15 +14,23 @@ import us.ihmc.javaSpriteWorld.SpriteWorld;
 
 public class FoodList01
 {
+   private final double xMax, yMax;
+   
    private final ArrayList<Food01> foodInPlay = new ArrayList<Food01>();
    private final ArrayList<Food01> recycledFood = new ArrayList<Food01>();
    private final HashMap<Sprite, Food01> map = new HashMap<Sprite, Food01>();
 
-   public FoodList01()
+   public FoodList01(double xMax, double yMax)
    {
-
+      this.xMax = xMax;
+      this.yMax = yMax;
    }
 
+   public void createSomeFood(Random random, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
+   {
+      createSomeFood(random, xMax, yMax, spriteWorld, collisionGroup);
+   }
+   
    public void createSomeFood(Random random, double xMax, double yMax, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
    {
       Food01 food;

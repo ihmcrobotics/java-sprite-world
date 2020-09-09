@@ -11,16 +11,18 @@ public class CollisionProcessor01 implements SpriteCollisionListener
 {
    private final RobotChallengeRobot robot;
    private final FoodList01 foodList;
+   private final PredatorList01 predatorList;
    private final Random random;
    private final double xMax, yMax;
    private final SpriteWorld spriteWorld;
    private final SpriteCollisionGroup collisionGroup;
 
-   public CollisionProcessor01(RobotChallengeRobot robot, FoodList01 foodList, Random random, double xMax, double yMax, SpriteWorld spriteWorld,
+   public CollisionProcessor01(RobotChallengeRobot robot, FoodList01 foodList, PredatorList01 predatorList, Random random, double xMax, double yMax, SpriteWorld spriteWorld,
                                SpriteCollisionGroup collisionGroup)
    {
       this.robot = robot;
       this.foodList = foodList;
+      this.predatorList = predatorList;
       this.random = random;
       this.xMax = xMax;
       this.yMax = yMax;
@@ -36,23 +38,38 @@ public class CollisionProcessor01 implements SpriteCollisionListener
       if (spriteOne == robot.getSprite())
       {
          processRobotCollision(robot, spriteTwo);
+         return;
       }
 
-      else if (spriteTwo == robot.getSprite())
+      if (spriteTwo == robot.getSprite())
       {
          processRobotCollision(robot, spriteOne);
+         return;
       }
 
-      else
+      Predator01 predator = predatorList.findPredator(spriteOne);
+      if (predator != null)
       {
-         Food01 foodOne = foodList.findFood(spriteOne);
-         Food01 foodTwo = foodList.findFood(spriteTwo);
-
-         if ((foodOne != null) && (foodTwo != null))
-         {
-            processFoodFoodCollision(foodOne, foodTwo);
-         }
+         processPredatorCollision(predator, spriteTwo);
+         return;
       }
+
+      predator = predatorList.findPredator(spriteTwo);
+      if (predator != null)
+      {
+         processPredatorCollision(predator, spriteOne);
+         return;
+      }
+      
+      
+      Food01 foodOne = foodList.findFood(spriteOne);
+      Food01 foodTwo = foodList.findFood(spriteTwo);
+
+      if ((foodOne != null) && (foodTwo != null))
+      {
+         processFoodFoodCollision(foodOne, foodTwo);
+      }
+      
 
    }
 
@@ -83,9 +100,32 @@ public class CollisionProcessor01 implements SpriteCollisionListener
       foodOne.setSpeed(1.0); //Math.abs(foodOne.getVelocity()));
       foodTwo.setSpeed(1.0); //Math.abs(foodTwo.getVelocity()));
    }
+   
+   private void processPredatorCollision(Predator01 predator, Sprite sprite)
+   {
+      Food01 food = foodList.findFood(sprite);
+
+      if (food != null)
+      {
+         processPredatorAndFoodCollision(predator, food);
+      }
+
+   }
+
+   private void processPredatorAndFoodCollision(Predator01 predator, Food01 food)
+   {      
+   }
 
    private void processRobotCollision(RobotChallengeRobot robot, Sprite sprite)
    {
+      Predator01 predator = predatorList.findPredator(sprite);
+      if (predator != null)
+      {
+         processRobotAndPredatorCollision(robot, predator);
+         return;
+      }
+      
+      
       Food01 food = foodList.findFood(sprite);
 
       if (food != null)
@@ -95,6 +135,12 @@ public class CollisionProcessor01 implements SpriteCollisionListener
 
    }
 
+   private void processRobotAndPredatorCollision(RobotChallengeRobot robot, Predator01 predator)
+   {
+      robot.getHitByPredator(predator);
+      predator.teleportToRandomLocation(random);
+   }
+   
    private void processRobotAndFoodCollision(RobotChallengeRobot robot, Food01 food)
    {
       robot.eatFood(food);

@@ -1,5 +1,6 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 
+import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.SampleSprites;
 import us.ihmc.javaSpriteWorld.Sprite;
@@ -113,8 +114,8 @@ public class Robot01 implements RobotChallengeRobot
       sprite.setY(y);
 
       health = health - 1.0 * velocity.length() * dt;
-      if (health < 0.01)
-         health = 0.01;
+      if (health < 1.0)
+         health = 1.0;
    }
 
    private void teleportHome()
@@ -138,6 +139,7 @@ public class Robot01 implements RobotChallengeRobot
       return false;
    }
 
+   @Override
    public void eatFood(Food01 food)
    {
       health = health + 1.0;
@@ -145,6 +147,25 @@ public class Robot01 implements RobotChallengeRobot
          health = 100.0;
 
       System.out.println("Yummy food! Health = " + health);
+   }
+
+   @Override
+   public void getHitByPredator(Predator01 predator)
+   {
+      health = health - 5.0;
+      if (health < 1.0) health = 1.0;
+   }
+
+   @Override
+   public Point2D getPosition()
+   {
+      return new Point2D(x, y);
+   }
+
+   @Override
+   public Vector2D getVelocityVector()
+   {
+      return new Vector2D(xDot, yDot);
    }
 
 }
