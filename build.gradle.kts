@@ -17,9 +17,9 @@ ihmc {
 mainDependencies {
    api("org.apache.commons:commons-lang3:3.7")
    api("commons-io:commons-io:2.6")
-
 }
 
 testDependencies {
-	api("us.ihmc:euclid:0.15.1")
+   api("us.ihmc:euclid:0.15.1")
+   api("us.ihmc:log-tools:0.5.0")
 }
