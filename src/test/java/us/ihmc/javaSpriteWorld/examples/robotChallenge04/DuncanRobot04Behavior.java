@@ -68,6 +68,8 @@ public class DuncanRobot04Behavior implements Robot04Behavior
       this.mousePressedY = mousePressedY;
    }
 
+   int flag = 0;
+
    @Override
    public double[] getAccelerationAndTurnRate()
    {
@@ -83,7 +85,7 @@ public class DuncanRobot04Behavior implements Robot04Behavior
       meToCenter.sub(me);
       double distanceToCenter = meToCenter.length();
       meToCenter.normalize();
-      meToCenter.scale(distanceToCenter * distanceToCenter);
+      meToCenter.scale(0.5 * Math.pow(distanceToCenter, 1.2));
 
       Vector2D predatorRepulsion = new Vector2D();
       for (Pair<Vector2D, Vector2D> predator : locationOfAllPredators)
@@ -97,10 +99,24 @@ public class DuncanRobot04Behavior implements Robot04Behavior
       }
 //      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
 
+      Vector2D foodAttraction = new Vector2D();
+      for (Pair<Vector2D, Vector2D> food : locationOfAllFood)
+      {
+         Vector2D meToFood = new Vector2D(food.getLeft());
+         meToFood.sub(me);
+         double distance = meToFood.length();
+         meToFood.normalize();
+         meToFood.scale(2.0 / Math.pow(distance, 1.5));
+         foodAttraction.add(meToFood);
+      }
+
+      
+
       Vector2D attractionVector = new Vector2D();
 //      attractionVector.add(meToMouse);
       attractionVector.add(meToCenter);
       attractionVector.add(predatorRepulsion);
+      attractionVector.add(foodAttraction);
 
       double desiredSpeed = attractionVector.length();
 
@@ -109,28 +125,15 @@ public class DuncanRobot04Behavior implements Robot04Behavior
       transform.getRotation().appendYawRotation(heading);
       transform.transform(headingVector);
 
-      double angle = EuclidGeometryTools.angleFromFirstToSecondVector2D(headingVector.getX(),
-                                                                        headingVector.getY(),
-                                                                        attractionVector.getX(),
-                                                                        attractionVector.getY());
+      double angleToAttraction = EuclidGeometryTools.angleFromFirstToSecondVector2D(headingVector.getX(),
+                                                                                    headingVector.getY(),
+                                                                                    attractionVector.getX(),
+                                                                                    attractionVector.getY());
 
-      double cross = headingVector.cross(attractionVector);
-      double dot = headingVector.dot(attractionVector);
-
-
-      double turnRate = 4.0 * cross;
-      double acceleration = 4.0 * dot;
-
-//      acceleration = velocity > desiredSpeed ? -0.5 : 0.5;
-      turnRate = angle > 0 ? -1.5 : 1.5;
-
-//      acceleration = velocity > desiredSpeed ? -0.5 : 0.5;
-//      turnRate = angle;
-
-      acceleration = (1.0 * (desiredSpeed - velocity));
+      double acceleration = (1.0 * (desiredSpeed - velocity));
 
       double angularVelocity = (velocity - lastVelocity) / 0.01;
-      turnRate = (2.0 * angle) + (-0.5 * angularVelocity);
+      double turnRate = (2.0 * angleToAttraction) + (-0.5 * angularVelocity);
       lastVelocity = velocity;
 
       return new double[] {acceleration, turnRate};
