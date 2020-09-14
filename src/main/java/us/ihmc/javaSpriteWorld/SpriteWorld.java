@@ -101,6 +101,11 @@ public class SpriteWorld
    {
       sprites.add(sprite);
    }
+   
+   public boolean removeSprite(Sprite sprite)
+   {
+      return sprites.remove(sprite);
+   }
 
    public void setStage(SpriteStage spriteStage, boolean centerStageInWorld)
    {
@@ -176,5 +181,6 @@ public class SpriteWorld
    {
 
    }
+
 
 }

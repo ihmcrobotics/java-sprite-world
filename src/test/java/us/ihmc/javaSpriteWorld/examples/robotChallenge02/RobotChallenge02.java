@@ -10,9 +10,9 @@ public class RobotChallenge02 extends RobotChallenge01
 {
    public static final String PLAYER = System.getProperty("player", "Simple");
 
-   public RobotChallenge02(RobotChallengeRobot robot, Random random, double xMax, double yMax)
+   public RobotChallenge02(String name, RobotChallengeRobot robot, Random random, double xMax, double yMax)
    {
-      super(robot, random, xMax, yMax);
+      super(name, robot, random, xMax, yMax);
    }
 
    public static void main(String[] args)
@@ -23,7 +23,7 @@ public class RobotChallenge02 extends RobotChallenge01
       
       Robot02 robot = new Robot02(xMax, yMax);
 
-      RobotChallenge02 robotChallenge = new RobotChallenge02(robot, random, xMax, yMax);
+      RobotChallenge02 robotChallenge = new RobotChallenge02("RobotChallenge02", robot, random, xMax, yMax);
       robotChallenge.createSomeFood(10);
 
       Robot02Behavior simpleBehavior;

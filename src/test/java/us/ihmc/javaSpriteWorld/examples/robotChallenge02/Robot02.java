@@ -1,8 +1,12 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge02;
 
+import us.ihmc.euclid.tuple2D.Point2D;
+import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.SampleSprites;
 import us.ihmc.javaSpriteWorld.Sprite;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge01.Flag;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.Food01;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge01.Predator01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeRobot;
 import us.ihmc.javaSpriteWorld.geometry.ConvexPolygon;
 import us.ihmc.javaSpriteWorld.geometry.Point;
@@ -14,14 +18,18 @@ public class Robot02 implements RobotChallengeRobot
    private final double xMax, yMax;
 
    private double x, y;
+   private double health;
    private double heading, velocity;
    private double acceleration, turnRate;
+   private double maximumVelocity = 3.0;
+
+   private Flag flagHolding;
 
    public Robot02(double xMax, double yMax)
    {
       this.xMax = xMax;
       this.yMax = yMax;
-      
+
       sprite = SampleSprites.createRocketOne();
       sprite.setReflectY(true);
       sprite.setWidth(0.5);
@@ -29,6 +37,8 @@ public class Robot02 implements RobotChallengeRobot
 
       ConvexPolygon collisionPolygon = ConvexPolygon.createRectangle(new Point(-0.25, -0.5), new Vector(0.5, 1.0));
       sprite.addCollisionPolygon(collisionPolygon);
+
+      setHealth(100.0);
 
       teleportHome();
    }
@@ -46,6 +56,11 @@ public class Robot02 implements RobotChallengeRobot
    public double getY()
    {
       return y;
+   }
+
+   public double getHealth()
+   {
+      return health;
    }
 
    public void setY(double y)
@@ -93,6 +108,11 @@ public class Robot02 implements RobotChallengeRobot
       this.turnRate = turnRate;
    }
 
+   public void setHealth(double health)
+   {
+      this.health = health;
+   }
+
    public Sprite getSprite()
    {
       return sprite;
@@ -103,6 +123,13 @@ public class Robot02 implements RobotChallengeRobot
       velocity += acceleration * dt;
       heading += turnRate * dt;
 
+      if (velocity > maximumVelocity * health / 100.0)
+      {
+         velocity = maximumVelocity * health / 100.0;
+      }
+      if (velocity < 0.0)
+         velocity = 0.0;
+
       double xDot = -velocity * Math.sin(heading);
       double yDot = velocity * Math.cos(heading);
 
@@ -111,6 +138,10 @@ public class Robot02 implements RobotChallengeRobot
 
       if (isOutOfBounds())
       {
+         System.out.println("Hit the wall. Ouch! Health = " + health);
+         health = health - 5.0;
+         if (health < 1.0)
+            health = 1.0;
          teleportHome();
       }
 
@@ -118,6 +149,10 @@ public class Robot02 implements RobotChallengeRobot
       sprite.setY(y);
 
       sprite.setRotationInRadians(heading);
+
+      health = health - 1.0 * velocity * dt;
+      if (health < 0.01)
+         health = 0.01;
    }
 
    private void teleportHome()
@@ -143,9 +178,63 @@ public class Robot02 implements RobotChallengeRobot
       return false;
    }
 
+   @Override
    public void eatFood(Food01 food)
    {
-      System.out.println("Yummy food!");
+      health = health + 1.0;
+      if (health > 100.0)
+         health = 100.0;
+
+      System.out.println("Yummy food! Health = " + health);
+   }
+
+   @Override
+   public void getHitByPredator(Predator01 predator)
+   {
+      health = health - 5.0;
+      if (health < 1.0)
+         health = 1.0;
+
+      System.out.println("Ouch! Health = " + health);
+   }
+
+   @Override
+   public Point2D getPosition()
+   {
+      return new Point2D(x, y);
+   }
+
+   @Override
+   public Vector2D getVelocityVector()
+   {
+      double xDot = -velocity * Math.sin(heading);
+      double yDot = velocity * Math.cos(heading);
+
+      return new Vector2D(xDot, yDot);
+   }
+
+   @Override
+   public Vector2D getHeadingVector()
+   {
+      double x = -Math.sin(heading);
+      double y = Math.cos(heading);
+
+      return new Vector2D(x, y);
+   }
+
+   @Override
+   public Flag dropFlag()
+   {
+      Flag flagToDrop = flagHolding;
+
+      flagHolding = null;
+      return flagToDrop;
+   }
+
+   @Override
+   public void capturedFlag(Flag flag)
+   {
+      this.flagHolding = flag;
    }
 
 }
