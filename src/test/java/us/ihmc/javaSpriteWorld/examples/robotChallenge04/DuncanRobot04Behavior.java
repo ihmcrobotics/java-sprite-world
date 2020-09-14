@@ -7,6 +7,7 @@ import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
+import us.ihmc.log.LogTools;
 
 import java.util.ArrayList;
 
@@ -68,7 +69,8 @@ public class DuncanRobot04Behavior implements Robot04Behavior
       this.mousePressedY = mousePressedY;
    }
 
-   int flag = 0;
+   int currentFlagId = 0;
+   boolean carrying = false;
 
    @Override
    public double[] getAccelerationAndTurnRate()
@@ -106,17 +108,69 @@ public class DuncanRobot04Behavior implements Robot04Behavior
          meToFood.sub(me);
          double distance = meToFood.length();
          meToFood.normalize();
-         meToFood.scale(2.0 / Math.pow(distance, 1.5));
+         meToFood.scale(1.2 / Math.pow(distance, 1.5));
          foodAttraction.add(meToFood);
       }
 
-      
+      Point2D goal = new Point2D(9.0, 9.0);
+      if (carrying && new Point2D(me).distance(goal) < 1.0)
+      {
+               LogTools.info("GOAL {}", currentFlagId);
+         carrying = false;
+         currentFlagId++;
+
+         if (currentFlagId >= locationAndIdsOfAllFlags.size())
+         {
+            currentFlagId = 0;
+         }
+      }
+
+      Vector2D flagField = new Vector2D();
+      for (int i = 0; i < locationAndIdsOfAllFlags.size(); i++)
+      {
+         Pair<Vector2D, Integer> flag = locationAndIdsOfAllFlags.get(i);
+
+         if (i == currentFlagId)
+         {
+            if (!carrying && new Point2D(me).distance(new Point2D(flag.getLeft())) < 0.2)
+            {
+               LogTools.info("Carrying 1");
+               carrying = true;
+            }
+
+            if (carrying)
+            {
+               Vector2D meToGoal = new Vector2D(goal);
+               meToGoal.sub(me);
+               double length = meToGoal.length();
+               meToGoal.scale(2.0 / Math.pow(length, 1.5));
+               flagField.add(meToGoal);
+            }
+            else
+            {
+               Vector2D meToNextFlag = new Vector2D(flag.getLeft());
+               meToNextFlag.sub(me);
+               double length = meToNextFlag.length();
+               meToNextFlag.scale(2.0 / Math.pow(length, 1.5));
+               flagField.add(meToNextFlag);
+            }
+         }
+         else
+         {
+            Vector2D inactiveFlagToMe = new Vector2D(me);
+            inactiveFlagToMe.sub(flag.getLeft());
+            double length = inactiveFlagToMe.length();
+            inactiveFlagToMe.scale(2.0 / Math.pow(length, 1.5));
+            flagField.add(inactiveFlagToMe);
+         }
+      }
 
       Vector2D attractionVector = new Vector2D();
 //      attractionVector.add(meToMouse);
       attractionVector.add(meToCenter);
       attractionVector.add(predatorRepulsion);
       attractionVector.add(foodAttraction);
+      attractionVector.add(flagField);
 
       double desiredSpeed = attractionVector.length();
 
@@ -139,7 +193,6 @@ public class DuncanRobot04Behavior implements Robot04Behavior
       return new double[] {acceleration, turnRate};
    }
 
-   double lastHeading = 0.0;
    double lastVelocity = 0.0;
 
    @Override
