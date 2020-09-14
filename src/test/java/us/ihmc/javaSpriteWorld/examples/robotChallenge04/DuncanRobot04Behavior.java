@@ -1,6 +1,8 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge04;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
+import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
 import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
@@ -83,24 +85,59 @@ public class DuncanRobot04Behavior implements Robot04Behavior
       meToCenter.normalize();
       meToCenter.scale(distanceToCenter * distanceToCenter);
 
-      
+      Vector2D predatorRepulsion = new Vector2D();
+      for (Pair<Vector2D, Vector2D> predator : locationOfAllPredators)
+      {
+         Vector2D predatorToMe = new Vector2D(me);
+         predatorToMe.sub(predator.getLeft());
+         double distance = predatorToMe.length();
+         predatorToMe.normalize();
+         predatorToMe.scale(5.0 / (distance * distance));
+         predatorRepulsion.add(predatorToMe);
+      }
+//      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
 
+      Vector2D attractionVector = new Vector2D();
+//      attractionVector.add(meToMouse);
+      attractionVector.add(meToCenter);
+      attractionVector.add(predatorRepulsion);
 
-      Vector2D attractionVector = meToCenter;
+      double desiredSpeed = attractionVector.length();
 
       Vector2D headingVector = new Vector2D(0.0, 1.0);
       RigidBodyTransform transform = new RigidBodyTransform();
       transform.getRotation().appendYawRotation(heading);
       transform.transform(headingVector);
 
+      double angle = EuclidGeometryTools.angleFromFirstToSecondVector2D(headingVector.getX(),
+                                                                        headingVector.getY(),
+                                                                        attractionVector.getX(),
+                                                                        attractionVector.getY());
+
       double cross = headingVector.cross(attractionVector);
       double dot = headingVector.dot(attractionVector);
+
 
       double turnRate = 4.0 * cross;
       double acceleration = 4.0 * dot;
 
+//      acceleration = velocity > desiredSpeed ? -0.5 : 0.5;
+      turnRate = angle > 0 ? -1.5 : 1.5;
+
+//      acceleration = velocity > desiredSpeed ? -0.5 : 0.5;
+//      turnRate = angle;
+
+      acceleration = (1.0 * (desiredSpeed - velocity));
+
+      double angularVelocity = (velocity - lastVelocity) / 0.01;
+      turnRate = (2.0 * angle) + (-0.5 * angularVelocity);
+      lastVelocity = velocity;
+
       return new double[] {acceleration, turnRate};
    }
+
+   double lastHeading = 0.0;
+   double lastVelocity = 0.0;
 
    @Override
    public boolean getDropFlag()
