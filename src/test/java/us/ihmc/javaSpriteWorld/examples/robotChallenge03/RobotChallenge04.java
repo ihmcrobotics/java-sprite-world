@@ -5,9 +5,9 @@ import java.util.Random;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallenge01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeRules;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge04.DuncanRobot04Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge04.Robot04Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge04.RobotChallengeRules04;
-import us.ihmc.javaSpriteWorld.examples.robotChallenge04.SimpleRobot04Behavior;
 
 public class RobotChallenge04 
 {
@@ -26,7 +26,7 @@ public class RobotChallenge04
       robotChallenge.createSomePredators(3, maximumPredatorSpeed);
       robotChallenge.createSomeFlags(5);
 
-      Robot04Behavior simpleBehavior = new SimpleRobot04Behavior();
+      Robot04Behavior simpleBehavior = new DuncanRobot04Behavior();
       RobotChallengeRules rules = new RobotChallengeRules04(robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);
 
       robotChallenge.setRootChallengeRules(rules);
