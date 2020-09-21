@@ -1,15 +1,20 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge04;
 
-import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.message.ParameterizedMessageFactory;
+import us.ihmc.euclid.geometry.Line2D;
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
 import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
+import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
 import us.ihmc.log.LogTools;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.function.Function;
 
 public class DuncanRobot04Behavior implements Robot04Behavior
 {
@@ -19,7 +24,8 @@ public class DuncanRobot04Behavior implements Robot04Behavior
    private double velocity;
    private ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood;
    private ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators;
-   private ArrayList<Pair<Vector2D, Integer>> locationAndIdsOfAllFlags;
+   private TreeMap<Integer, Vector2D> flags;
+   private TreeSet<Integer> changedFlags = new TreeSet<>();
 
    public DuncanRobot04Behavior()
    {
@@ -59,7 +65,45 @@ public class DuncanRobot04Behavior implements Robot04Behavior
    @Override
    public void senseFlags(ArrayList<Pair<Vector2D, Integer>> locationAndIdsOfAllFlags)
    {
-      this.locationAndIdsOfAllFlags = locationAndIdsOfAllFlags;
+      TreeMap<Integer, Vector2D> newFlags = new TreeMap<>();
+      for (Pair<Vector2D, Integer> newFlag : locationAndIdsOfAllFlags)
+      {
+         newFlags.put(newFlag.getRight(), newFlag.getLeft());
+      }
+
+      if (flags != null)
+      {
+         changedFlags.clear();
+         for (Integer integer : newFlags.keySet())
+         {
+            if (!flags.containsKey(integer) || !flags.get(integer).epsilonEquals(newFlags.get(integer), 1e-5))
+            {
+               changedFlags.add(integer);
+            }
+         }
+         for (Integer integer : flags.keySet())
+         {
+            if (!newFlags.containsKey(integer))
+            {
+               changedFlags.add(integer);
+            }
+         }
+
+         if (!changedFlags.isEmpty())
+         {
+            for (Integer changedFlag : changedFlags)
+            {
+               LogTools.info("Changed flag: {}", changedFlag);
+            }
+         }
+
+         flags.clear();
+         flags.putAll(newFlags);
+      }
+      else
+      {
+         flags = new TreeMap<>(newFlags);
+      }
    }
 
    @Override
@@ -69,105 +113,127 @@ public class DuncanRobot04Behavior implements Robot04Behavior
       this.mousePressedY = mousePressedY;
    }
 
-   int currentFlagId = 0;
-   boolean carrying = false;
+   int currentFlagId = 1;
+   int carrying = -1;
 
    @Override
    public double[] getAccelerationAndTurnRate()
    {
+      double fieldGraduation = 1.5;
       Vector2D mouse = new Vector2D(mousePressedX, mousePressedY);
-      Vector2D me = new Vector2D(x, y);
+      Point2D me = new Point2D(x, y);
 
-      Vector2D meToMouse = new Vector2D(mouse);
-      meToMouse.sub(me);
-      meToMouse.normalize();
+      Vector2D meToMouse = fieldVector(me, mouse, distance -> 10.0 * Math.pow(distance, 1.5));
 
       Point2D center = new Point2D(5.0, 5.0);
-      Vector2D meToCenter = new Vector2D(center);
-      meToCenter.sub(me);
-      double distanceToCenter = meToCenter.length();
-      meToCenter.normalize();
-      meToCenter.scale(0.5 * Math.pow(distanceToCenter, 1.2));
+      Vector2D meToCenter = fieldVector(me, center, distance -> 2.0 * Math.pow(distance, 1.5));
+
+      Line2D left = new Line2D(0.0, 0.0, 0.0, 1.0);
+      Line2D right = new Line2D(10.0, 0.0, 0.0, 1.0);
+      Line2D bottom = new Line2D(0.0, 0.0, 1.0, 0.0);
+      Line2D top = new Line2D(0.0, 10.0, 1.0, 0.0);
+      Vector2D boundaryRepulsion = new Vector2D();
+      double boundaryStrength = 2.0;
+      Point2D closestLeft = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, left.getPoint(), left.getDirection());
+      Point2D closestRight = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, right.getPoint(), right.getDirection());
+      Point2D closestBottom = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, bottom.getPoint(), bottom.getDirection());
+      Point2D closestTop = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, top.getPoint(), top.getDirection());
+      boundaryRepulsion.add(fieldVector(closestLeft, me, distance -> boundaryStrength / Math.pow(distance, fieldGraduation)));
+      boundaryRepulsion.add(fieldVector(closestRight, me, distance -> boundaryStrength / Math.pow(distance, fieldGraduation)));
+      boundaryRepulsion.add(fieldVector(closestBottom, me, distance -> boundaryStrength / Math.pow(distance, fieldGraduation)));
+      boundaryRepulsion.add(fieldVector(closestTop, me, distance -> boundaryStrength / Math.pow(distance, fieldGraduation)));
 
       Vector2D predatorRepulsion = new Vector2D();
       for (Pair<Vector2D, Vector2D> predator : locationOfAllPredators)
       {
-         Vector2D predatorToMe = new Vector2D(me);
-         predatorToMe.sub(predator.getLeft());
-         double distance = predatorToMe.length();
-         predatorToMe.normalize();
-         predatorToMe.scale(5.0 / (distance * distance));
-         predatorRepulsion.add(predatorToMe);
+         predatorRepulsion.add(fieldVector(predator.getLeft(), me, distance -> 6.0 / Math.pow(distance, fieldGraduation)));
       }
 //      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
 
       Vector2D foodAttraction = new Vector2D();
       for (Pair<Vector2D, Vector2D> food : locationOfAllFood)
       {
-         Vector2D meToFood = new Vector2D(food.getLeft());
-         meToFood.sub(me);
-         double distance = meToFood.length();
-         meToFood.normalize();
-         meToFood.scale(1.2 / Math.pow(distance, 1.5));
-         foodAttraction.add(meToFood);
+         foodAttraction.add(fieldVector(me, food.getLeft(), distance -> 0.5 / Math.pow(distance, 1.5)));
       }
 
-      Point2D goal = new Point2D(9.0, 9.0);
-      if (carrying && new Point2D(me).distance(goal) < 1.0)
+      if (changedFlags.size() == 1)
       {
-               LogTools.info("GOAL {}", currentFlagId);
-         carrying = false;
-         currentFlagId++;
-
-         if (currentFlagId >= locationAndIdsOfAllFlags.size())
+         if (carrying > 0) // goal or drop via hit wrong number
          {
-            currentFlagId = 0;
-         }
-      }
-
-      Vector2D flagField = new Vector2D();
-      for (int i = 0; i < locationAndIdsOfAllFlags.size(); i++)
-      {
-         Pair<Vector2D, Integer> flag = locationAndIdsOfAllFlags.get(i);
-
-         if (i == currentFlagId)
-         {
-            if (!carrying && new Point2D(me).distance(new Point2D(flag.getLeft())) < 0.2)
+            if (changedFlags.contains(currentFlagId)) // goal
             {
-               LogTools.info("Carrying 1");
-               carrying = true;
+               carrying = -1;
+               LogTools.info("Goal! Flag: {}", currentFlagId);
+               if (currentFlagId < 5)
+               {
+                  currentFlagId++;
+               }
+               else
+               {
+                  currentFlagId = 1;
+               }
+               LogTools.info("Next flag: {}", currentFlagId);
             }
-
-            if (carrying)
+//            else // hit wrong number
+//            {
+//               carrying = false;
+//               LogTools.info("Oops. Bumped into wrong flag and dropped flag.");
+//            }
+         }
+         else // pick up or hit wrong number
+         {
+            carrying = changedFlags.first();
+            if (changedFlags.contains(currentFlagId)) // pick up
             {
-               Vector2D meToGoal = new Vector2D(goal);
-               meToGoal.sub(me);
-               double length = meToGoal.length();
-               meToGoal.scale(2.0 / Math.pow(length, 1.5));
-               flagField.add(meToGoal);
+               LogTools.info("Picked up flag {}", currentFlagId);
             }
             else
             {
-               Vector2D meToNextFlag = new Vector2D(flag.getLeft());
-               meToNextFlag.sub(me);
-               double length = meToNextFlag.length();
-               meToNextFlag.scale(2.0 / Math.pow(length, 1.5));
-               flagField.add(meToNextFlag);
+               LogTools.info("Oops. Bumped into wrong flag {}. Going for {}", changedFlags.first(), currentFlagId);
+            }
+         }
+      }
+      else if (changedFlags.size() == 2)
+      {
+         if (changedFlags.first() == carrying)
+         {
+            carrying = changedFlags.last();
+         }
+         else if (changedFlags.last() == carrying)
+         {
+            carrying = changedFlags.first();
+         }
+         else
+         {
+            carrying = changedFlags.first();
+         }
+         LogTools.info("I guess we picked up {}. Going for: {}", carrying, currentFlagId);
+      }
+
+      Vector2D flagField = new Vector2D();
+      for (Integer flagId : flags.keySet())
+      {
+         if (flagId == currentFlagId)
+         {
+            if (carrying != currentFlagId) // toward flag to pick up
+            {
+               flagField.add(fieldVector(me, flags.get(flagId), distance -> 6.0 / Math.pow(distance, fieldGraduation)));
             }
          }
          else
          {
-            Vector2D inactiveFlagToMe = new Vector2D(me);
-            inactiveFlagToMe.sub(flag.getLeft());
-            double length = inactiveFlagToMe.length();
-            inactiveFlagToMe.scale(2.0 / Math.pow(length, 1.5));
-            flagField.add(inactiveFlagToMe);
+            flagField.add(fieldVector(flags.get(flagId), me, distance -> 3.0 / Math.pow(distance, 2.0)));
          }
+      }
+      if (carrying == currentFlagId) // set to goal
+      {
+         flagField.add(fieldVector(me, new Point2D(9.0, 9.0), distance -> 15.0 / Math.pow(distance, 0.5)));
       }
 
       Vector2D attractionVector = new Vector2D();
 //      attractionVector.add(meToMouse);
-      attractionVector.add(meToCenter);
+//      attractionVector.add(meToCenter);
+      attractionVector.add(boundaryRepulsion);
       attractionVector.add(predatorRepulsion);
       attractionVector.add(foodAttraction);
       attractionVector.add(flagField);
@@ -187,13 +253,23 @@ public class DuncanRobot04Behavior implements Robot04Behavior
       double acceleration = (1.0 * (desiredSpeed - velocity));
 
       double angularVelocity = (velocity - lastVelocity) / 0.01;
-      double turnRate = (2.0 * angleToAttraction) + (-0.5 * angularVelocity);
+      double turnRate = (5.0 * angleToAttraction) + (-0.5 * angularVelocity);
       lastVelocity = velocity;
 
       return new double[] {acceleration, turnRate};
    }
 
    double lastVelocity = 0.0;
+
+   private Vector2D fieldVector(Tuple2DReadOnly from, Tuple2DReadOnly to, Function<Double, Double> magnitude)
+   {
+      Vector2D vector = new Vector2D(to);
+      vector.sub(from);
+      double distance = vector.length();
+      vector.normalize();
+      vector.scale(magnitude.apply(distance));
+      return vector;
+   }
 
    @Override
    public boolean getDropFlag()
