@@ -20,6 +20,12 @@ public interface Robot03Behavior
 
    public abstract void sensePredators(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators);
 
+   public abstract void droppedFlag(int id);
+
+   public abstract void pickedUpFlag(int id);
+
+   public abstract void deliveredFlag(int flagId);
+
    public abstract double[] getAccelerationAndTurnRate();
 
 }

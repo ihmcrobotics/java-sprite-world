@@ -22,8 +22,14 @@ public interface Robot04Behavior
    public abstract void sensePredators(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators);
 
    public abstract void senseFlags(ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags);
+   
+   public abstract void droppedFlag(int id);
 
-   public abstract double[] getAccelerationAndTurnRate();
+   public abstract void pickedUpFlag(int id);
+
+   public abstract void deliveredFlag(int flagId);
+
+   abstract double[] getAccelerationAndTurnRate();
 
    public abstract boolean getDropFlag();
 

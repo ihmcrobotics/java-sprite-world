@@ -11,6 +11,7 @@ import us.ihmc.javaSpriteWorld.SpriteWorld;
 
 public class CollisionProcessor01 implements SpriteCollisionListener
 {
+   private final RobotChallengeRules robotChallengeRules;
    private final RobotChallengeRobot robot;
    private final FoodList01 foodList;
    private final PredatorList01 predatorList;
@@ -20,9 +21,10 @@ public class CollisionProcessor01 implements SpriteCollisionListener
    private final SpriteWorld spriteWorld;
    private final SpriteCollisionGroup collisionGroup;
 
-   public CollisionProcessor01(RobotChallengeRobot robot, FoodList01 foodList, PredatorList01 predatorList, FlagList flagList, Random random, double xMax,
-                               double yMax, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
+   public CollisionProcessor01(RobotChallengeRules robotChallengeRules, RobotChallengeRobot robot, FoodList01 foodList, PredatorList01 predatorList,
+                               FlagList flagList, Random random, double xMax, double yMax, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
    {
+      this.robotChallengeRules = robotChallengeRules;
       this.robot = robot;
       this.foodList = foodList;
       this.predatorList = predatorList;
@@ -163,6 +165,13 @@ public class CollisionProcessor01 implements SpriteCollisionListener
 
       robot.capturedFlag(flag);
       flagList.removeFlag(flag, spriteWorld, collisionGroup);
+
+      if (droppedFlag != null)
+      {
+         robotChallengeRules.droppedFlag(droppedFlag.getId());
+      }
+
+      robotChallengeRules.capturedFlag(flag.getId());
    }
 
    private void processRobotAndPredatorCollision(RobotChallengeRobot robot, Predator01 predator)

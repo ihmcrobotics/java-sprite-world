@@ -94,4 +94,19 @@ public class SimpleRobot04Behavior implements Robot04Behavior, Robot05Behavior
    {      
    }
 
+   @Override
+   public void droppedFlag(int id)
+   {      
+   }
+
+   @Override
+   public void pickedUpFlag(int id)
+   {      
+   }
+
+   @Override
+   public void deliveredFlag(int flagId)
+   {      
+   }
+
 }

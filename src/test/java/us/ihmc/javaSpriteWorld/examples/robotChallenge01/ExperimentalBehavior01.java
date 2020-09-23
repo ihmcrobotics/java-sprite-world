@@ -123,4 +123,21 @@ public class ExperimentalBehavior01 implements Robot01Behavior
 
       foodCentroid.scale(1.0 / totalWeight);
    }
+
+   @Override
+   public void droppedFlag(int id)
+   {      
+   }
+
+   @Override
+   public void pickedUpFlag(int id)
+   {
+   }
+
+   @Override
+   public void deliveredFlag(int flagId)
+   {      
+   }
+
+
 }

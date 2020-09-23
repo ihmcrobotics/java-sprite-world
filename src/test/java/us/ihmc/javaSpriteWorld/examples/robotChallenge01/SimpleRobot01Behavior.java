@@ -44,4 +44,19 @@ public class SimpleRobot01Behavior implements Robot01Behavior
       System.out.println("Mouse pressed at " + mousePressedX + ", " + mousePressedY);
    }
 
+   @Override
+   public void droppedFlag(int id)
+   {      
+   }
+
+   @Override
+   public void pickedUpFlag(int id)
+   {      
+   }
+
+   @Override
+   public void deliveredFlag(int flagId)
+   {      
+   }
+
 }

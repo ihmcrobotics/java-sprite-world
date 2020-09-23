@@ -44,4 +44,19 @@ public class SimpleRobot02Behavior implements Robot02Behavior
       return new double[] {1.0, -0.3};
    }
 
+   @Override
+   public void droppedFlag(int id)
+   {      
+   }
+
+   @Override
+   public void pickedUpFlag(int id)
+   {      
+   }
+
+   @Override
+   public void deliveredFlag(int flagId)
+   {      
+   }
+
 }

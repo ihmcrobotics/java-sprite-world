@@ -78,5 +78,23 @@ public class RobotChallengeRules05 implements RobotChallengeRules
          }
       }
    }
+   
+   @Override
+   public void droppedFlag(int id)
+   {
+      robotBehavior.droppedFlag(id);
+   }
+
+   @Override
+   public void capturedFlag(int id)
+   {
+      robotBehavior.pickedUpFlag(id);
+   }
+   
+   @Override
+   public void deliveredFlag(int flagId)
+   {
+      robotBehavior.deliveredFlag(flagId); 
+   }
 
 }

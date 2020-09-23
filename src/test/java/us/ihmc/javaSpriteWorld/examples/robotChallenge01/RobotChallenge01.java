@@ -1,7 +1,9 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 
+import java.util.ArrayList;
 import java.util.Random;
 
+import us.ihmc.euclid.geometry.LineSegment2D;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.SpriteCollisionGroup;
@@ -69,7 +71,8 @@ public class RobotChallenge01
       viewer.setSpriteWorld(spriteWorld);
       viewer.createAndDisplayWindow();
 
-      CollisionProcessor01 collisionProcessor = new CollisionProcessor01(robot,
+      CollisionProcessor01 collisionProcessor = new CollisionProcessor01(robotChallengeRules,
+                                                                         robot,
                                                                          foodList,
                                                                          predatorList,
                                                                          flagList,
@@ -171,6 +174,7 @@ public class RobotChallenge01
       if ((position.getX() > 0.8 * xMax) && (position.getY() > 0.8 * yMax))
       {
          System.out.println("Flag " + flag.getId() + "returned home!!");
+         robotChallengeRules.deliveredFlag(flag.getId());
       }
       
       Vector2D headingVector = robot.getHeadingVector();
@@ -235,6 +239,33 @@ public class RobotChallenge01
    {
       return flagList;
    }
+   
+   public ArrayList<LineSegment2D> getWalls()
+   {
+      Point2D corner01 = new Point2D(0.0, 0.0);
+      Point2D corner02 = new Point2D(0.0, yMax);
+      Point2D corner03 = new Point2D(xMax, yMax);
+      Point2D corner04 = new Point2D(xMax, 0.0);
+      
+      LineSegment2D wall1 = new LineSegment2D(corner01, corner02);
+      LineSegment2D wall2 = new LineSegment2D(corner02, corner03);
+      LineSegment2D wall3 = new LineSegment2D(corner03, corner04);
+      LineSegment2D wall4 = new LineSegment2D(corner04, corner01);
+      
+      ArrayList<LineSegment2D> walls = new ArrayList<LineSegment2D>();
+      walls.add(wall1);
+      walls.add(wall2);
+      walls.add(wall3);
+      walls.add(wall4);
+      
+      return walls;
+   }
+   
+//   public double getDistancetoWallInFront(Point2D position, Vector2D headingVector)
+//   {
+//      
+//   }
+   
 
    public static void main(String[] args)
    {

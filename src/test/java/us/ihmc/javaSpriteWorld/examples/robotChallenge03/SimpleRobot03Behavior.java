@@ -76,4 +76,19 @@ public class SimpleRobot03Behavior implements Robot03Behavior
       return new double[] {acceleration, turnRate};
    }
 
+   @Override
+   public void droppedFlag(int id)
+   {      
+   }
+
+   @Override
+   public void pickedUpFlag(int id)
+   {      
+   }
+
+   @Override
+   public void deliveredFlag(int flagId)
+   {      
+   }
+   
 }

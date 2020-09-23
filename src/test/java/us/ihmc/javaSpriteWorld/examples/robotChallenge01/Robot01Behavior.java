@@ -18,6 +18,11 @@ public interface Robot01Behavior
 
    public abstract void senseMousePressed(double mousePressedX, double mousePressedY);
 
-   double[] getXYVelocity();
+   public abstract void droppedFlag(int id);
 
+   public abstract void pickedUpFlag(int id);
+   
+   public abstract void deliveredFlag(int flagId);
+
+   double[] getXYVelocity();
 }

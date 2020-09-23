@@ -274,4 +274,27 @@ public class DuncanRobot04Behavior implements Robot04Behavior
    {
       return ((x > 8.0) && (y > 8.0));
    }
+
+   @Override
+   public void droppedFlag(int id)
+   {
+      // TODO Auto-generated method stub
+      
+   }
+
+   @Override
+   public void pickedUpFlag(int id)
+   {
+      // TODO Auto-generated method stub
+      
+   }
+
+   @Override
+   public void deliveredFlag(int flagId)
+   {
+      // TODO Auto-generated method stub
+      
+   }
+
+  
 }
