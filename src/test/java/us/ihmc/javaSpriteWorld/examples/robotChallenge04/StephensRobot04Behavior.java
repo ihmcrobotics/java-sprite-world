@@ -5,7 +5,6 @@ import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
-import us.ihmc.euclid.tuple3D.interfaces.Tuple3DReadOnly;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,13 +24,29 @@ public class StephensRobot04Behavior implements Robot04Behavior
    private ArrayList<Pair<Vector2D, Integer>> locationAndIdsOfAllFlags;
    private final Point2D nearestFood = new Point2D();
    private final Point2D nearestPredator = new Point2D();
+   private double nearestPredatorDistance = 0.0;
+   private double nearestDistanceToFood = 0.0;
 
    // behavior parameters
-   private final Vector2D targetPosition = new Vector2D();
-   private final double[] accelerationAndTurnRate = new double[2];
+   private final Point2D center = new Point2D(5.0, 5.0);
+
    private final double turnRateMagnitude = 3.5;
-   private final double foodProximityThreshold = 2.0;
-   private final double predatorProximityThreshold = 2.0;
+   private final double foodProximityThreshold = 4.0;
+   private final double predatorProximityThreshold = 4.0;
+
+   private final double[] wallAction = new double[2];
+   private final double[] predatorAction = new double[2];
+   private final double[] foodAction = new double[2];
+   private final double[] flagAction = new double[2];
+   private final double[] totalAction = new double[2];
+
+   private double totalWeight;
+   private final double kWall = 5.0;
+
+   private boolean inFlagDropMode = false;
+   private int flagIdToChase = 1;
+   private boolean droppedFlagLastTick = false;
+   private boolean hasAFlag = false;
 
    @Override
    public void senseVelocity(double velocity)
@@ -85,46 +100,63 @@ public class StephensRobot04Behavior implements Robot04Behavior
       }
 
       calculateXYVelocity();
+      Arrays.fill(wallAction, 0.0);
+      Arrays.fill(predatorAction, 0.0);
+      Arrays.fill(foodAction, 0.0);
+      Arrays.fill(flagAction, 0.0);
+      Arrays.fill(totalAction, 0.0);
+      totalWeight = 0.0;
 
       if (checkIfNearWall())
       {
-         targetPosition.set(5.0, 5.0);
-         System.out.println("WALL");
-         return simpleTurnTowardsGoalBehavior(nearestFood);
+         simpleTurnTowardsGoalBehavior(center, wallAction);
+         registerAction(wallAction, kWall);
       }
-      else if (checkIfNearPredator())
+      if (checkIfNearPredator())
       {
-//         Vector2D predatorToRobot = new Vector2D(nearestPredator);
-//         predatorToRobot.sub(xPosition, yPosition);
-//
-//         Vector2D perpendicularVector1 = new Vector2D(-predatorToRobot.getY(), predatorToRobot.getX());
-//         Vector2D perpendicularVector2 = new Vector2D(predatorToRobot.getY(), -predatorToRobot.getX());
-//         double angle1 = Math.abs(perpendicularVector1.angle(xyVelocity));
-//         double angle2 = Math.abs(perpendicularVector2.angle(xyVelocity));
-//         Vector2D targetVector = angle1 < angle2 ? perpendicularVector1 : perpendicularVector2;
-         System.out.println("PRED");
-
          double turnRate = calculatePredatorAction();
 
-         double cruisingVelocity = 1.0;
-         accelerationAndTurnRate[0] = 0.5 * (cruisingVelocity - velocity);
-         accelerationAndTurnRate[1] = turnRate;
-         return accelerationAndTurnRate;
+         double cruisingVelocity = 1.5;
+         predatorAction[0] = 0.5 * (cruisingVelocity - velocity);
+         predatorAction[1] = turnRate;
+
+         double kPredator = Math.max(0.0, 4.0 - nearestPredatorDistance);
+         registerAction(predatorAction, kPredator);
       }
-      else if (checkIfNearFood())
+      if (checkIfNearFood())
       {
-         targetPosition.set(nearestFood);
-         System.out.println("FOOD");
-         return simpleTurnTowardsGoalBehavior(nearestFood);
+         simpleTurnTowardsGoalBehavior(nearestFood, foodAction);
+
+         double kFood = Math.max(0.0, 4.0 - nearestDistanceToFood);
+         registerAction(foodAction, kFood);
       }
 
-      return new double[2];
+      if (droppedFlagLastTick)
+      {
+         flagIdToChase++;
+         droppedFlagLastTick = false;
+      }
+
+      if (inFlagDropMode)
+      {
+         simpleTurnTowardsGoalBehavior(new Point2D(9.0, 9.0), flagAction);
+      }
+      else
+      {
+         simpleTurnTowardsGoalBehavior(locationAndIdsOfAllFlags.get(flagIdToChase - 1).getLeft(), flagAction);
+      }
+
+      double kFlag = Math.max(0.0, 4.0 - totalWeight);
+      registerAction(flagAction, kFlag);
+
+      totalAction[0] = totalAction[0] / totalWeight;
+      totalAction[1] = totalAction[1] / totalWeight;
+
+      return totalAction;
    }
 
-   private double[] simpleTurnTowardsGoalBehavior(Tuple2DReadOnly targetPosition)
+   private void simpleTurnTowardsGoalBehavior(Tuple2DReadOnly targetPosition, double[] action)
    {
-      double[] accelerationAndTurnRate = new double[2];
-
       Vector2D toTargetPosition = new Vector2D(targetPosition);
       toTargetPosition.sub(xPosition, yPosition);
 
@@ -133,17 +165,22 @@ public class StephensRobot04Behavior implements Robot04Behavior
       double turnInPlaceThreshold = Math.toRadians(45.0);
       if (Math.abs(angleToTargetPosition) < turnInPlaceThreshold)
       {
-         double cruisingVelocity = 1.0;
-         accelerationAndTurnRate[0] = 0.5 * (cruisingVelocity - velocity);
-         accelerationAndTurnRate[1] = turnRateMagnitude * (angleToTargetPosition / turnInPlaceThreshold);
+         double cruisingVelocity = 1.25;
+         action[0] = 0.5 * (cruisingVelocity - velocity);
+         action[1] = turnRateMagnitude * (angleToTargetPosition / turnInPlaceThreshold);
       }
       else
       {
-         accelerationAndTurnRate[0] = - velocity;
-         accelerationAndTurnRate[1] = turnRateMagnitude * Math.signum(angleToTargetPosition);
+         action[0] = - velocity;
+         action[1] = turnRateMagnitude * Math.signum(angleToTargetPosition);
       }
+   }
 
-      return accelerationAndTurnRate;
+   private void registerAction(double[] action, double gain)
+   {
+      totalWeight += gain;
+      totalAction[0] += gain * action[0];
+      totalAction[1] += gain * action[1];
    }
 
    private void calculateXYVelocity()
@@ -203,7 +240,8 @@ public class StephensRobot04Behavior implements Robot04Behavior
       }
 
       nearestFood.set(locationOfAllFood.get(closestIndex).getKey());
-      return nearestFood.distance(new Point2D(xPosition, yPosition)) < foodProximityThreshold;
+      nearestDistanceToFood = nearestFood.distance(new Point2D(xPosition, yPosition));
+      return nearestDistanceToFood < foodProximityThreshold;
    }
 
    private boolean checkIfNearPredator()
@@ -223,7 +261,8 @@ public class StephensRobot04Behavior implements Robot04Behavior
       }
 
       nearestPredator.set(locationOfAllPredators.get(closestIndex).getKey());
-      return nearestPredator.distance(new Point2D(xPosition, yPosition)) < predatorProximityThreshold;
+      nearestPredatorDistance = nearestPredator.distance(new Point2D(xPosition, yPosition));
+      return nearestPredatorDistance < predatorProximityThreshold;
    }
 
    private double calculatePredatorAction()
@@ -256,7 +295,9 @@ public class StephensRobot04Behavior implements Robot04Behavior
          predatorRelativeVelocityTowardsRobot.scale(alpha);
 
          double minimumDistanceThreshold = 0.5;
-         double distanceMetric = distanceToPredator; // Math.max(distanceToPredator - kLookAhead * predatorRelativeVelocityTowardsRobot.length(), minimumDistanceThreshold);
+         double kLookAhead = 0.35;
+
+         double distanceMetric = Math.max(distanceToPredator - kLookAhead * predatorRelativeVelocityTowardsRobot.length(), minimumDistanceThreshold);
 
          Vector2D perpendicularVector1 = new Vector2D(- predatorToRobot.getY(), predatorToRobot.getX());
          Vector2D perpendicularVector2 = new Vector2D(predatorToRobot.getY(), - predatorToRobot.getX());
@@ -264,7 +305,7 @@ public class StephensRobot04Behavior implements Robot04Behavior
          double angle2 = Math.abs(perpendicularVector2.angle(xyVelocity));
          Vector2D targetVector = angle1 < angle2 ? perpendicularVector1 : perpendicularVector2;
          double targetHeading = headingFromVector(targetVector.getX(), targetVector.getY());
-         turningAction += EuclidCoreTools.angleDifferenceMinusPiToPi(targetHeading, heading) / distanceMetric;
+         turningAction += 1.5 * EuclidCoreTools.angleDifferenceMinusPiToPi(targetHeading, heading) / distanceMetric;
       }
 
       return turningAction;
@@ -273,6 +314,14 @@ public class StephensRobot04Behavior implements Robot04Behavior
    @Override
    public boolean getDropFlag()
    {
+      if (!hasAFlag)
+         return false;
+      if (xPosition > 8.0 && yPosition > 8.0)
+      {
+         droppedFlagLastTick = true;
+         return true;
+      }
+
       return false;
    }
 

@@ -23,7 +23,7 @@ public class RobotChallenge04
       RobotChallenge01 robotChallenge = new RobotChallenge01("RobotChallenge04", robot, random, xMax, yMax);
       robotChallenge.createSomeFood(10);
       double maximumPredatorSpeed = 1.5;
-      robotChallenge.createSomePredators(3, maximumPredatorSpeed);
+      robotChallenge.createSomePredators(1, maximumPredatorSpeed);
       robotChallenge.createSomeFlags(5);
 
       Robot04Behavior simpleBehavior = new DuncanRobot04Behavior();
