@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.tuple.Pair;
 
 import us.ihmc.euclid.transform.RigidBodyTransform;
+import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge05.Robot05Behavior;
 
-public class SimpleRobot04Behavior implements Robot04Behavior
+public class SimpleRobot04Behavior implements Robot04Behavior, Robot05Behavior
 {
    private double mousePressedX = 5.0, mousePressedY = 5.0;
    private double x = 0.0, y = 0.0;
@@ -77,7 +79,7 @@ public class SimpleRobot04Behavior implements Robot04Behavior
    }
 
    @Override
-   public void senseFlags(ArrayList<Pair<Vector2D, Integer>> locationAndIdsOfAllFlags)
+   public void senseFlags(ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags)
    {
    }
 
@@ -85,6 +87,11 @@ public class SimpleRobot04Behavior implements Robot04Behavior
    public boolean getDropFlag()
    {
       return ((x > 8.0) && (y > 8.0));
+   }
+
+   @Override
+   public void senseClosestFlag(Pair<Point2D, Integer> locationAndIdsOfClosestFlag)
+   {      
    }
 
 }

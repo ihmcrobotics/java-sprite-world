@@ -1,4 +1,4 @@
-package us.ihmc.javaSpriteWorld.examples.robotChallenge03;
+package us.ihmc.javaSpriteWorld.examples.robotChallenge04;
 
 import java.util.Random;
 
