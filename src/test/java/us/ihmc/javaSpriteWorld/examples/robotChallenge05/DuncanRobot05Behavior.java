@@ -7,11 +7,8 @@ import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
-import us.ihmc.log.LogTools;
 
 import java.util.ArrayList;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.function.Function;
 
 public class DuncanRobot05Behavior implements Robot05Behavior
