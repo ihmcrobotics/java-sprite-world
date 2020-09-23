@@ -1,10 +1,8 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge04;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.message.ParameterizedMessageFactory;
 import us.ihmc.euclid.geometry.Line2D;
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
-import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
@@ -24,7 +22,7 @@ public class DuncanRobot04Behavior implements Robot04Behavior
    private double velocity;
    private ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood;
    private ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators;
-   private TreeMap<Integer, Vector2D> flags;
+   private TreeMap<Integer, Point2D> flags;
    private TreeSet<Integer> changedFlags = new TreeSet<>();
 
    public DuncanRobot04Behavior()
@@ -63,10 +61,10 @@ public class DuncanRobot04Behavior implements Robot04Behavior
    }
 
    @Override
-   public void senseFlags(ArrayList<Pair<Vector2D, Integer>> locationAndIdsOfAllFlags)
+   public void senseFlags(ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags)
    {
-      TreeMap<Integer, Vector2D> newFlags = new TreeMap<>();
-      for (Pair<Vector2D, Integer> newFlag : locationAndIdsOfAllFlags)
+      TreeMap<Integer, Point2D> newFlags = new TreeMap<>();
+      for (Pair<Point2D, Integer> newFlag : locationAndIdsOfAllFlags)
       {
          newFlags.put(newFlag.getRight(), newFlag.getLeft());
       }
