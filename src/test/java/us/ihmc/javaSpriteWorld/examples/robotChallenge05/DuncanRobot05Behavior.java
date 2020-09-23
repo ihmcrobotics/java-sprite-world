@@ -7,6 +7,7 @@ import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
+import us.ihmc.log.LogTools;
 
 import java.util.ArrayList;
 import java.util.function.Function;
@@ -60,20 +61,36 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    public void droppedFlag(int flagId)
    {
       if (carrying != flagId)
+      {
          carrying = -1;
+         LogTools.info("Dropped flag: {} Going for: {}", flagId, currentFlagId);
+      }
    }
 
    @Override
    public void pickedUpFlag(int id)
    {
       carrying = id;
+      LogTools.info("Picked up: {} Going for: {}", carrying, currentFlagId);
    }
 
    @Override
    public void deliveredFlag(int flagId)
    {
       if (carrying == flagId)
+      {
          carrying = -1;
+         LogTools.info("Goal! Flag: {}", currentFlagId);
+         if (currentFlagId < 5)
+         {
+            currentFlagId++;
+         }
+         else
+         {
+            currentFlagId = 1;
+         }
+         LogTools.info("Next flag: {}", currentFlagId);
+      }
    }
 
    @Override
