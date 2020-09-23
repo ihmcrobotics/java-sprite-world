@@ -215,7 +215,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    }
 
    @Override
-   public void senseWallRange(Vector2D vectorToWallInBodyFrame, double wallDistance)
+   public void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance)
    {      
    }
 }

@@ -50,17 +50,19 @@ public class RobotChallengeRules05 implements RobotChallengeRules
       {
          Point2DBasics intersectionWithWall = challenge.getIntersectionWithWall(robot.getPosition(), robot.getHeadingVector());
          double wallDistance = intersectionWithWall.distance(robot.getPosition());
-         robotBehavior.senseWallRange(new Vector2D(0.0, 0.0), wallDistance);
+         robotBehavior.senseWallRangeInBodyFrame(new Vector2D(0.0, 0.0), wallDistance);
          
          robotBehavior.senseGlobalLocation(robot.getX(), robot.getY());
          robotBehavior.senseHeading(robot.getHeading());
          robotBehavior.senseVelocity(robot.getVelocity());
 
          ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
-         robotBehavior.senseFoodInBodyFrame(locationOfAllFood);
+         ArrayList<Pair<Point2D, Vector2D>> locationOfAllFoodInBodyFrame = RobotChallengeTools.convertFromWorldToBodyFrame(robot.getPosition(), locationOfAllFood, robot.getHeading());
+         robotBehavior.senseFoodInBodyFrame(locationOfAllFoodInBodyFrame);
 
          ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators = predatorList.getLocationAndVelocityOfAllPredators();
-         robotBehavior.sensePredatorsInBodyFrame(locationOfAllPredators);
+         ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredatorsInBodyFrame = RobotChallengeTools.convertFromWorldToBodyFrame(robot.getPosition(), locationOfAllPredators, robot.getHeading());
+         robotBehavior.sensePredatorsInBodyFrame(locationOfAllPredatorsInBodyFrame);
 
          Pair<Point2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag = computeVectorToClosestFlag();
          robotBehavior.senseClosestFlagInBodyFrame(vectorToInBodyFrameAndIdOfClosestFlag);
@@ -93,8 +95,8 @@ public class RobotChallengeRules05 implements RobotChallengeRules
       
       Point2D vectorToFlagInBody = RobotChallengeTools.computePositionInRobotBodyFrame(robotLocationInWorld, worldLocationOfFlag, robot.getHeading());
 
-      Pair<Point2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag = new ImmutablePair<Point2D, Integer>(vectorToFlagInBody, locationAndIdOfClosestFlag.getRight());
-      return vectorToInBodyFrameAndIdOfClosestFlag;
+      Pair<Point2D, Integer> positionOfClosestFlagInBodyFrame = new ImmutablePair<Point2D, Integer>(vectorToFlagInBody, locationAndIdOfClosestFlag.getRight());
+      return positionOfClosestFlagInBodyFrame;
    }
    
    @Override

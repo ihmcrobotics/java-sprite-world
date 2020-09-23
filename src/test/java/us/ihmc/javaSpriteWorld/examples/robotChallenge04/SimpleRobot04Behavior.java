@@ -94,16 +94,7 @@ public class SimpleRobot04Behavior implements Robot04Behavior, Robot05Behavior
    {      
       Point2D vectorToFlag = vectorToInBodyFrameAndIdOfClosestFlag.getLeft();
       Integer flagId = vectorToInBodyFrameAndIdOfClosestFlag.getRight();
-      System.out.println("flag " + flagId + " is at" + vectorToFlag + ", in body frame");
-      try
-      {
-         Thread.sleep(100);
-      }
-      catch (InterruptedException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
+//      System.out.println("flag " + flagId + " is at" + vectorToFlag + ", in body frame");
    }
 
    @Override
@@ -122,7 +113,7 @@ public class SimpleRobot04Behavior implements Robot04Behavior, Robot05Behavior
    }
 
    @Override
-   public void senseWallRange(Vector2D vectorToWallInBodyFrame, double wallDistance)
+   public void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance)
    {
 //      System.out.println("Distance to wall = " + wallDistance);      
    }
