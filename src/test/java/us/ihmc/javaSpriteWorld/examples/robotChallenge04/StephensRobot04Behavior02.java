@@ -21,7 +21,7 @@ public class StephensRobot04Behavior02 implements Robot04Behavior
    // environment state
    private ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood;
    private ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators;
-   private ArrayList<Pair<Vector2D, Integer>> locationAndIdsOfAllFlags;
+   private ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags;
 
    // behavior parameters
    private final double[] wallForce = new double[2];
@@ -94,7 +94,25 @@ public class StephensRobot04Behavior02 implements Robot04Behavior
    }
 
    @Override
-   public void senseFlags(ArrayList<Pair<Vector2D, Integer>> locationAndIdsOfAllFlags)
+   public void droppedFlag(int id)
+   {
+
+   }
+
+   @Override
+   public void pickedUpFlag(int id)
+   {
+
+   }
+
+   @Override
+   public void deliveredFlag(int flagId)
+   {
+
+   }
+
+   @Override
+   public void senseFlags(ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags)
    {
       this.locationAndIdsOfAllFlags = locationAndIdsOfAllFlags;
    }
