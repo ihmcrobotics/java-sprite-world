@@ -19,8 +19,8 @@ public class StephensRobot04Behavior02 implements Robot04Behavior
    private final Vector2D xyVelocity = new Vector2D();
 
    // environment state
-   private ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood;
-   private ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators;
+   private ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood;
+   private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
    private ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags;
 
    // behavior parameters
@@ -82,13 +82,13 @@ public class StephensRobot04Behavior02 implements Robot04Behavior
    }
 
    @Override
-   public void senseFood(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood)
+   public void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
    {
       this.locationOfAllFood = locationOfAllFood;
    }
 
    @Override
-   public void sensePredators(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators)
+   public void sensePredators(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators)
    {
       this.locationOfAllPredators = locationOfAllPredators;
    }

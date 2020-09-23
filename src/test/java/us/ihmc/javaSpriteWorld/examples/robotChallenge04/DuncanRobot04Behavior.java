@@ -20,8 +20,8 @@ public class DuncanRobot04Behavior implements Robot04Behavior
    private double x = 0.0, y = 0.0;
    private double heading = 0.0;
    private double velocity;
-   private ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood;
-   private ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators;
+   private ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood;
+   private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
    private TreeMap<Integer, Point2D> flags;
    private TreeSet<Integer> changedFlags = new TreeSet<>();
 
@@ -49,13 +49,13 @@ public class DuncanRobot04Behavior implements Robot04Behavior
    }
 
    @Override
-   public void senseFood(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood)
+   public void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
    {
       this.locationOfAllFood = locationOfAllFood;
    }
 
    @Override
-   public void sensePredators(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators)
+   public void sensePredators(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators)
    {
       this.locationOfAllPredators = locationOfAllPredators;
    }
@@ -142,14 +142,14 @@ public class DuncanRobot04Behavior implements Robot04Behavior
       boundaryRepulsion.add(fieldVector(closestTop, me, distance -> boundaryStrength / Math.pow(distance, fieldGraduation)));
 
       Vector2D predatorRepulsion = new Vector2D();
-      for (Pair<Vector2D, Vector2D> predator : locationOfAllPredators)
+      for (Pair<Point2D, Vector2D> predator : locationOfAllPredators)
       {
          predatorRepulsion.add(fieldVector(predator.getLeft(), me, distance -> 6.0 / Math.pow(distance, fieldGraduation)));
       }
 //      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
 
       Vector2D foodAttraction = new Vector2D();
-      for (Pair<Vector2D, Vector2D> food : locationOfAllFood)
+      for (Pair<Point2D, Vector2D> food : locationOfAllFood)
       {
          foodAttraction.add(fieldVector(me, food.getLeft(), distance -> 0.5 / Math.pow(distance, 1.5)));
       }

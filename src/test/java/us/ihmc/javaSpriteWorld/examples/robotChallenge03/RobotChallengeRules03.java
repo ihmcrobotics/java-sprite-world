@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.FoodList01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.PredatorList01;
@@ -42,10 +43,10 @@ public class RobotChallengeRules03 implements RobotChallengeRules
          robotBehavior.senseVelocity(robot.getVelocity());
          
 
-         ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
+         ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
          robotBehavior.senseFood(locationOfAllFood);
          
-         ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators = predatorList.getLocationAndVelocityOfAllPredators();
+         ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators = predatorList.getLocationAndVelocityOfAllPredators();
          robotBehavior.sensePredators(locationOfAllPredators);
 
          double[] accelerationAndTurnRate = robotBehavior.getAccelerationAndTurnRate();

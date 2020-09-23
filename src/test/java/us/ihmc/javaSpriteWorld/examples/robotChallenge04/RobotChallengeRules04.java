@@ -49,10 +49,10 @@ public class RobotChallengeRules04 implements RobotChallengeRules
          robotBehavior.senseHeading(robot.getHeading());
          robotBehavior.senseVelocity(robot.getVelocity());
 
-         ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
+         ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
          robotBehavior.senseFood(locationOfAllFood);
 
-         ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators = predatorList.getLocationAndVelocityOfAllPredators();
+         ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators = predatorList.getLocationAndVelocityOfAllPredators();
          robotBehavior.sensePredators(locationOfAllPredators);
 
          ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags = flagList.getLocationAndIdsOfAllFlags();

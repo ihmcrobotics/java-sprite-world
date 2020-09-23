@@ -71,19 +71,19 @@ public class PredatorList01
       }
    }
 
-   public ArrayList<Pair<Vector2D, Vector2D>> getLocationAndVelocityOfAllPredators()
+   public ArrayList<Pair<Point2D, Vector2D>> getLocationAndVelocityOfAllPredators()
    {
-      ArrayList<Pair<Vector2D, Vector2D>> locationsAndVelocities = new ArrayList<Pair<Vector2D, Vector2D>>();
+      ArrayList<Pair<Point2D, Vector2D>> locationsAndVelocities = new ArrayList<Pair<Point2D, Vector2D>>();
 
       for (Predator01 predator : predatorsInPlay)
       {
-         Vector2D location = new Vector2D(predator.getX(), predator.getY());
+         Point2D location = new Point2D(predator.getX(), predator.getY());
 
          double heading = predator.getHeading();
          double speed = predator.getSpeed();
 
          Vector2D velocity = new Vector2D(speed * Math.cos(heading), speed * Math.sin(heading));
-         locationsAndVelocities.add(new ImmutablePair<Vector2D, Vector2D>(location, velocity));
+         locationsAndVelocities.add(new ImmutablePair<Point2D, Vector2D>(location, velocity));
       }
 
       return locationsAndVelocities;

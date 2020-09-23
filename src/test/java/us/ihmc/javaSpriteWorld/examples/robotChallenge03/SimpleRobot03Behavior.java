@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.tuple.Pair;
 
 import us.ihmc.euclid.transform.RigidBodyTransform;
+import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 
 public class SimpleRobot03Behavior implements Robot03Behavior
@@ -36,12 +37,12 @@ public class SimpleRobot03Behavior implements Robot03Behavior
    }
 
    @Override
-   public void senseFood(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood)
+   public void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
    {
    }
 
    @Override
-   public void sensePredators(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators)
+   public void sensePredators(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators)
    {
    }
 

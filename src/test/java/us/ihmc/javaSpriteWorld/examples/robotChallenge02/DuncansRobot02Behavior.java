@@ -68,10 +68,10 @@ public class DuncansRobot02Behavior implements Robot02Behavior
    }
 
    @Override
-   public void senseFood(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood)
+   public void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
    {
       foods = new ArrayList<>();
-      for (Pair<Vector2D, Vector2D> vector2DVector2DPair : locationOfAllFood)
+      for (Pair<Point2D, Vector2D> vector2DVector2DPair : locationOfAllFood)
       {
          foods.add(new Food(new Point2D(vector2DVector2DPair.getLeft()), new Vector2D(vector2DVector2DPair.getRight())));
       }

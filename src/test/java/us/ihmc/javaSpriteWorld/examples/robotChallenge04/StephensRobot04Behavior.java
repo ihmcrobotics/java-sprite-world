@@ -19,8 +19,8 @@ public class StephensRobot04Behavior implements Robot04Behavior
    private final Vector2D xyVelocity = new Vector2D();
 
    // environment state
-   private ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood;
-   private ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators;
+   private ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood;
+   private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
    private ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags;
    private final Point2D nearestFood = new Point2D();
    private final Point2D nearestPredator = new Point2D();
@@ -74,13 +74,13 @@ public class StephensRobot04Behavior implements Robot04Behavior
    }
 
    @Override
-   public void senseFood(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood)
+   public void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
    {
       this.locationOfAllFood = locationOfAllFood;
    }
 
    @Override
-   public void sensePredators(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators)
+   public void sensePredators(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators)
    {
       this.locationOfAllPredators = locationOfAllPredators;
    }
@@ -248,7 +248,7 @@ public class StephensRobot04Behavior implements Robot04Behavior
 
       for (int i = 0; i < locationOfAllFood.size(); i++)
       {
-         Vector2D food = locationOfAllFood.get(i).getKey();
+         Point2D food = locationOfAllFood.get(i).getKey();
          double distance = EuclidCoreTools.norm(food.getX() - xPosition, food.getY() - yPosition);
          if (distance < closestFoodDistance)
          {
@@ -269,7 +269,7 @@ public class StephensRobot04Behavior implements Robot04Behavior
 
       for (int i = 0; i < locationOfAllPredators.size(); i++)
       {
-         Vector2D predator = locationOfAllPredators.get(i).getKey();
+         Point2D predator = locationOfAllPredators.get(i).getKey();
          double distance = EuclidCoreTools.norm(predator.getX() - xPosition, predator.getY() - yPosition);
          if (distance < closestPredator)
          {
@@ -289,8 +289,8 @@ public class StephensRobot04Behavior implements Robot04Behavior
 
       for (int i = 0; i < locationOfAllPredators.size(); i++)
       {
-         Pair<Vector2D, Vector2D> predatorState = locationOfAllPredators.get(i);
-         Vector2D predatorPosition = predatorState.getLeft();
+         Pair<Point2D, Vector2D> predatorState = locationOfAllPredators.get(i);
+         Point2D predatorPosition = predatorState.getLeft();
          Vector2D predatorVelocity = predatorState.getRight();
 
          Vector2D predatorToRobot = new Vector2D(xPosition, yPosition);

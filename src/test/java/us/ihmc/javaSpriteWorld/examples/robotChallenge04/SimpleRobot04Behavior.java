@@ -38,12 +38,12 @@ public class SimpleRobot04Behavior implements Robot04Behavior, Robot05Behavior
    }
 
    @Override
-   public void senseFood(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood)
+   public void senseFoodInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
    {
    }
 
    @Override
-   public void sensePredators(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators)
+   public void sensePredatorsInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators)
    {
    }
 
@@ -90,9 +90,9 @@ public class SimpleRobot04Behavior implements Robot04Behavior, Robot05Behavior
    }
 
    @Override
-   public void senseClosestFlag(Pair<Vector2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag)
+   public void senseClosestFlagInBodyFrame(Pair<Point2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag)
    {      
-      Vector2D vectorToFlag = vectorToInBodyFrameAndIdOfClosestFlag.getLeft();
+      Point2D vectorToFlag = vectorToInBodyFrameAndIdOfClosestFlag.getLeft();
       Integer flagId = vectorToInBodyFrameAndIdOfClosestFlag.getRight();
       System.out.println("flag " + flagId + " is at" + vectorToFlag + ", in body frame");
       try
@@ -125,6 +125,16 @@ public class SimpleRobot04Behavior implements Robot04Behavior, Robot05Behavior
    public void senseWallRange(Vector2D vectorToWallInBodyFrame, double wallDistance)
    {
 //      System.out.println("Distance to wall = " + wallDistance);      
+   }
+
+   @Override
+   public void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
+   {      
+   }
+
+   @Override
+   public void sensePredators(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators)
+   {      
    }
 
 }

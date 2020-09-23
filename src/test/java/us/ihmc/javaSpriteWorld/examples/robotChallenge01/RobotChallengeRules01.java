@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 
 public class RobotChallengeRules01 implements RobotChallengeRules
@@ -32,7 +33,7 @@ public class RobotChallengeRules01 implements RobotChallengeRules
       {
          robot01Behavior.senseGlobalLocation(robot.getX(), robot.getY());
 
-         ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
+         ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
          robot01Behavior.senseFood(locationOfAllFood);
 
          double[] xyVelocity = robot01Behavior.getXYVelocity();

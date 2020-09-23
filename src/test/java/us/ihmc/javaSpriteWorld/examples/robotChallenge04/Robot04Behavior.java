@@ -17,9 +17,9 @@ public interface Robot04Behavior
 
    public abstract void senseGlobalLocation(double x, double y);
 
-   public abstract void senseFood(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood);
+   public abstract void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood);
 
-   public abstract void sensePredators(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators);
+   public abstract void sensePredators(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators);
 
    public abstract void senseFlags(ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags);
    
