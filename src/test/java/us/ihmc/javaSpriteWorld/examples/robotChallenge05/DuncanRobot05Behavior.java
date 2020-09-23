@@ -61,13 +61,33 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    }
 
    @Override
+   public void droppedFlag(int flagId)
+   {
+      if (carrying != flagId)
+         carrying = -1;
+   }
+
+   @Override
+   public void pickedUpFlag(int id)
+   {
+      carrying = id;
+   }
+
+   @Override
+   public void deliveredFlag(int flagId)
+   {
+      if (carrying == flagId)
+         carrying = -1;
+   }
+
+   @Override
    public void senseClosestFlag(Pair<Point2D, Integer> locationAndIdsOfClosestFlag)
    {
       TreeMap<Integer, Point2D> newFlags = new TreeMap<>();
-      for (Pair<Point2D, Integer> newFlag : locationAndIdsOfAllFlags)
-      {
-         newFlags.put(newFlag.getRight(), newFlag.getLeft());
-      }
+//      for (Pair<Point2D, Integer> newFlag : locationAndIdsOfAllFlags)
+//      {
+//         newFlags.put(newFlag.getRight(), newFlag.getLeft());
+//      }
 
       if (flags != null)
       {
