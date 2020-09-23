@@ -9,6 +9,7 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge04.SimpleRobot04Behavior;
 
 public class RobotChallenge05 
 {
+   public static final String PLAYER = System.getProperty("player", "Simple");
 
    public static void main(String[] args)
    {
@@ -24,7 +25,13 @@ public class RobotChallenge05
       robotChallenge.createSomePredators(3, maximumPredatorSpeed);
       robotChallenge.createSomeFlags(5);
 
-      Robot05Behavior simpleBehavior = new SimpleRobot04Behavior();
+      Robot05Behavior simpleBehavior;
+      if (PLAYER.equals("Duncan"))
+         simpleBehavior = new DuncansRobot05Behavior();
+      else if (PLAYER.equals("Stephen"))
+         simpleBehavior = new SimpleRobot04Behavior(); // TODO: Stephen adds behavior here
+      else
+         simpleBehavior = new SimpleRobot04Behavior();
       RobotChallengeRules rules = new RobotChallengeRules05(robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);
 
       robotChallenge.setRootChallengeRules(rules);
