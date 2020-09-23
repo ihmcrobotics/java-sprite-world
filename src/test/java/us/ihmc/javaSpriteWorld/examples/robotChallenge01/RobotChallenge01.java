@@ -3,9 +3,11 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 import java.util.ArrayList;
 import java.util.Random;
 
+import us.ihmc.euclid.geometry.Line2D;
 import us.ihmc.euclid.geometry.LineSegment2D;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
+import us.ihmc.euclid.tuple2D.interfaces.Point2DBasics;
 import us.ihmc.javaSpriteWorld.SpriteCollisionGroup;
 import us.ihmc.javaSpriteWorld.SpriteStage;
 import us.ihmc.javaSpriteWorld.SpriteWorld;
@@ -27,6 +29,8 @@ public class RobotChallenge01
    private final PredatorList01 predatorList;
    private final FlagList flagList;
 
+   private final CollisionProcessor01 collisionProcessor;
+   
    private RobotChallengeRules robotChallengeRules;
    private SpriteCollisionGroup collisionGroup;
 
@@ -71,16 +75,15 @@ public class RobotChallenge01
       viewer.setSpriteWorld(spriteWorld);
       viewer.createAndDisplayWindow();
 
-      CollisionProcessor01 collisionProcessor = new CollisionProcessor01(robotChallengeRules,
-                                                                         robot,
-                                                                         foodList,
-                                                                         predatorList,
-                                                                         flagList,
-                                                                         random,
-                                                                         xMax,
-                                                                         yMax,
-                                                                         spriteWorld,
-                                                                         collisionGroup);
+      collisionProcessor = new CollisionProcessor01(robot,
+                                                    foodList,
+                                                    predatorList,
+                                                    flagList,
+                                                    random,
+                                                    xMax,
+                                                    yMax,
+                                                    spriteWorld,
+                                                    collisionGroup);
       collisionGroup.addSpriteCollisionListener(collisionProcessor);
 
       spriteWorldMouseListener = new SpriteWorldMouseListener()
@@ -223,6 +226,7 @@ public class RobotChallenge01
    public void setRootChallengeRules(RobotChallengeRules robotChallengeRules)
    {
       this.robotChallengeRules = robotChallengeRules;
+      this.collisionProcessor.setRobotChallengeRules(robotChallengeRules);
    }
 
    public FoodList01 getFoodList()
@@ -261,10 +265,29 @@ public class RobotChallenge01
       return walls;
    }
    
-//   public double getDistancetoWallInFront(Point2D position, Vector2D headingVector)
-//   {
-//      
-//   }
+   public Point2DBasics getIntersectionWithWall(Point2D position, Vector2D sensingVectorInWorld)
+   {
+      ArrayList<LineSegment2D> walls = getWalls();
+      
+      Line2D ray = new Line2D(position, sensingVectorInWorld);
+      
+      for (LineSegment2D wall : walls)
+      {
+         Point2DBasics intersection = wall.intersectionWith(ray);
+         if (intersection != null)
+         {
+            Vector2D vectorToWall = new Vector2D(intersection);
+            vectorToWall.sub(position);
+            
+            if (sensingVectorInWorld.dot(vectorToWall) > 0.0)
+            {
+               return intersection;
+            }
+         }
+      }
+      
+      return null;
+   }
    
 
    public static void main(String[] args)

@@ -109,4 +109,10 @@ public class SimpleRobot04Behavior implements Robot04Behavior, Robot05Behavior
    {      
    }
 
+   @Override
+   public void senseWallRange(Vector2D vectorToWallInBodyFrame, double wallDistance)
+   {
+//      System.out.println("Distance to wall = " + wallDistance);      
+   }
+
 }

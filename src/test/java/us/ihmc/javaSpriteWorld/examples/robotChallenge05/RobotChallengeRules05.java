@@ -6,6 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
+import us.ihmc.euclid.tuple2D.interfaces.Point2DBasics;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.Flag;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.FlagList;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.FoodList01;
@@ -45,6 +46,10 @@ public class RobotChallengeRules05 implements RobotChallengeRules
    {
       if (robotBehavior != null)
       {
+         Point2DBasics intersectionWithWall = challenge.getIntersectionWithWall(robot.getPosition(), robot.getHeadingVector());
+         double wallDistance = intersectionWithWall.distance(robot.getPosition());
+         robotBehavior.senseWallRange(new Vector2D(0.0, 0.0), wallDistance);
+         
          robotBehavior.senseGlobalLocation(robot.getX(), robot.getY());
          robotBehavior.senseHeading(robot.getHeading());
          robotBehavior.senseVelocity(robot.getVelocity());

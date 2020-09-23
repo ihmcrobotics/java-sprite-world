@@ -11,7 +11,7 @@ import us.ihmc.javaSpriteWorld.SpriteWorld;
 
 public class CollisionProcessor01 implements SpriteCollisionListener
 {
-   private final RobotChallengeRules robotChallengeRules;
+   private RobotChallengeRules robotChallengeRules;
    private final RobotChallengeRobot robot;
    private final FoodList01 foodList;
    private final PredatorList01 predatorList;
@@ -21,10 +21,9 @@ public class CollisionProcessor01 implements SpriteCollisionListener
    private final SpriteWorld spriteWorld;
    private final SpriteCollisionGroup collisionGroup;
 
-   public CollisionProcessor01(RobotChallengeRules robotChallengeRules, RobotChallengeRobot robot, FoodList01 foodList, PredatorList01 predatorList,
+   public CollisionProcessor01(RobotChallengeRobot robot, FoodList01 foodList, PredatorList01 predatorList,
                                FlagList flagList, Random random, double xMax, double yMax, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
    {
-      this.robotChallengeRules = robotChallengeRules;
       this.robot = robot;
       this.foodList = foodList;
       this.predatorList = predatorList;
@@ -163,15 +162,18 @@ public class CollisionProcessor01 implements SpriteCollisionListener
          flagList.addFlag(droppedFlag, spriteWorld, collisionGroup);
       }
 
-      robot.capturedFlag(flag);
-      flagList.removeFlag(flag, spriteWorld, collisionGroup);
+      if (robotChallengeRules != null)
+      {
+         robot.capturedFlag(flag);
+         flagList.removeFlag(flag, spriteWorld, collisionGroup);
+         robotChallengeRules.capturedFlag(flag.getId());
+      }
 
       if (droppedFlag != null)
       {
          robotChallengeRules.droppedFlag(droppedFlag.getId());
       }
 
-      robotChallengeRules.capturedFlag(flag.getId());
    }
 
    private void processRobotAndPredatorCollision(RobotChallengeRobot robot, Predator01 predator)
@@ -186,6 +188,11 @@ public class CollisionProcessor01 implements SpriteCollisionListener
 
       foodList.removeFood(food);
       foodList.createSomeFood(random, xMax, yMax, spriteWorld, collisionGroup);
+   }
+
+   public void setRobotChallengeRules(RobotChallengeRules robotChallengeRules)
+   {
+      this.robotChallengeRules = robotChallengeRules;
    }
 
 }
