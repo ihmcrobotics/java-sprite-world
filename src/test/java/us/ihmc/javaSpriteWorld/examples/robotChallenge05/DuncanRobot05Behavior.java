@@ -199,4 +199,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    {
       return ((x > 8.0) && (y > 8.0));
    }
+
+   @Override
+   public void senseWallRange(Vector2D vectorToWallInBodyFrame, double wallDistance)
+   {      
+   }
 }
