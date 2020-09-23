@@ -22,8 +22,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    private double velocity;
    private ArrayList<Pair<Vector2D, Vector2D>> locationOfAllFood;
    private ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators;
-   private TreeMap<Integer, Point2D> flags;
-   private TreeSet<Integer> changedFlags = new TreeSet<>();
+   private Pair<Point2D, Integer> closestFlag;
 
    public DuncanRobot05Behavior()
    {
@@ -83,45 +82,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    @Override
    public void senseClosestFlag(Pair<Point2D, Integer> locationAndIdsOfClosestFlag)
    {
-      TreeMap<Integer, Point2D> newFlags = new TreeMap<>();
-//      for (Pair<Point2D, Integer> newFlag : locationAndIdsOfAllFlags)
-//      {
-//         newFlags.put(newFlag.getRight(), newFlag.getLeft());
-//      }
-
-      if (flags != null)
-      {
-         changedFlags.clear();
-         for (Integer integer : newFlags.keySet())
-         {
-            if (!flags.containsKey(integer) || !flags.get(integer).epsilonEquals(newFlags.get(integer), 1e-5))
-            {
-               changedFlags.add(integer);
-            }
-         }
-         for (Integer integer : flags.keySet())
-         {
-            if (!newFlags.containsKey(integer))
-            {
-               changedFlags.add(integer);
-            }
-         }
-
-         if (!changedFlags.isEmpty())
-         {
-            for (Integer changedFlag : changedFlags)
-            {
-               LogTools.info("Changed flag: {}", changedFlag);
-            }
-         }
-
-         flags.clear();
-         flags.putAll(newFlags);
-      }
-      else
-      {
-         flags = new TreeMap<>(newFlags);
-      }
+      this.closestFlag = locationAndIdsOfClosestFlag;
    }
 
    @Override
@@ -174,75 +135,19 @@ public class DuncanRobot05Behavior implements Robot05Behavior
          foodAttraction.add(fieldVector(me, food.getLeft(), distance -> 0.5 / Math.pow(distance, 1.5)));
       }
 
-      if (changedFlags.size() == 1)
+      Vector2D flagField = new Vector2D();
+      if (closestFlag.getRight() == currentFlagId)
       {
-         if (carrying > 0) // goal or drop via hit wrong number
+         if (carrying != currentFlagId) // toward flag to pick up
          {
-            if (changedFlags.contains(currentFlagId)) // goal
-            {
-               carrying = -1;
-               LogTools.info("Goal! Flag: {}", currentFlagId);
-               if (currentFlagId < 5)
-               {
-                  currentFlagId++;
-               }
-               else
-               {
-                  currentFlagId = 1;
-               }
-               LogTools.info("Next flag: {}", currentFlagId);
-            }
-//            else // hit wrong number
-//            {
-//               carrying = false;
-//               LogTools.info("Oops. Bumped into wrong flag and dropped flag.");
-//            }
-         }
-         else // pick up or hit wrong number
-         {
-            carrying = changedFlags.first();
-            if (changedFlags.contains(currentFlagId)) // pick up
-            {
-               LogTools.info("Picked up flag {}", currentFlagId);
-            }
-            else
-            {
-               LogTools.info("Oops. Bumped into wrong flag {}. Going for {}", changedFlags.first(), currentFlagId);
-            }
+            flagField.add(fieldVector(me, closestFlag.getLeft(), distance -> 6.0 / Math.pow(distance, fieldGraduation)));
          }
       }
-      else if (changedFlags.size() == 2)
+      else
       {
-         if (changedFlags.first() == carrying)
-         {
-            carrying = changedFlags.last();
-         }
-         else if (changedFlags.last() == carrying)
-         {
-            carrying = changedFlags.first();
-         }
-         else
-         {
-            carrying = changedFlags.first();
-         }
-         LogTools.info("I guess we picked up {}. Going for: {}", carrying, currentFlagId);
+         flagField.add(fieldVector(closestFlag.getLeft(), me, distance -> 3.0 / Math.pow(distance, 2.0)));
       }
 
-      Vector2D flagField = new Vector2D();
-      for (Integer flagId : flags.keySet())
-      {
-         if (flagId == currentFlagId)
-         {
-            if (carrying != currentFlagId) // toward flag to pick up
-            {
-               flagField.add(fieldVector(me, flags.get(flagId), distance -> 6.0 / Math.pow(distance, fieldGraduation)));
-            }
-         }
-         else
-         {
-            flagField.add(fieldVector(flags.get(flagId), me, distance -> 3.0 / Math.pow(distance, 2.0)));
-         }
-      }
       if (carrying == currentFlagId) // set to goal
       {
          flagField.add(fieldVector(me, new Point2D(9.0, 9.0), distance -> 15.0 / Math.pow(distance, 0.5)));
