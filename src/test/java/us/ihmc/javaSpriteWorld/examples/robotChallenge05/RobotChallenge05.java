@@ -27,7 +27,7 @@ public class RobotChallenge05
 
       Robot05Behavior simpleBehavior;
       if (PLAYER.equals("Duncan"))
-         simpleBehavior = new DuncansRobot05Behavior();
+         simpleBehavior = new DuncanRobot05Behavior();
       else if (PLAYER.equals("Stephen"))
          simpleBehavior = new SimpleRobot04Behavior(); // TODO: Stephen adds behavior here
       else
