@@ -52,7 +52,6 @@ public class RobotChallengeRules05 implements RobotChallengeRules
          double wallDistance = intersectionWithWall.distance(robot.getPosition());
          robotBehavior.senseWallRangeInBodyFrame(new Vector2D(0.0, 0.0), wallDistance);
          
-         robotBehavior.senseGlobalLocation(robot.getX(), robot.getY());
          robotBehavior.senseHeading(robot.getHeading());
          robotBehavior.senseVelocity(robot.getVelocity());
 

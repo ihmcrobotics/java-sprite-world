@@ -26,12 +26,12 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    {
    }
 
-   @Override
-   public void senseGlobalLocation(double x, double y)
-   {
-      this.x = x;
-      this.y = y;
-   }
+//   @Override
+//   public void senseGlobalLocation(double x, double y)
+//   {
+//      this.x = x;
+//      this.y = y;
+//   }
 
    @Override
    public void senseVelocity(double velocity)

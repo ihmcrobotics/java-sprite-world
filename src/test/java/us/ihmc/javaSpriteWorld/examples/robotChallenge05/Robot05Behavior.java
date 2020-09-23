@@ -17,8 +17,6 @@ public interface Robot05Behavior
 
    public abstract void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance);
 
-   public abstract void senseGlobalLocation(double x, double y);
-
    public abstract void senseFoodInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood);
 
    public abstract void sensePredatorsInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators);
