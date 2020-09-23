@@ -181,7 +181,7 @@ public class Robot02 implements RobotChallengeRobot
    @Override
    public void eatFood(Food01 food)
    {
-      health = health + 1.0;
+      health = health + 5.0;
       if (health > 100.0)
          health = 100.0;
 
