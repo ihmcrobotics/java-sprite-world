@@ -94,9 +94,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    }
 
    @Override
-   public void senseClosestFlag(Pair<Point2D, Integer> locationAndIdsOfClosestFlag)
+   public void senseClosestFlag(Pair<Vector2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag)
    {
-      this.closestFlag = locationAndIdsOfClosestFlag;
+//      this.closestFlag = locationAndIdsOfClosestFlag;
    }
 
    @Override

@@ -2,6 +2,7 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import us.ihmc.euclid.tuple2D.Point2D;
@@ -13,6 +14,7 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge01.FoodList01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.PredatorList01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallenge01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeRules;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeTools;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
 
 public class RobotChallengeRules05 implements RobotChallengeRules
@@ -60,9 +62,8 @@ public class RobotChallengeRules05 implements RobotChallengeRules
          ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators = predatorList.getLocationAndVelocityOfAllPredators();
          robotBehavior.sensePredators(locationOfAllPredators);
 
-         Point2D point = new Point2D(robot.getX(), robot.getY());
-         Pair<Point2D, Integer> locationAndIdOfClosestFlag = flagList.getLocationAndIdOfClosestFlag(point);
-         robotBehavior.senseClosestFlag(locationAndIdOfClosestFlag);
+         Pair<Vector2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag = computeVectorToClosestFlag();
+         robotBehavior.senseClosestFlag(vectorToInBodyFrameAndIdOfClosestFlag);
 
          double[] accelerationAndTurnRate = robotBehavior.getAccelerationAndTurnRate();
 
@@ -82,6 +83,18 @@ public class RobotChallengeRules05 implements RobotChallengeRules
 
          }
       }
+   }
+
+   private Pair<Vector2D, Integer> computeVectorToClosestFlag()
+   {
+      Point2D robotLocationInWorld = robot.getPosition();
+      Pair<Point2D, Integer> locationAndIdOfClosestFlag = flagList.getLocationAndIdOfClosestFlag(robotLocationInWorld);      
+      Point2D worldLocationOfFlag = locationAndIdOfClosestFlag.getLeft();
+      
+      Vector2D vectorToFlagInBody = RobotChallengeTools.computeVectorFromRobotInBody(robotLocationInWorld, worldLocationOfFlag, robot.getHeading());
+
+      Pair<Vector2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag = new ImmutablePair<Vector2D, Integer>(vectorToFlagInBody, locationAndIdOfClosestFlag.getRight());
+      return vectorToInBodyFrameAndIdOfClosestFlag;
    }
    
    @Override

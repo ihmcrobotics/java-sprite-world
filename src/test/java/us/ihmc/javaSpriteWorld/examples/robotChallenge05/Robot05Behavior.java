@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 
 public interface Robot05Behavior
@@ -23,7 +22,7 @@ public interface Robot05Behavior
 
    public abstract void sensePredators(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators);
 
-   public abstract void senseClosestFlag(Pair<Point2D, Integer> locationAndIdsOfClosestFlag);
+   public abstract void senseClosestFlag(Pair<Vector2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag);
 
    public abstract void droppedFlag(int flagId);
 

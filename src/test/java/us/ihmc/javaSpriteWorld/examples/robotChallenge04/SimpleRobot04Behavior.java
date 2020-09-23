@@ -90,8 +90,20 @@ public class SimpleRobot04Behavior implements Robot04Behavior, Robot05Behavior
    }
 
    @Override
-   public void senseClosestFlag(Pair<Point2D, Integer> locationAndIdsOfClosestFlag)
+   public void senseClosestFlag(Pair<Vector2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag)
    {      
+      Vector2D vectorToFlag = vectorToInBodyFrameAndIdOfClosestFlag.getLeft();
+      Integer flagId = vectorToInBodyFrameAndIdOfClosestFlag.getRight();
+      System.out.println("flag " + flagId + " is at" + vectorToFlag + ", in body frame");
+      try
+      {
+         Thread.sleep(100);
+      }
+      catch (InterruptedException e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
    }
 
    @Override
