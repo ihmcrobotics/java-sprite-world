@@ -1,4 +1,4 @@
-package us.ihmc.javaSpriteWorld.examples.robotChallenge04;
+package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
 
 import java.util.ArrayList;
 
@@ -7,7 +7,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 
-public interface Robot04Behavior
+public interface Robot05Behavior
 {
    public abstract void senseVelocity(double velocity);
 
@@ -21,7 +21,7 @@ public interface Robot04Behavior
 
    public abstract void sensePredators(ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators);
 
-   public abstract void senseFlags(ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags);
+   public abstract void senseClosestFlag(Pair<Point2D, Integer> locationAndIdsOfClosestFlag);
 
    public abstract double[] getAccelerationAndTurnRate();
 

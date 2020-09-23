@@ -1,4 +1,4 @@
-package us.ihmc.javaSpriteWorld.examples.robotChallenge04;
+package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
 
 import java.util.ArrayList;
 
@@ -14,16 +14,16 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallenge01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeRules;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
 
-public class RobotChallengeRules04 implements RobotChallengeRules
+public class RobotChallengeRules05 implements RobotChallengeRules
 {
    private final Robot02 robot;
    private final FoodList01 foodList;
    private final PredatorList01 predatorList;
    private final FlagList flagList;
-   private final Robot04Behavior robotBehavior;
+   private final Robot05Behavior robotBehavior;
    private final RobotChallenge01 challenge;
 
-   public RobotChallengeRules04(RobotChallenge01 challenge, Robot02 robot, FoodList01 foodList, PredatorList01 predatorList, FlagList flagList, Robot04Behavior robotBehavior)
+   public RobotChallengeRules05(RobotChallenge01 challenge, Robot02 robot, FoodList01 foodList, PredatorList01 predatorList, FlagList flagList, Robot05Behavior robotBehavior)
    {
       this.challenge = challenge;
 
@@ -55,8 +55,9 @@ public class RobotChallengeRules04 implements RobotChallengeRules
          ArrayList<Pair<Vector2D, Vector2D>> locationOfAllPredators = predatorList.getLocationAndVelocityOfAllPredators();
          robotBehavior.sensePredators(locationOfAllPredators);
 
-         ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags = flagList.getLocationAndIdsOfAllFlags();
-         robotBehavior.senseFlags(locationAndIdsOfAllFlags);
+         Point2D point = new Point2D(robot.getX(), robot.getY());
+         Pair<Point2D, Integer> locationAndIdOfClosestFlag = flagList.getLocationAndIdOfClosestFlag(point);
+         robotBehavior.senseClosestFlag(locationAndIdOfClosestFlag);
 
          double[] accelerationAndTurnRate = robotBehavior.getAccelerationAndTurnRate();
 

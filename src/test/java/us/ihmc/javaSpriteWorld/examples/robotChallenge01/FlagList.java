@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.Sprite;
 import us.ihmc.javaSpriteWorld.SpriteCollisionGroup;
@@ -67,20 +68,42 @@ public class FlagList
       }
    }
 
-   public ArrayList<Pair<Vector2D, Integer>> getLocationAndIdsOfAllFlags()
+   public ArrayList<Pair<Point2D, Integer>> getLocationAndIdsOfAllFlags()
    {
-      ArrayList<Pair<Vector2D, Integer>> locationsAndIds = new ArrayList<Pair<Vector2D, Integer>>();
+      ArrayList<Pair<Point2D, Integer>> locationsAndIds = new ArrayList<Pair<Point2D, Integer>>();
 
       for (Flag flag : flagsInPlay)
       {
-         Vector2D location = new Vector2D(flag.getX(), flag.getY());
+         Point2D location = new Point2D(flag.getX(), flag.getY());
 
          int id = flag.getId();
 
-         locationsAndIds.add(new ImmutablePair<Vector2D, Integer>(location, id));
+         locationsAndIds.add(new ImmutablePair<Point2D, Integer>(location, id));
       }
 
       return locationsAndIds;
+   }
+   
+   public Pair<Point2D, Integer> getLocationAndIdOfClosestFlag(Point2D point)
+   {
+      ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags = getLocationAndIdsOfAllFlags();
+     
+      double closestDistance = Double.MAX_VALUE;
+      Pair<Point2D, Integer> closestFlag = null;
+      
+      for (Pair<Point2D, Integer> flag : locationAndIdsOfAllFlags)
+      {
+         Point2D location = flag.getLeft();
+         double distance = location.distance(point);
+         
+         if (distance < closestDistance)
+         {
+            closestDistance = distance;
+            closestFlag = flag;
+         }
+      }
+      
+      return closestFlag;
    }
 
 }
