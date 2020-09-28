@@ -8,13 +8,12 @@ import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DBasics;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
-import us.ihmc.javaSpriteWorld.geometry.Point;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class StephenRobot05Behavior implements Robot05Behavior
+public class StephenRobot05Behavior02 implements Robot05Behavior
 {
    // simulator parameters
    private final double initialX = 0.5;
@@ -36,16 +35,17 @@ public class StephenRobot05Behavior implements Robot05Behavior
    private double wallDistance;
 
    // behavior parameters
-   private final Vector2D wallForce = new Vector2D();
-   private final Vector2D foodForce = new Vector2D();
-   private final Vector2D predatorForce = new Vector2D();
-   private final Vector2D flagForce = new Vector2D();
-
-   private final Vector2D totalForce = new Vector2D();
+   private final List<ObjectResponseDescription> responseDescriptions = new ArrayList<>();
    private final double[] totalAction = new double[2];
 
-   private final double maxForceWall = 4.5;
-   private final double maxForceFood = 1.25;
+   private final double wallAngularCostRange = Math.toRadians(75.0);
+   private final double foodAngularCostRange = Math.toRadians(180.0);
+   private final double predatorAngularCostRange = Math.toRadians(80.0);
+   private final double goToFlagAngularCostRange = Math.toRadians(180.0);
+   private final double avoidFlagAngularCostRange = Math.toRadians(45.0);
+
+   private final double maxForceWall = 2.5;
+   private final double maxForceFood = 1.0;
    private final double maxForcePredator = 1.2;
    private final double maxForceAvoidFlagWhileDelivering = 3.0;
    private final double flagAttractionForceMagnitude = 0.5;
@@ -64,22 +64,15 @@ public class StephenRobot05Behavior implements Robot05Behavior
    private final Point2D areaToExplore = new Point2D();
    private final Random random = new Random(3920);
 
-   private final double baseWall = 2.5;
+   private final double baseWall = 2.65;
    private double baseFood = 2.2;
    private final double basePredator = 2.0;
    private final double baseFlag = 2.5;
 
-   // debug variables
-   private double percentageWall;
-   private double percentageFood;
-   private double percentagePredator;
-   private double percentageFlagAttractor;
-   private double percentageFlagRepulsive;
-
    private int flagIdToChase = 1;
    private boolean inDeliverFlagMode = false;
 
-   public StephenRobot05Behavior()
+   public StephenRobot05Behavior02()
    {
       for (int i = 0; i < flagLocations.length; i++)
       {
@@ -168,24 +161,21 @@ public class StephenRobot05Behavior implements Robot05Behavior
       updateAreaToExplore();
       takeANoteOfFlagLocation();
 
-      wallForce.setToZero();
-      foodForce.setToZero();
-      predatorForce.setToZero();
-      flagForce.setToZero();
+      responseDescriptions.clear();
 
       // wall
-      computeWallForce();
+      computeWallAction();
 
       // food
       for (int i = 0; i < locationOfAllFoodInBodyFrame.size(); i++)
       {
-         computeFoodForce(foodForce, locationOfAllFoodInBodyFrame.get(i).getLeft());
+         computeFoodAction(locationOfAllFoodInBodyFrame.get(i).getLeft());
       }
 
       // predators
       for (int i = 0; i < locationOfAllPredators.size(); i++)
       {
-         computePredatorForce(predatorForce, locationOfAllPredators.get(i).getLeft());
+         computePredatorForce(locationOfAllPredators.get(i).getLeft());
       }
 
       // chase flag
@@ -195,45 +185,55 @@ public class StephenRobot05Behavior implements Robot05Behavior
          Vector2D dropPointBody = new Vector2D();
          worldFrameToBodyFrame(dropPointWorld, dropPointBody);
 
-         computeGoToFlagForce(flagForce, dropPointBody);
-         computeAvoidFlagForce(flagForce, positionInBodyFrameAndIdOfClosestFlag.getLeft());
+         computeGoToFlagForce(dropPointBody);
+         computeAvoidFlagForce(positionInBodyFrameAndIdOfClosestFlag.getLeft());
       }
       else
       {
          boolean detectedFlagShouldBeRetrieved = positionInBodyFrameAndIdOfClosestFlag.getRight() == flagIdToChase;
          if (detectedFlagShouldBeRetrieved)
          {
-            computeGoToFlagForce(flagForce, positionInBodyFrameAndIdOfClosestFlag.getLeft());
+            computeGoToFlagForce(positionInBodyFrameAndIdOfClosestFlag.getLeft());
          }
          else
          {
             if (flagLocations[flagIdToChase - 1].containsNaN())
             {
-               computeGoToWorldCoordinate(flagForce, areaToExplore, exploreAreaForceMagnitude);
+               computeGoToWorldCoordinate(areaToExplore, exploreAreaForceMagnitude, goToFlagAngularCostRange);
             }
             else
             {
-               computeGoToWorldCoordinate(flagForce, flagLocations[flagIdToChase - 1], flagAttractionForceMagnitude);
+               computeGoToWorldCoordinate(flagLocations[flagIdToChase - 1], flagAttractionForceMagnitude, goToFlagAngularCostRange);
             }
          }
       }
 
-      totalForce.setX(wallForce.getX() + predatorForce.getX() + foodForce.getX() + flagForce.getX());
-      totalForce.setY(wallForce.getY() + predatorForce.getY() + foodForce.getY() + flagForce.getY());
+      // find max cost (rename later...) heading
+      double angle = -Math.PI;
+      double maxCost = Double.NEGATIVE_INFINITY;
+      double maxCostHeading = Double.NaN;
 
-      double totalForceMagnitude = totalForce.length();
-      percentageWall = wallForce.length() / totalForceMagnitude;
-      percentageFood = foodForce.length() / totalForceMagnitude;
-      percentagePredator = predatorForce.length() / totalForceMagnitude;
-      percentageFlagAttractor = flagForce.length() / totalForceMagnitude;
-      percentageFlagRepulsive = flagForce.length() / totalForceMagnitude;
+      while (angle <= Math.PI)
+      {
+         double cost = 0.0;
+         for (int i = 0; i < responseDescriptions.size(); i++)
+         {
+            cost += responseDescriptions.get(i).getCostAtAngle(angle);
+         }
 
-      // convert to acceleration and steering action
-      double deltaDesiredHeading = headingFromVector(totalForce.getX(), totalForce.getY());
+         if (cost > maxCost)
+         {
+            maxCost = cost;
+            maxCostHeading = angle;
+         }
+
+         angle += 0.01;
+      }
 
       double velocityWhenAligned = 3.0;
       double targetVelocity;
       double angleToStopAndTurn = Math.toRadians(60.0);
+      double deltaDesiredHeading = maxCostHeading;
 
       if (Math.abs(deltaDesiredHeading) < angleToStopAndTurn)
       {
@@ -318,25 +318,25 @@ public class StephenRobot05Behavior implements Robot05Behavior
       }
    }
 
-   private void computeWallForce()
+   private void computeWallAction()
    {
-      wallForce.set(0.0, -1.0);
-      wallForce.scale(maxForceWall * Math.pow(baseWall, -wallDistance));
+      double cost = -maxForceWall * Math.pow(baseWall, -wallDistance);
+
+//      double distanceBottom = xyPosition.getY();
+//      double distanceTop = 10.0 - distanceBottom;
+//      double distanceLeft = xyPosition.getX();
+//      double distanceRight = 10.0 - distanceLeft;
+
+      responseDescriptions.add(new ObjectResponseDescription(0.0, wallAngularCostRange, cost));
    }
 
-   private void computeFoodForce(Vector2D forceToAddTo, Tuple2DReadOnly foodInBodyFrame)
+   private void computeFoodAction(Tuple2DReadOnly foodInBodyFrame)
    {
-      Vector2D force = new Vector2D();
-
-      // Dead reckoning seems off...
       double distanceToWall = computeDistanceToWall(foodInBodyFrame);
       if (distanceToWall < proximityNearWallToIgnoreFood)
       {
          return;
       }
-
-      force.set(foodInBodyFrame);
-      force.normalize();
 
       double distance = EuclidCoreTools.norm(foodInBodyFrame.getX(), foodInBodyFrame.getY());
       double angleFromStraightAhead = headingFromVector(foodInBodyFrame);
@@ -346,63 +346,38 @@ public class StephenRobot05Behavior implements Robot05Behavior
          distance += extraFoodDistanceIfBehind * (1.0 - Math.abs(angleFromStraightBehind) / (Math.PI - minAngleToPenalizeFood));
       }
 
-      force.scale(maxForceFood* Math.pow(baseFood, - distance));
-      forceToAddTo.add(force);
+      double cost = maxForceFood * Math.pow(baseFood, - distance);
+      double heading = headingFromVector(foodInBodyFrame);
+      responseDescriptions.add(new ObjectResponseDescription(heading, foodAngularCostRange, cost));
    }
 
-   private void computePredatorForce(Vector2D forceToAddTo, Tuple2DReadOnly predatorInBodyFrame)
+   private void computePredatorForce(Tuple2DReadOnly predatorInBodyFrame)
    {
-      Vector2D force = new Vector2D();
-
-      force.set(predatorInBodyFrame);
-      force.negate();
-      force.normalize();
-
       double distance = EuclidCoreTools.norm(predatorInBodyFrame.getX(), predatorInBodyFrame.getY());
-      force.scale(maxForcePredator * Math.pow(basePredator, - distance));
-      forceToAddTo.add(force);
+      double cost = - maxForcePredator * Math.pow(basePredator, - distance);
+      double heading = headingFromVector(predatorInBodyFrame);
+      responseDescriptions.add(new ObjectResponseDescription(heading, predatorAngularCostRange, cost));
    }
 
-   private void computeAvoidFlagForce(Vector2D forceToAddTo, Tuple2DReadOnly flagInBodyFrame)
+   private void computeAvoidFlagForce(Tuple2DReadOnly flagInBodyFrame)
    {
-      Vector2D force = new Vector2D();
-
-      double fieldOfViewForAvoiding = Math.toRadians(45.0);
-      double angle = headingFromVector(flagInBodyFrame);
-      if (Math.abs(angle) > fieldOfViewForAvoiding)
-      {
-         return;
-      }
-
-      force.set(flagInBodyFrame);
-      force.negate();
-      force.normalize();
-
+      double heading = headingFromVector(flagInBodyFrame);
       double distance = EuclidCoreTools.norm(flagInBodyFrame.getX(), flagInBodyFrame.getY());
-      force.scale(maxForceAvoidFlagWhileDelivering * Math.pow(baseFlag, - distance));
-      forceToAddTo.add(force);
+      double cost = - maxForceAvoidFlagWhileDelivering * Math.pow(baseFlag, - distance);
+      responseDescriptions.add(new ObjectResponseDescription(heading, avoidFlagAngularCostRange, cost));
    }
 
-   private void computeGoToFlagForce(Vector2D forceToAddTo, Tuple2DReadOnly flagInBodyFrame)
+   private void computeGoToFlagForce(Tuple2DReadOnly flagInBodyFrame)
    {
-      Vector2D force = new Vector2D();
-
-      force.set(flagInBodyFrame);
-      force.normalize();
-
-      force.scale(flagAttractionForceMagnitude);
-      forceToAddTo.add(force);
+      responseDescriptions.add(new ObjectResponseDescription(headingFromVector(flagInBodyFrame), goToFlagAngularCostRange, flagAttractionForceMagnitude));
    }
 
-   private void computeGoToWorldCoordinate(Vector2D forceToAddTo, Tuple2DReadOnly worldCoordinate, double forceMagnitude)
+   private void computeGoToWorldCoordinate(Tuple2DReadOnly worldCoordinate, double cost, double angularRange)
    {
-      Vector2D force = new Vector2D();
-
-      worldFrameToBodyFrame(worldCoordinate, force);
-      force.normalize();
-      force.scale(forceMagnitude);
-
-      forceToAddTo.add(force);
+      Point2D bodyFrameCoordinate = new Point2D();
+      worldFrameToBodyFrame(worldCoordinate, bodyFrameCoordinate);
+      double heading = headingFromVector(bodyFrameCoordinate);
+      responseDescriptions.add(new ObjectResponseDescription(heading, angularRange, cost));
    }
 
    private double computeDistanceToWall(Tuple2DReadOnly foodInBodyFrame)
@@ -500,6 +475,48 @@ public class StephenRobot05Behavior implements Robot05Behavior
       }
    }
 
+   private class ObjectResponseDescription
+   {
+      private final double heading;
+      private final double angularRange;
+      private final double cost;
+
+      public ObjectResponseDescription(double heading, double angularRange, double cost)
+      {
+         this.heading = heading;
+         this.angularRange = angularRange;
+         this.cost = cost;
+      }
+
+      public double getHeading()
+      {
+         return heading;
+      }
+
+      public double getAngularRange()
+      {
+         return angularRange;
+      }
+
+      public double getCost()
+      {
+         return cost;
+      }
+
+      public double getCostAtAngle(double angle)
+      {
+         double angularDifference = Math.abs(EuclidCoreTools.angleDifferenceMinusPiToPi(angle, heading));
+         if (angularDifference > angularRange)
+         {
+            return 0.0;
+         }
+         else
+         {
+            return cost * (1.0 - angularDifference / angularRange);
+         }
+      }
+   }
+
    private static int clamp(int x, int min, int max)
    {
       return Math.min(Math.max(x, min), max);
@@ -509,7 +526,7 @@ public class StephenRobot05Behavior implements Robot05Behavior
 
    static void testBodyWorldTransforms()
    {
-      StephenRobot05Behavior behavior = new StephenRobot05Behavior();
+      StephenRobot05Behavior02 behavior = new StephenRobot05Behavior02();
       Random random = new Random(38932);
 
       for (int i = 0; i < 100; i++)

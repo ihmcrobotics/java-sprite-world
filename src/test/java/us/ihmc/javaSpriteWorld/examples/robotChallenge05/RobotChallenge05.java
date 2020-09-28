@@ -29,7 +29,7 @@ public class RobotChallenge05
       if (PLAYER.equals("Duncan"))
          simpleBehavior = new DuncanRobot05Behavior();
       else if (PLAYER.equals("Stephen"))
-         simpleBehavior = new StephenRobot05Behavior();
+         simpleBehavior = new StephenRobot05Behavior02();
       else
          simpleBehavior = new SimpleRobot04Behavior();
       RobotChallengeRules rules = new RobotChallengeRules05(robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);
