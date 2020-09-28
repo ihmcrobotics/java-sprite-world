@@ -1,6 +1,5 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
 
-import com.sun.accessibility.internal.resources.accessibility;
 import org.apache.commons.lang3.tuple.Pair;
 import us.ihmc.euclid.geometry.Line2D;
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
@@ -8,7 +7,6 @@ import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
-import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeTools;
 import us.ihmc.log.LogTools;
 
 import java.util.ArrayList;
@@ -185,10 +183,6 @@ public class DuncanRobot05Behavior implements Robot05Behavior
       attractionVector.add(boundaryRepulsion);
       attractionVector.add(predatorRepulsion);
       attractionVector.add(foodAttraction);
-//      LogTools.info("Boundary repulsion: {}", boundaryRepulsion);
-//      LogTools.info("Predator repulsion: {}", predatorRepulsion);
-//      LogTools.info("Food repulsion: {}", foodAttraction);
-//      LogTools.info("Attraction vector: {}", attractionVector);
 
       double desiredSpeed = attractionVector.length();
 
