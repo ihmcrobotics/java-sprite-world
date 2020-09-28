@@ -1,5 +1,6 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
 
+import com.sun.accessibility.internal.resources.accessibility;
 import org.apache.commons.lang3.tuple.Pair;
 import us.ihmc.euclid.geometry.Line2D;
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
@@ -18,6 +19,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    private double x = 0.0, y = 0.0;
    private double heading = 0.0;
    private double velocity;
+   private double wallDistance;
    private ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood;
    private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
    private Pair<Point2D, Integer> closestFlag;
@@ -25,13 +27,6 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    public DuncanRobot05Behavior()
    {
    }
-
-//   @Override
-//   public void senseGlobalLocation(double x, double y)
-//   {
-//      this.x = x;
-//      this.y = y;
-//   }
 
    @Override
    public void senseVelocity(double velocity)
@@ -46,8 +41,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    }
 
    @Override
-   public void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance)
+   public void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance) // to wall directly in front
    {
+      this.wallDistance = wallDistance;
    }
 
    @Override
@@ -117,6 +113,11 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    @Override
    public double[] getAccelerationAndTurnRate()
    {
+      // 0 heading is y+ (up)
+      double dt = 0.01;
+      x += velocity * Math.sin(heading);
+      y += velocity * Math.cos(heading);
+
       double fieldGraduation = 1.5;
       Vector2D mouse = new Vector2D(mousePressedX, mousePressedY);
       Point2D me = new Point2D(x, y);
@@ -180,8 +181,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior
 //      attractionVector.add(meToMouse);
 //      attractionVector.add(meToCenter);
       attractionVector.add(boundaryRepulsion);
-      attractionVector.add(predatorRepulsion);
-      attractionVector.add(foodAttraction);
+//      attractionVector.add(predatorRepulsion);
+//      attractionVector.add(foodAttraction);
 
       double desiredSpeed = attractionVector.length();
 
@@ -197,9 +198,19 @@ public class DuncanRobot05Behavior implements Robot05Behavior
 
       double acceleration = (1.0 * (desiredSpeed - velocity));
 
-      double angularVelocity = (velocity - lastVelocity) / 0.01;
+      double angularVelocity = (velocity - lastVelocity) / dt;
       double turnRate = (5.0 * angleToAttraction) + (-0.5 * angularVelocity);
       lastVelocity = velocity;
+
+      LogTools.info("me: {} accel: {} turn: {}", me, acceleration, turnRate);
+
+      if (Double.isNaN(acceleration)) acceleration = 0.0;
+      if (Double.isNaN(turnRate)) turnRate = 0.0;
+
+      if (me.getX() < 0.001 || me.getY() < 0.001)
+      {
+         return new double[] {0.1, 0.1};
+      }
 
       return new double[] {acceleration, turnRate};
    }
