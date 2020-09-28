@@ -49,6 +49,10 @@ public class RobotChallengeRules05 implements RobotChallengeRules
       if (robotBehavior != null)
       {
          Point2DBasics intersectionWithWall = challenge.getIntersectionWithWall(robot.getPosition(), robot.getHeadingVector());
+
+         if (intersectionWithWall == null)
+            return;
+
          double wallDistance = intersectionWithWall.distance(robot.getPosition());
          robotBehavior.senseWallRangeInBodyFrame(new Vector2D(0.0, 0.0), wallDistance);
          
@@ -63,8 +67,11 @@ public class RobotChallengeRules05 implements RobotChallengeRules
          ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredatorsInBodyFrame = RobotChallengeTools.convertFromWorldToBodyFrame(robot.getPosition(), locationOfAllPredators, robot.getHeading());
          robotBehavior.sensePredatorsInBodyFrame(locationOfAllPredatorsInBodyFrame);
 
-         Pair<Point2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag = computeVectorToClosestFlag();
-         robotBehavior.senseClosestFlagInBodyFrame(vectorToInBodyFrameAndIdOfClosestFlag);
+         if (!flagList.getLocationAndIdsOfAllFlags().isEmpty())
+         {
+            Pair<Point2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag = computeVectorToClosestFlag();
+            robotBehavior.senseClosestFlagInBodyFrame(vectorToInBodyFrameAndIdOfClosestFlag);
+         }
 
          double[] accelerationAndTurnRate = robotBehavior.getAccelerationAndTurnRate();
 

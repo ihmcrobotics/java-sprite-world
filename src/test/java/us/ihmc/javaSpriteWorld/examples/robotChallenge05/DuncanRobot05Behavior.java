@@ -46,6 +46,11 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    }
 
    @Override
+   public void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance)
+   {
+   }
+
+   @Override
    public void senseFoodInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
    {
       this.locationOfAllFood = locationOfAllFood;
@@ -96,7 +101,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    @Override
    public void senseClosestFlagInBodyFrame(Pair<Point2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag)
    {
-//      this.closestFlag = locationAndIdsOfClosestFlag;
+      this.closestFlag = vectorToInBodyFrameAndIdOfClosestFlag;
    }
 
    @Override
@@ -115,6 +120,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior
       double fieldGraduation = 1.5;
       Vector2D mouse = new Vector2D(mousePressedX, mousePressedY);
       Point2D me = new Point2D(x, y);
+      Vector2D attractionVector = new Vector2D();
 
       Vector2D meToMouse = fieldVector(me, mouse, distance -> 10.0 * Math.pow(distance, 1.5));
 
@@ -149,31 +155,33 @@ public class DuncanRobot05Behavior implements Robot05Behavior
          foodAttraction.add(fieldVector(me, food.getLeft(), distance -> 0.5 / Math.pow(distance, 1.5)));
       }
 
-      Vector2D flagField = new Vector2D();
-      if (closestFlag.getRight() == currentFlagId)
+      if (closestFlag != null)
       {
-         if (carrying != currentFlagId) // toward flag to pick up
+         Vector2D flagField = new Vector2D();
+         if (closestFlag != null && closestFlag.getRight() == currentFlagId)
          {
-            flagField.add(fieldVector(me, closestFlag.getLeft(), distance -> 6.0 / Math.pow(distance, fieldGraduation)));
+            if (carrying != currentFlagId) // toward flag to pick up
+            {
+               flagField.add(fieldVector(me, closestFlag.getLeft(), distance -> 6.0 / Math.pow(distance, fieldGraduation)));
+            }
          }
-      }
-      else
-      {
-         flagField.add(fieldVector(closestFlag.getLeft(), me, distance -> 3.0 / Math.pow(distance, 2.0)));
+         else
+         {
+            flagField.add(fieldVector(closestFlag.getLeft(), me, distance -> 3.0 / Math.pow(distance, 2.0)));
+         }
+
+         if (carrying == currentFlagId) // set to goal
+         {
+            flagField.add(fieldVector(me, new Point2D(9.0, 9.0), distance -> 15.0 / Math.pow(distance, 0.5)));
+         }
+         attractionVector.add(flagField);
       }
 
-      if (carrying == currentFlagId) // set to goal
-      {
-         flagField.add(fieldVector(me, new Point2D(9.0, 9.0), distance -> 15.0 / Math.pow(distance, 0.5)));
-      }
-
-      Vector2D attractionVector = new Vector2D();
 //      attractionVector.add(meToMouse);
 //      attractionVector.add(meToCenter);
       attractionVector.add(boundaryRepulsion);
       attractionVector.add(predatorRepulsion);
       attractionVector.add(foodAttraction);
-      attractionVector.add(flagField);
 
       double desiredSpeed = attractionVector.length();
 
@@ -212,10 +220,5 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    public boolean getDropFlag()
    {
       return ((x > 8.0) && (y > 8.0));
-   }
-
-   @Override
-   public void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance)
-   {      
    }
 }

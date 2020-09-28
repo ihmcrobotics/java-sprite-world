@@ -20,10 +20,10 @@ public class RobotChallenge05
       Robot02 robot = new Robot02(xMax, yMax);
 
       RobotChallenge01 robotChallenge = new RobotChallenge01("RobotChallenge05", robot, random, xMax, yMax);
-      robotChallenge.createSomeFood(10);
-      double maximumPredatorSpeed = 1.5;
-      robotChallenge.createSomePredators(3, maximumPredatorSpeed);
-      robotChallenge.createSomeFlags(5);
+//      robotChallenge.createSomeFood(10);
+//      double maximumPredatorSpeed = 1.5;
+//      robotChallenge.createSomePredators(3, maximumPredatorSpeed);
+//      robotChallenge.createSomeFlags(5);
 
       Robot05Behavior simpleBehavior;
       if (PLAYER.equals("Duncan"))
