@@ -160,18 +160,17 @@ public class DuncanRobot05Behavior implements Robot05Behavior
 
       if (closestFlag != null)
       {
-         Point2D closestFlagPosition = bodyToWorld(closestFlag.getLeft());
          Vector2D flagField = new Vector2D();
          if (closestFlag != null && closestFlag.getRight() == currentFlagId)
          {
             if (carrying != currentFlagId) // toward flag to pick up
             {
-               flagField.add(fieldVector(me, closestFlagPosition, distance -> 6.0 / Math.pow(distance, fieldGraduation)));
+               flagField.add(fieldVector(me, bodyToWorld(closestFlag.getLeft()), distance -> 6.0 / Math.pow(distance, fieldGraduation)));
             }
          }
          else
          {
-            flagField.add(fieldVector(closestFlagPosition, me, distance -> 3.0 / Math.pow(distance, 2.0)));
+            flagField.add(fieldVector(bodyToWorld(closestFlag.getLeft()), me, distance -> 3.0 / Math.pow(distance, 2.0)));
          }
 
          if (carrying == currentFlagId) // set to goal
@@ -184,7 +183,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior
 //      attractionVector.add(meToMouse);
 //      attractionVector.add(meToCenter);
       attractionVector.add(boundaryRepulsion);
-//      attractionVector.add(predatorRepulsion);
+      attractionVector.add(predatorRepulsion);
       attractionVector.add(foodAttraction);
 //      LogTools.info("Boundary repulsion: {}", boundaryRepulsion);
 //      LogTools.info("Predator repulsion: {}", predatorRepulsion);
@@ -209,17 +208,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior
       double turnRate = (5.0 * angleToAttraction) + (-0.5 * angularVelocity);
       lastVelocity = velocity;
 
-
       if (Double.isNaN(acceleration)) acceleration = 0.0;
       if (Double.isNaN(turnRate)) turnRate = 0.0;
-
-//      if (me.getX() < 0.001 || me.getY() < 0.001)
-//      {
-//         return new double[] {0.1, 0.1};
-//      }
-
-//      LogTools.info("me: {} accel: {} turn: {}", me, acceleration, turnRate);
-//      LogTools.info("Commanding accel: ");
 
       return new double[] {acceleration, turnRate};
    }
