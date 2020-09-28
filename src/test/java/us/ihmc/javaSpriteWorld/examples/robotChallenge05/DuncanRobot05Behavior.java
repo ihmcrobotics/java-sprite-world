@@ -16,7 +16,7 @@ import java.util.function.Function;
 public class DuncanRobot05Behavior implements Robot05Behavior
 {
    private double mousePressedX = 5.0, mousePressedY = 5.0;
-   private double x = 0.0, y = 0.0;
+   private double x = 0.5, y = 0.5;
    private double heading = 0.0;
    private double velocity;
    private double wallDistance;
@@ -115,8 +115,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    {
       // 0 heading is y+ (up)
       double dt = 0.01;
-      x += velocity * Math.sin(heading);
-      y += velocity * Math.cos(heading);
+      x += dt * velocity * -Math.sin(heading);
+      y += dt * velocity * Math.cos(heading);
 
       double fieldGraduation = 1.5;
       Vector2D mouse = new Vector2D(mousePressedX, mousePressedY);
