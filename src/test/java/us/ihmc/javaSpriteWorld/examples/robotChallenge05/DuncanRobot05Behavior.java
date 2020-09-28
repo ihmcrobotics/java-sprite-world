@@ -8,6 +8,7 @@ import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeTools;
 import us.ihmc.log.LogTools;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    private ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood;
    private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
    private Pair<Point2D, Integer> closestFlag;
+   private Point2D me;
 
    public DuncanRobot05Behavior()
    {
@@ -120,7 +122,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior
 
       double fieldGraduation = 1.5;
       Vector2D mouse = new Vector2D(mousePressedX, mousePressedY);
-      Point2D me = new Point2D(x, y);
+      me = new Point2D(x, y);
       Vector2D attractionVector = new Vector2D();
 
       Vector2D meToMouse = fieldVector(me, mouse, distance -> 10.0 * Math.pow(distance, 1.5));
@@ -146,29 +148,30 @@ public class DuncanRobot05Behavior implements Robot05Behavior
       Vector2D predatorRepulsion = new Vector2D();
       for (Pair<Point2D, Vector2D> predator : locationOfAllPredators)
       {
-         predatorRepulsion.add(fieldVector(predator.getLeft(), me, distance -> 6.0 / Math.pow(distance, fieldGraduation)));
+         predatorRepulsion.add(fieldVector(bodyToWorld(predator.getLeft()), me, distance -> 6.0 / Math.pow(distance, fieldGraduation)));
       }
 //      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
 
       Vector2D foodAttraction = new Vector2D();
       for (Pair<Point2D, Vector2D> food : locationOfAllFood)
       {
-         foodAttraction.add(fieldVector(me, food.getLeft(), distance -> 0.5 / Math.pow(distance, 1.5)));
+         foodAttraction.add(fieldVector(me, bodyToWorld(food.getLeft()), distance -> 0.5 / Math.pow(distance, 1.5)));
       }
 
       if (closestFlag != null)
       {
+         Point2D closestFlagPosition = bodyToWorld(closestFlag.getLeft());
          Vector2D flagField = new Vector2D();
          if (closestFlag != null && closestFlag.getRight() == currentFlagId)
          {
             if (carrying != currentFlagId) // toward flag to pick up
             {
-               flagField.add(fieldVector(me, closestFlag.getLeft(), distance -> 6.0 / Math.pow(distance, fieldGraduation)));
+               flagField.add(fieldVector(me, closestFlagPosition, distance -> 6.0 / Math.pow(distance, fieldGraduation)));
             }
          }
          else
          {
-            flagField.add(fieldVector(closestFlag.getLeft(), me, distance -> 3.0 / Math.pow(distance, 2.0)));
+            flagField.add(fieldVector(closestFlagPosition, me, distance -> 3.0 / Math.pow(distance, 2.0)));
          }
 
          if (carrying == currentFlagId) // set to goal
@@ -182,7 +185,11 @@ public class DuncanRobot05Behavior implements Robot05Behavior
 //      attractionVector.add(meToCenter);
       attractionVector.add(boundaryRepulsion);
 //      attractionVector.add(predatorRepulsion);
-//      attractionVector.add(foodAttraction);
+      attractionVector.add(foodAttraction);
+//      LogTools.info("Boundary repulsion: {}", boundaryRepulsion);
+//      LogTools.info("Predator repulsion: {}", predatorRepulsion);
+//      LogTools.info("Food repulsion: {}", foodAttraction);
+//      LogTools.info("Attraction vector: {}", attractionVector);
 
       double desiredSpeed = attractionVector.length();
 
@@ -202,20 +209,32 @@ public class DuncanRobot05Behavior implements Robot05Behavior
       double turnRate = (5.0 * angleToAttraction) + (-0.5 * angularVelocity);
       lastVelocity = velocity;
 
-      LogTools.info("me: {} accel: {} turn: {}", me, acceleration, turnRate);
 
       if (Double.isNaN(acceleration)) acceleration = 0.0;
       if (Double.isNaN(turnRate)) turnRate = 0.0;
 
-      if (me.getX() < 0.001 || me.getY() < 0.001)
-      {
-         return new double[] {0.1, 0.1};
-      }
+//      if (me.getX() < 0.001 || me.getY() < 0.001)
+//      {
+//         return new double[] {0.1, 0.1};
+//      }
+
+//      LogTools.info("me: {} accel: {} turn: {}", me, acceleration, turnRate);
+//      LogTools.info("Commanding accel: ");
 
       return new double[] {acceleration, turnRate};
    }
 
    double lastVelocity = 0.0;
+
+   private Point2D bodyToWorld(Tuple2DReadOnly pointInBody)
+   {
+      Point2D pointInWorld = new Point2D(pointInBody);
+      RigidBodyTransform transform = new RigidBodyTransform();
+      transform.getRotation().setYawPitchRoll(-heading, 0.0, 0.0);
+      pointInWorld.applyInverseTransform(transform);
+      pointInWorld.add(me);
+      return pointInWorld;
+   }
 
    private Vector2D fieldVector(Tuple2DReadOnly from, Tuple2DReadOnly to, Function<Double, Double> magnitude)
    {
