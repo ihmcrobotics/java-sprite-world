@@ -23,13 +23,13 @@ public interface Robot04Behavior
 
    public abstract void senseFlags(ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags);
 
-   public abstract void droppedFlag(int id);
+   public abstract void senseDroppedFlag(int id);
 
-   public abstract void pickedUpFlag(int id);
+   public abstract void sensePickedUpFlag(int id);
 
-   public abstract void deliveredFlag(int flagId);
+   public abstract void senseDeliveredFlag(int flagId);
 
-   public abstract void hitWall();
+   public abstract void senseHitWall();
 
    public abstract double[] getAccelerationAndTurnRate();
 

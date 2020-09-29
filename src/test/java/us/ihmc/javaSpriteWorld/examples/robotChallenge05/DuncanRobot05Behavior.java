@@ -60,7 +60,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    }
 
    @Override
-   public void droppedFlag(int flagId)
+   public void senseDroppedFlag(int flagId)
    {
       if (carrying != flagId)
       {
@@ -70,14 +70,14 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    }
 
    @Override
-   public void pickedUpFlag(int id)
+   public void sensePickedUpFlag(int id)
    {
       carrying = id;
       LogTools.info("Picked up: {} Going for: {}", carrying, currentFlagId);
    }
 
    @Override
-   public void deliveredFlag(int flagId)
+   public void senseDeliveredFlag(int flagId)
    {
       if (carrying == flagId)
       {
@@ -222,7 +222,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    }
 
    @Override
-   public void hitWall()
+   public void senseHitWall()
    {
       // TODO Auto-generated method stub
       

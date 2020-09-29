@@ -100,17 +100,17 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
    }
 
    @Override
-   public void droppedFlag(int id)
+   public void senseDroppedFlag(int id)
    {      
    }
 
    @Override
-   public void pickedUpFlag(int id)
+   public void sensePickedUpFlag(int id)
    {      
    }
 
    @Override
-   public void deliveredFlag(int flagId)
+   public void senseDeliveredFlag(int flagId)
    {      
    }
 
@@ -121,7 +121,7 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
    }
 
    @Override
-   public void hitWall()
+   public void senseHitWall()
    {      
    }
 

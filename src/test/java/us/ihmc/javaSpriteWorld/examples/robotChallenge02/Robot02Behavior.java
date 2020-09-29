@@ -19,13 +19,13 @@ public interface Robot02Behavior
 
    public abstract void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood);
 
-   public abstract void droppedFlag(int id);
+   public abstract void senseDroppedFlag(int id);
 
-   public abstract void pickedUpFlag(int id);
+   public abstract void sensePickedUpFlag(int id);
 
-   public abstract void deliveredFlag(int flagId);
+   public abstract void senseDeliveredFlag(int flagId);
 
-   public abstract void hitWall();
+   public abstract void senseHitWall();
 
    public abstract double[] getAccelerationAndTurnRate();
 

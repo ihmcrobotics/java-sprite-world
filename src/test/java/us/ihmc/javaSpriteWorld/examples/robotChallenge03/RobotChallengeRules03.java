@@ -59,24 +59,24 @@ public class RobotChallengeRules03 implements RobotChallengeRules
    @Override
    public void droppedFlag(int id)
    {
-      robotBehavior.droppedFlag(id);
+      robotBehavior.senseDroppedFlag(id);
    }
 
    @Override
    public void capturedFlag(int id)
    {
-      robotBehavior.pickedUpFlag(id);
+      robotBehavior.sensePickedUpFlag(id);
    }
    
    @Override
    public void deliveredFlag(int flagId)
    {
-      robotBehavior.deliveredFlag(flagId); 
+      robotBehavior.senseDeliveredFlag(flagId); 
    }
    
    @Override
    public void hitWall()
    {
-      robotBehavior.hitWall();      
+      robotBehavior.senseHitWall();      
    }
 }

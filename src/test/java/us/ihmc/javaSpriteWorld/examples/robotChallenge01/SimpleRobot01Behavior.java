@@ -46,22 +46,22 @@ public class SimpleRobot01Behavior implements Robot01Behavior
    }
 
    @Override
-   public void droppedFlag(int id)
+   public void senseDroppedFlag(int id)
    {      
    }
 
    @Override
-   public void pickedUpFlag(int id)
+   public void sensePickedUpFlag(int id)
    {      
    }
 
    @Override
-   public void deliveredFlag(int flagId)
+   public void senseDeliveredFlag(int flagId)
    {      
    }
 
    @Override
-   public void hitWall()
+   public void senseHitWall()
    {      
    }
 

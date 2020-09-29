@@ -51,21 +51,26 @@ public class StephenRobot05Behavior implements Robot05Behavior
    }
 
    @Override
-   public void droppedFlag(int flagId)
+   public void senseDroppedFlag(int flagId)
    {
 
    }
 
    @Override
-   public void pickedUpFlag(int id)
+   public void sensePickedUpFlag(int id)
    {
 
    }
 
    @Override
-   public void deliveredFlag(int flagId)
+   public void senseDeliveredFlag(int flagId)
    {
 
+   }
+
+   @Override
+   public void senseHitWall()
+   {      
    }
 
    @Override
@@ -79,4 +84,5 @@ public class StephenRobot05Behavior implements Robot05Behavior
    {
       return false;
    }
+
 }

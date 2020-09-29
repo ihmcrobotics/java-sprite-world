@@ -276,28 +276,28 @@ public class DuncanRobot04Behavior implements Robot04Behavior
    }
 
    @Override
-   public void droppedFlag(int id)
+   public void senseDroppedFlag(int id)
    {
       // TODO Auto-generated method stub
       
    }
 
    @Override
-   public void pickedUpFlag(int id)
+   public void sensePickedUpFlag(int id)
    {
       // TODO Auto-generated method stub
       
    }
 
    @Override
-   public void deliveredFlag(int flagId)
+   public void senseDeliveredFlag(int flagId)
    {
       // TODO Auto-generated method stub
       
    }
 
    @Override
-   public void hitWall()
+   public void senseHitWall()
    {
       // TODO Auto-generated method stub
       

@@ -92,19 +92,19 @@ public class StephensRobot04Behavior implements Robot04Behavior
    }
 
    @Override
-   public void droppedFlag(int id)
+   public void senseDroppedFlag(int id)
    {
 
    }
 
    @Override
-   public void pickedUpFlag(int id)
+   public void sensePickedUpFlag(int id)
    {
 
    }
 
    @Override
-   public void deliveredFlag(int flagId)
+   public void senseDeliveredFlag(int flagId)
    {
 
    }
@@ -352,7 +352,7 @@ public class StephensRobot04Behavior implements Robot04Behavior
    }
 
    @Override
-   public void hitWall()
+   public void senseHitWall()
    {      
    }
 }

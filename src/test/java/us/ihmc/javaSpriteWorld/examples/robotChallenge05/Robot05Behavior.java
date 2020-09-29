@@ -23,13 +23,13 @@ public interface Robot05Behavior
 
    public abstract void senseClosestFlagInBodyFrame(Pair<Point2D, Integer> positionInBodyFrameAndIdOfClosestFlag);
 
-   public abstract void droppedFlag(int flagId);
+   public abstract void senseDroppedFlag(int flagId);
 
-   public abstract void pickedUpFlag(int id);
+   public abstract void sensePickedUpFlag(int id);
 
-   public abstract void deliveredFlag(int flagId);
+   public abstract void senseDeliveredFlag(int flagId);
 
-   public abstract void hitWall();
+   public abstract void senseHitWall();
 
    public abstract double[] getAccelerationAndTurnRate();
 
