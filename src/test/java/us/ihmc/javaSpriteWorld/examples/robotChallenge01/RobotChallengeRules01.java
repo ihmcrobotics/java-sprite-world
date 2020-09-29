@@ -61,5 +61,11 @@ public class RobotChallengeRules01 implements RobotChallengeRules
       robot01Behavior.deliveredFlag(flagId); 
    }
 
+   @Override
+   public void hitWall()
+   {
+      robot01Behavior.hitWall();
+   }
+
    
 }

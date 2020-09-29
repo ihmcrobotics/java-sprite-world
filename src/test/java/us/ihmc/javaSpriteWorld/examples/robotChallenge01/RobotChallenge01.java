@@ -211,6 +211,14 @@ public class RobotChallenge01
          robot.doDynamicsAndUpdateSprite(dt);
          collisionGroup.doCheckCollisions();
 
+         
+         if (isOutOfBounds(robot.getPosition()))
+         {
+            robot.hitWall();
+            robotChallengeRules.hitWall();
+         }
+         
+         
          try
          {
             Thread.sleep((long) (dt * 1000));
@@ -223,6 +231,24 @@ public class RobotChallenge01
       }
    }
 
+   private boolean isOutOfBounds(Point2D position)
+   {
+      double x = position.getX();
+      double y = position.getY();
+      
+      if (x > xMax)
+         return true;
+      if (y > yMax)
+         return true;
+
+      if (x < 0.0)
+         return true;
+      if (y < 0.0)
+         return true;
+
+      return false;
+   }
+   
    public void setRootChallengeRules(RobotChallengeRules robotChallengeRules)
    {
       this.robotChallengeRules = robotChallengeRules;
@@ -286,7 +312,11 @@ public class RobotChallenge01
          }
       }
       
-      return null;
+      System.err.println("walls = " + walls);
+      System.err.println("ray = " + ray);
+      
+      throw new RuntimeException("Shouldn't get here. Intersection with wall not found...");
+//      return null;
    }
    
 

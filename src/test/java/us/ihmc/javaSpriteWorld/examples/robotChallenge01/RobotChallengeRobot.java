@@ -25,6 +25,8 @@ public interface RobotChallengeRobot
 
    public abstract void capturedFlag(Flag flag);
 
+   public abstract void teleportHome();
 
+   public abstract void hitWall();
 
 }

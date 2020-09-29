@@ -9,7 +9,7 @@ import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.Robot05Behavior;
 
-public class SimpleRobot04Behavior implements Robot04Behavior, Robot05Behavior
+public class SimpleRobot04Behavior implements Robot04Behavior
 {
    private double mousePressedX = 5.0, mousePressedY = 5.0;
    private double x = 0.0, y = 0.0;
@@ -35,16 +35,6 @@ public class SimpleRobot04Behavior implements Robot04Behavior, Robot05Behavior
    public void senseHeading(double heading)
    {
       this.heading = heading;
-   }
-
-   @Override
-   public void senseFoodInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
-   {
-   }
-
-   @Override
-   public void sensePredatorsInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators)
-   {
    }
 
    @Override
@@ -90,14 +80,6 @@ public class SimpleRobot04Behavior implements Robot04Behavior, Robot05Behavior
    }
 
    @Override
-   public void senseClosestFlagInBodyFrame(Pair<Point2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag)
-   {      
-      Point2D vectorToFlag = vectorToInBodyFrameAndIdOfClosestFlag.getLeft();
-      Integer flagId = vectorToInBodyFrameAndIdOfClosestFlag.getRight();
-//      System.out.println("flag " + flagId + " is at" + vectorToFlag + ", in body frame");
-   }
-
-   @Override
    public void droppedFlag(int id)
    {      
    }
@@ -113,18 +95,17 @@ public class SimpleRobot04Behavior implements Robot04Behavior, Robot05Behavior
    }
 
    @Override
-   public void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance)
-   {
-//      System.out.println("Distance to wall = " + wallDistance);      
-   }
-
-   @Override
    public void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
    {      
    }
 
    @Override
    public void sensePredators(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators)
+   {      
+   }
+
+   @Override
+   public void hitWall()
    {      
    }
 

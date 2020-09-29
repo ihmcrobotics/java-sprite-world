@@ -350,4 +350,9 @@ public class StephensRobot04Behavior implements Robot04Behavior
       System.out.println(headingFromVector(0.0, -1.0));
       System.out.println(headingFromVector(1.0, 0.0));
    }
+
+   @Override
+   public void hitWall()
+   {      
+   }
 }

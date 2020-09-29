@@ -136,15 +136,6 @@ public class Robot02 implements RobotChallengeRobot
       x += xDot * dt;
       y += yDot * dt;
 
-      if (isOutOfBounds())
-      {
-         System.out.println("Hit the wall. Ouch! Health = " + health);
-         health = health - 5.0;
-         if (health < 1.0)
-            health = 1.0;
-         teleportHome();
-      }
-
       sprite.setX(x);
       sprite.setY(y);
 
@@ -154,28 +145,14 @@ public class Robot02 implements RobotChallengeRobot
       if (health < 0.01)
          health = 0.01;
    }
-
-   private void teleportHome()
+   
+   @Override
+   public void teleportHome()
    {
       setX(0.5);
       setY(0.5);
       setVelocity(0.0);
       setHeading(0.0);
-   }
-
-   private boolean isOutOfBounds()
-   {
-      if (x > xMax)
-         return true;
-      if (y > yMax)
-         return true;
-
-      if (x < 0.0)
-         return true;
-      if (y < 0.0)
-         return true;
-
-      return false;
    }
 
    @Override
@@ -235,6 +212,33 @@ public class Robot02 implements RobotChallengeRobot
    public void capturedFlag(Flag flag)
    {
       this.flagHolding = flag;
+   }
+
+   @Override
+   public void hitWall()
+   {
+      health = health - 5.0;
+      if (health < 1.0)
+         health = 1.0;
+      
+      System.out.println("Hit the wall. Ouch! Health = " + health);
+      
+      heading = heading + Math.PI;
+      double xDot = -velocity * Math.sin(heading);
+      double yDot = velocity * Math.cos(heading);
+      
+      Vector2D unitVelocity = new Vector2D(xDot, yDot);
+      unitVelocity.normalize();
+      unitVelocity.scale(0.05 * xMax);
+      x = x + unitVelocity.getX();
+      y = y + unitVelocity.getY();
+      
+      velocity = 0.0;
+      
+      sprite.setX(x);
+      sprite.setY(y);
+
+      sprite.setRotationInRadians(heading);
    }
 
 }

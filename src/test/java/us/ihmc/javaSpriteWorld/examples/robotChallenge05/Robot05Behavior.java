@@ -29,7 +29,10 @@ public interface Robot05Behavior
 
    public abstract void deliveredFlag(int flagId);
 
+   public abstract void hitWall();
+
    public abstract double[] getAccelerationAndTurnRate();
 
    public abstract boolean getDropFlag();
+
 }

@@ -1,18 +1,20 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
 
+import java.util.ArrayList;
+import java.util.function.Function;
+
 import org.apache.commons.lang3.tuple.Pair;
+
 import us.ihmc.euclid.geometry.Line2D;
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 import us.ihmc.log.LogTools;
 
-import java.util.ArrayList;
-import java.util.function.Function;
-
-public class DuncanRobot05Behavior implements Robot05Behavior
+public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 {
    private double mousePressedX = 5.0, mousePressedY = 5.0;
    private double x = 0.0, y = 0.0;
@@ -217,5 +219,12 @@ public class DuncanRobot05Behavior implements Robot05Behavior
    @Override
    public void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance)
    {      
+   }
+
+   @Override
+   public void hitWall()
+   {
+      // TODO Auto-generated method stub
+      
    }
 }

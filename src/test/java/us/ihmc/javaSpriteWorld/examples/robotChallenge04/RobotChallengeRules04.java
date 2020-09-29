@@ -95,4 +95,10 @@ public class RobotChallengeRules04 implements RobotChallengeRules
    {
       robotBehavior.deliveredFlag(flagId); 
    }
+   
+   @Override
+   public void hitWall()
+   {
+      robotBehavior.hitWall();      
+   }
 }

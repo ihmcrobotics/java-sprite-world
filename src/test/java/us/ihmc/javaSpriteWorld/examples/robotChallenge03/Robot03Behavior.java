@@ -27,6 +27,8 @@ public interface Robot03Behavior
 
    public abstract void deliveredFlag(int flagId);
 
+   public abstract void hitWall();
+
    public abstract double[] getAccelerationAndTurnRate();
 
 }

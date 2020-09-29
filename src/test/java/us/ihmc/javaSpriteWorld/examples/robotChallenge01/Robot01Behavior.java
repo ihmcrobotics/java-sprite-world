@@ -25,5 +25,8 @@ public interface Robot01Behavior
    
    public abstract void deliveredFlag(int flagId);
 
+   public abstract void hitWall();
+
    double[] getXYVelocity();
+
 }

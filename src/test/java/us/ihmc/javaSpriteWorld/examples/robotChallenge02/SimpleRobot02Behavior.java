@@ -60,4 +60,9 @@ public class SimpleRobot02Behavior implements Robot02Behavior
    {      
    }
 
+   @Override
+   public void hitWall()
+   {      
+   }
+
 }

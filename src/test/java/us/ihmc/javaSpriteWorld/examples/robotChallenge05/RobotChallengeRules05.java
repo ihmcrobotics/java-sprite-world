@@ -48,22 +48,19 @@ public class RobotChallengeRules05 implements RobotChallengeRules
    {
       if (robotBehavior != null)
       {
-         Point2DBasics intersectionWithWall = challenge.getIntersectionWithWall(robot.getPosition(), robot.getHeadingVector());
-         double wallDistance = intersectionWithWall.distance(robot.getPosition());
+         double wallDistance = senseWallDistanceStraightAhead();
          robotBehavior.senseWallRangeInBodyFrame(new Vector2D(0.0, 0.0), wallDistance);
          
-         robotBehavior.senseHeading(robot.getHeading());
-         robotBehavior.senseVelocity(robot.getVelocity());
+         robotBehavior.senseHeading(senseRobotHeading());
+         robotBehavior.senseVelocity(senseRobotVelocity());
 
-         ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
-         ArrayList<Pair<Point2D, Vector2D>> locationOfAllFoodInBodyFrame = RobotChallengeTools.convertFromWorldToBodyFrame(robot.getPosition(), locationOfAllFood, robot.getHeading());
+         ArrayList<Pair<Point2D, Vector2D>> locationOfAllFoodInBodyFrame = senseLocationOfFood();
          robotBehavior.senseFoodInBodyFrame(locationOfAllFoodInBodyFrame);
 
-         ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators = predatorList.getLocationAndVelocityOfAllPredators();
-         ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredatorsInBodyFrame = RobotChallengeTools.convertFromWorldToBodyFrame(robot.getPosition(), locationOfAllPredators, robot.getHeading());
+         ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredatorsInBodyFrame = senseLocationOfPredatorsInBodyFrame();
          robotBehavior.sensePredatorsInBodyFrame(locationOfAllPredatorsInBodyFrame);
 
-         Pair<Point2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag = computeVectorToClosestFlag();
+         Pair<Point2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag = senseVectorToClosestFlagInBodyFrame();
          robotBehavior.senseClosestFlagInBodyFrame(vectorToInBodyFrameAndIdOfClosestFlag);
 
          double[] accelerationAndTurnRate = robotBehavior.getAccelerationAndTurnRate();
@@ -86,13 +83,45 @@ public class RobotChallengeRules05 implements RobotChallengeRules
       }
    }
 
-   private Pair<Point2D, Integer> computeVectorToClosestFlag()
+   protected ArrayList<Pair<Point2D, Vector2D>> senseLocationOfPredatorsInBodyFrame()
+   {
+      ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators = predatorList.getLocationAndVelocityOfAllPredators();
+      ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredatorsInBodyFrame = RobotChallengeTools.convertFromWorldToBodyFrame(robot.getPosition(), locationOfAllPredators, senseRobotHeading());
+      return locationOfAllPredatorsInBodyFrame;
+   }
+
+   protected ArrayList<Pair<Point2D, Vector2D>> senseLocationOfFood()
+   {
+      ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
+      ArrayList<Pair<Point2D, Vector2D>> locationOfAllFoodInBodyFrame = RobotChallengeTools.convertFromWorldToBodyFrame(robot.getPosition(), locationOfAllFood, senseRobotHeading());
+      return locationOfAllFoodInBodyFrame;
+   }
+
+   protected double senseRobotVelocity()
+   {
+      return robot.getVelocity();
+   }
+
+   protected double senseRobotHeading()
+   {
+      return robot.getHeading();
+   }
+
+   protected double senseWallDistanceStraightAhead()
+   {
+      Point2DBasics intersectionWithWall = challenge.getIntersectionWithWall(robot.getPosition(), robot.getHeadingVector());
+//      if (intersectionWithWall == null) return Double.NaN;
+      double wallDistance = intersectionWithWall.distance(robot.getPosition());
+      return wallDistance;
+   }
+
+   protected Pair<Point2D, Integer> senseVectorToClosestFlagInBodyFrame()
    {
       Point2D robotLocationInWorld = robot.getPosition();
       Pair<Point2D, Integer> locationAndIdOfClosestFlag = flagList.getLocationAndIdOfClosestFlag(robotLocationInWorld);      
       Point2D worldLocationOfFlag = locationAndIdOfClosestFlag.getLeft();
       
-      Point2D vectorToFlagInBody = RobotChallengeTools.computePositionInRobotBodyFrame(robotLocationInWorld, worldLocationOfFlag, robot.getHeading());
+      Point2D vectorToFlagInBody = RobotChallengeTools.computePositionInRobotBodyFrame(robotLocationInWorld, worldLocationOfFlag, senseRobotHeading());
 
       Pair<Point2D, Integer> positionOfClosestFlagInBodyFrame = new ImmutablePair<Point2D, Integer>(vectorToFlagInBody, locationAndIdOfClosestFlag.getRight());
       return positionOfClosestFlagInBodyFrame;
@@ -115,5 +144,10 @@ public class RobotChallengeRules05 implements RobotChallengeRules
    {
       robotBehavior.deliveredFlag(flagId); 
    }
-
+   
+   @Override
+   public void hitWall()
+   {
+      robotBehavior.hitWall();      
+   }
 }

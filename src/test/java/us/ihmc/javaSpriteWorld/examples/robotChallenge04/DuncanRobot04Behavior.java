@@ -296,5 +296,12 @@ public class DuncanRobot04Behavior implements Robot04Behavior
       
    }
 
+   @Override
+   public void hitWall()
+   {
+      // TODO Auto-generated method stub
+      
+   }
+
   
 }

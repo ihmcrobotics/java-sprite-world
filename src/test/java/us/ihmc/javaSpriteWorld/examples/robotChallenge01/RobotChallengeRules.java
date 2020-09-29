@@ -12,5 +12,6 @@ public interface RobotChallengeRules
 
    public abstract void deliveredFlag(int id);
 
+   public abstract void hitWall();
 
 }

@@ -162,4 +162,11 @@ public class DuncansRobot02Behavior implements Robot02Behavior
       // TODO Auto-generated method stub
       
    }
+
+   @Override
+   public void hitWall()
+   {
+      // TODO Auto-generated method stub
+      
+   }
 }
