@@ -5,6 +5,7 @@ import java.util.Random;
 
 import us.ihmc.euclid.geometry.Line2D;
 import us.ihmc.euclid.geometry.LineSegment2D;
+import us.ihmc.euclid.geometry.interfaces.LineSegment2DReadOnly;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Point2DBasics;
@@ -30,6 +31,7 @@ public class RobotChallenge01
    private final FoodList01 foodList;
    private final PredatorList01 predatorList;
    private final FlagList flagList;
+   private final WallList wallList;
 
    private final CollisionProcessor01 collisionProcessor;
    
@@ -49,7 +51,8 @@ public class RobotChallenge01
       foodList = new FoodList01(xMax, yMax);
       predatorList = new PredatorList01();
       flagList = new FlagList();
-
+      wallList = new WallList();
+      
       viewer = new SpriteWorldViewerUsingSwing(name);
 
       viewer.setPreferredSizeInPixels(1000, 1000);
@@ -69,7 +72,7 @@ public class RobotChallenge01
       //      stage.addBackdrop(backgammonBoardBackdrop);
       //      spriteWorld.setStage(stage, true);
 
-      spriteWorld.addSprite(robot.getSprite());
+      spriteWorld.addSprite(robot.getSprite());      
 
       collisionGroup = new SpriteCollisionGroup();
       collisionGroup.addSprite(robot.getSprite());
@@ -130,6 +133,26 @@ public class RobotChallenge01
       };
 
       spriteWorld.attacheSpriteWorldMouseListener(spriteWorldMouseListener);
+      
+      addOutsideWalls();
+   }
+
+   private void addOutsideWalls()
+   {
+      addWall(0.0, 0.0, xMax, 0.0);
+      addWall(xMax, 0.0, xMax, yMax);
+      addWall(xMax, yMax, 0.0, yMax);
+      addWall(0.0, yMax, 0.0, 0.0);
+   }
+
+   public void addWall(double xOne, double yOne, double xTwo, double yTwo)
+   {
+      addWall(new Point2D(xOne, yOne), new Point2D(xTwo, yTwo));
+   }
+
+   public void addWall(Point2D pointOne, Point2D pointTwo)
+   {
+      wallList.createWall(pointOne, pointTwo, spriteWorld, collisionGroup);
    }
 
    public void createSomeFood(int numberOfPieces)
@@ -271,34 +294,18 @@ public class RobotChallenge01
       return flagList;
    }
    
-   public ArrayList<LineSegment2D> getWalls()
+   public ArrayList<LineSegment2DReadOnly> getWalls()
    {
-      Point2D corner01 = new Point2D(0.0, 0.0);
-      Point2D corner02 = new Point2D(0.0, yMax);
-      Point2D corner03 = new Point2D(xMax, yMax);
-      Point2D corner04 = new Point2D(xMax, 0.0);
-      
-      LineSegment2D wall1 = new LineSegment2D(corner01, corner02);
-      LineSegment2D wall2 = new LineSegment2D(corner02, corner03);
-      LineSegment2D wall3 = new LineSegment2D(corner03, corner04);
-      LineSegment2D wall4 = new LineSegment2D(corner04, corner01);
-      
-      ArrayList<LineSegment2D> walls = new ArrayList<LineSegment2D>();
-      walls.add(wall1);
-      walls.add(wall2);
-      walls.add(wall3);
-      walls.add(wall4);
-      
-      return walls;
+      return wallList.getWallLineSegments();
    }
    
    public Point2DBasics getIntersectionWithWall(Point2D position, Vector2D sensingVectorInWorld)
    {
-      ArrayList<LineSegment2D> walls = getWalls();
+      ArrayList<LineSegment2DReadOnly> walls = getWalls();
       
       Line2D ray = new Line2D(position, sensingVectorInWorld);
       
-      for (LineSegment2D wall : walls)
+      for (LineSegment2DReadOnly wall : walls)
       {
          Point2DBasics intersection = wall.intersectionWith(ray);
          if (intersection != null)
@@ -317,7 +324,6 @@ public class RobotChallenge01
       System.err.println("ray = " + ray);
       
       throw new RuntimeException("Shouldn't get here. Intersection with wall not found...");
-//      return null;
    }
    
 
