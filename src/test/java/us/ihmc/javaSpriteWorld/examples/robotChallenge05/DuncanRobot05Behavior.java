@@ -14,6 +14,11 @@ import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 import us.ihmc.log.LogTools;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+
 public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 {
    private double mousePressedX = 5.0, mousePressedY = 5.0;
@@ -121,6 +126,11 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public double[] getAccelerationAndTurnRate()
    {
+      Vector2D headingVector = new Vector2D(0.0, 1.0);
+      RigidBodyTransform transform = new RigidBodyTransform();
+      transform.getRotation().appendYawRotation(heading);
+      transform.transform(headingVector);
+
       // 0 heading is y+ (up)
       double dt = 0.01;
       x += dt * velocity * -Math.sin(heading);
@@ -132,7 +142,6 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       Vector2D attractionVector = new Vector2D();
 
       Vector2D meToMouse = fieldVector(me, mouse, distance -> 10.0 * Math.pow(distance, 1.5));
-
       Point2D center = new Point2D(5.0, 5.0);
       Vector2D meToCenter = fieldVector(me, center, distance -> 2.0 * Math.pow(distance, 1.5));
 
@@ -140,6 +149,23 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       Line2D right = new Line2D(10.0, 0.0, 0.0, 1.0);
       Line2D bottom = new Line2D(0.0, 0.0, 1.0, 0.0);
       Line2D top = new Line2D(0.0, 10.0, 1.0, 0.0);
+      List<Line2D> walls = Arrays.asList(left, right, bottom, top);
+
+      Vector2D toWallAhead = new Vector2D(100.0, 100.0);
+      for (Line2D wall : walls)
+      {
+         Point2D intersection = new Point2D();
+         wall.intersectionWith(new Line2D(me, headingVector), intersection);
+         Vector2D toWall = new Vector2D();
+         toWall.sub(intersection, me);
+         if (toWall.dot(headingVector) > 0.0 && toWall.length() < toWallAhead.length())
+         {
+            toWallAhead = toWall;
+         }
+      }
+      double wallDistanceError = wallDistance - toWallAhead.length();
+      LogTools.info("Wall distance error: {}", wallDistanceError);
+
       Vector2D boundaryRepulsion = new Vector2D();
       double boundaryStrength = 2.0;
       Point2D closestLeft = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, left.getPoint(), left.getDirection());
@@ -193,11 +219,6 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       attractionVector.add(foodAttraction);
 
       double desiredSpeed = attractionVector.length();
-
-      Vector2D headingVector = new Vector2D(0.0, 1.0);
-      RigidBodyTransform transform = new RigidBodyTransform();
-      transform.getRotation().appendYawRotation(heading);
-      transform.transform(headingVector);
 
       double angleToAttraction = EuclidGeometryTools.angleFromFirstToSecondVector2D(headingVector.getX(),
                                                                                     headingVector.getY(),
