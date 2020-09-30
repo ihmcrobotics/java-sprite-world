@@ -49,6 +49,12 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    }
 
    @Override
+   public void senseHitWall()
+   {
+      // TODO Auto-generated method stub
+   }
+
+   @Override
    public void senseFoodInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
    {
       this.locationOfAllFood = locationOfAllFood;
@@ -236,17 +242,5 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    public boolean getDropFlag()
    {
       return ((x > 8.0) && (y > 8.0));
-   }
-   
-   @Override
-   public void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance)
-   {      
-   }
-
-   @Override
-   public void senseHitWall()
-   {
-      // TODO Auto-generated method stub
-      
    }
 }
