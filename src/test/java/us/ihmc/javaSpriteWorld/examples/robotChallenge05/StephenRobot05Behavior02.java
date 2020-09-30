@@ -117,9 +117,9 @@ public class StephenRobot05Behavior02 implements Robot05Behavior, Robot06Behavio
    }
 
    @Override
-   public void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance)
+   public void senseWallRangeInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame)
    {
-      this.wallDistance = wallDistance;
+
    }
 
    @Override
