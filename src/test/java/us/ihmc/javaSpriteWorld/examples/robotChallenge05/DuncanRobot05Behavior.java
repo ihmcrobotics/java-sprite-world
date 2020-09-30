@@ -17,23 +17,18 @@ import us.ihmc.log.LogTools;
 public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 {
    private double mousePressedX = 5.0, mousePressedY = 5.0;
-   private double x = 0.0, y = 0.0;
+   private double x = 0.5, y = 0.5;
    private double heading = 0.0;
    private double velocity;
+   private double wallDistance;
    private ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood;
    private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
    private Pair<Point2D, Integer> closestFlag;
+   private Point2D me;
 
    public DuncanRobot05Behavior()
    {
    }
-
-//   @Override
-//   public void senseGlobalLocation(double x, double y)
-//   {
-//      this.x = x;
-//      this.y = y;
-//   }
 
    @Override
    public void senseVelocity(double velocity)
@@ -45,6 +40,12 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    public void senseHeading(double heading)
    {
       this.heading = heading;
+   }
+
+   @Override
+   public void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance) // to wall directly in front
+   {
+      this.wallDistance = wallDistance;
    }
 
    @Override
@@ -98,7 +99,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseClosestFlagInBodyFrame(Pair<Point2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag)
    {
-//      this.closestFlag = locationAndIdsOfClosestFlag;
+      this.closestFlag = vectorToInBodyFrameAndIdOfClosestFlag;
    }
 
    @Override
@@ -114,9 +115,15 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public double[] getAccelerationAndTurnRate()
    {
+      // 0 heading is y+ (up)
+      double dt = 0.01;
+      x += dt * velocity * -Math.sin(heading);
+      y += dt * velocity * Math.cos(heading);
+
       double fieldGraduation = 1.5;
       Vector2D mouse = new Vector2D(mousePressedX, mousePressedY);
-      Point2D me = new Point2D(x, y);
+      me = new Point2D(x, y);
+      Vector2D attractionVector = new Vector2D();
 
       Vector2D meToMouse = fieldVector(me, mouse, distance -> 10.0 * Math.pow(distance, 1.5));
 
@@ -141,41 +148,43 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       Vector2D predatorRepulsion = new Vector2D();
       for (Pair<Point2D, Vector2D> predator : locationOfAllPredators)
       {
-         predatorRepulsion.add(fieldVector(predator.getLeft(), me, distance -> 6.0 / Math.pow(distance, fieldGraduation)));
+         predatorRepulsion.add(fieldVector(bodyToWorld(predator.getLeft()), me, distance -> 6.0 / Math.pow(distance, fieldGraduation)));
       }
 //      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
 
       Vector2D foodAttraction = new Vector2D();
       for (Pair<Point2D, Vector2D> food : locationOfAllFood)
       {
-         foodAttraction.add(fieldVector(me, food.getLeft(), distance -> 0.5 / Math.pow(distance, 1.5)));
+         foodAttraction.add(fieldVector(me, bodyToWorld(food.getLeft()), distance -> 0.5 / Math.pow(distance, 1.5)));
       }
 
-      Vector2D flagField = new Vector2D();
-      if (closestFlag.getRight() == currentFlagId)
+      if (closestFlag != null)
       {
-         if (carrying != currentFlagId) // toward flag to pick up
+         Vector2D flagField = new Vector2D();
+         if (closestFlag != null && closestFlag.getRight() == currentFlagId)
          {
-            flagField.add(fieldVector(me, closestFlag.getLeft(), distance -> 6.0 / Math.pow(distance, fieldGraduation)));
+            if (carrying != currentFlagId) // toward flag to pick up
+            {
+               flagField.add(fieldVector(me, bodyToWorld(closestFlag.getLeft()), distance -> 6.0 / Math.pow(distance, fieldGraduation)));
+            }
          }
-      }
-      else
-      {
-         flagField.add(fieldVector(closestFlag.getLeft(), me, distance -> 3.0 / Math.pow(distance, 2.0)));
+         else
+         {
+            flagField.add(fieldVector(bodyToWorld(closestFlag.getLeft()), me, distance -> 3.0 / Math.pow(distance, 2.0)));
+         }
+
+         if (carrying == currentFlagId) // set to goal
+         {
+            flagField.add(fieldVector(me, new Point2D(9.0, 9.0), distance -> 15.0 / Math.pow(distance, 0.5)));
+         }
+         attractionVector.add(flagField);
       }
 
-      if (carrying == currentFlagId) // set to goal
-      {
-         flagField.add(fieldVector(me, new Point2D(9.0, 9.0), distance -> 15.0 / Math.pow(distance, 0.5)));
-      }
-
-      Vector2D attractionVector = new Vector2D();
 //      attractionVector.add(meToMouse);
 //      attractionVector.add(meToCenter);
       attractionVector.add(boundaryRepulsion);
       attractionVector.add(predatorRepulsion);
       attractionVector.add(foodAttraction);
-      attractionVector.add(flagField);
 
       double desiredSpeed = attractionVector.length();
 
@@ -191,14 +200,27 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
       double acceleration = (1.0 * (desiredSpeed - velocity));
 
-      double angularVelocity = (velocity - lastVelocity) / 0.01;
+      double angularVelocity = (velocity - lastVelocity) / dt;
       double turnRate = (5.0 * angleToAttraction) + (-0.5 * angularVelocity);
       lastVelocity = velocity;
+
+      if (Double.isNaN(acceleration)) acceleration = 0.0;
+      if (Double.isNaN(turnRate)) turnRate = 0.0;
 
       return new double[] {acceleration, turnRate};
    }
 
    double lastVelocity = 0.0;
+
+   private Point2D bodyToWorld(Tuple2DReadOnly pointInBody)
+   {
+      Point2D pointInWorld = new Point2D(pointInBody);
+      RigidBodyTransform transform = new RigidBodyTransform();
+      transform.getRotation().setYawPitchRoll(-heading, 0.0, 0.0);
+      pointInWorld.applyInverseTransform(transform);
+      pointInWorld.add(me);
+      return pointInWorld;
+   }
 
    private Vector2D fieldVector(Tuple2DReadOnly from, Tuple2DReadOnly to, Function<Double, Double> magnitude)
    {
@@ -215,7 +237,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    {
       return ((x > 8.0) && (y > 8.0));
    }
-
+   
    @Override
    public void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance)
    {      

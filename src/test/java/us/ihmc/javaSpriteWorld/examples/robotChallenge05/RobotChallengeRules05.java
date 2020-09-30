@@ -60,8 +60,11 @@ public class RobotChallengeRules05 implements RobotChallengeRules
          ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredatorsInBodyFrame = senseLocationOfPredatorsInBodyFrame();
          robotBehavior.sensePredatorsInBodyFrame(locationOfAllPredatorsInBodyFrame);
 
-         Pair<Point2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag = senseVectorToClosestFlagInBodyFrame();
-         robotBehavior.senseClosestFlagInBodyFrame(vectorToInBodyFrameAndIdOfClosestFlag);
+         if (!flagList.getLocationAndIdsOfAllFlags().isEmpty())
+         {
+            Pair<Point2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag = senseVectorToClosestFlagInBodyFrame();
+            robotBehavior.senseClosestFlagInBodyFrame(vectorToInBodyFrameAndIdOfClosestFlag);
+         }
 
          double[] accelerationAndTurnRate = robotBehavior.getAccelerationAndTurnRate();
 
