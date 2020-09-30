@@ -8,6 +8,7 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.DuncanRobot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.Robot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.SimpleRobot05Behavior;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge05.StephenRobot05Behavior;
 
 public class RobotChallenge06
 {
@@ -31,7 +32,7 @@ public class RobotChallenge06
       if (PLAYER.equals("Duncan"))
          simpleBehavior = new DuncanRobot05Behavior();
       else if (PLAYER.equals("Stephen"))
-         simpleBehavior = new SimpleRobot05Behavior(); // TODO: Stephen adds behavior here
+         simpleBehavior = new StephenRobot05Behavior();
       else
          simpleBehavior = new SimpleRobot05Behavior();
       RobotChallengeRules rules = new RobotChallengeRules06(robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);

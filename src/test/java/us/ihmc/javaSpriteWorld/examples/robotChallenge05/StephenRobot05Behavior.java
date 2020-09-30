@@ -8,12 +8,13 @@ import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DBasics;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class StephenRobot05Behavior implements Robot05Behavior
+public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
 {
    // simulator parameters
    private final double initialX = 0.5;
@@ -271,7 +272,7 @@ public class StephenRobot05Behavior implements Robot05Behavior
          {
             Vector2D correctionVector = new Vector2D(expectedIntersectionPoint);
             correctionVector.sub(wallPointInWorldEstimatedFrame);
-            xyPosition.add(correctionVector);
+//            xyPosition.add(correctionVector);
             return;
          }
       }
