@@ -7,12 +7,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallenge01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 
 public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
-{
-   private double dt = 0.001;
-   
+{   
    private double mousePressedX = 5.0, mousePressedY = 5.0;
    private double velocity = 0.0;
    private double heading = 0.0;
@@ -56,13 +55,19 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public double[] getAccelerationAndTurnRate()
    {
-      xDotInWorld = Math.cos(heading) * velocity;
-      yDotInWorld = Math.sin(heading) * velocity;
+      Vector2D headingVector = new Vector2D(0.0, 1.0);
+      RigidBodyTransform transform = new RigidBodyTransform();
+      transform.getRotation().appendYawRotation(heading);
+      transform.transform(headingVector);
       
-      x = x + xDotInWorld * dt;
-      y = y + yDotInWorld * dt;
+      xDotInWorld = headingVector.getX() * velocity;
+      yDotInWorld = headingVector.getY() * velocity;
       
-      System.out.println("x = " + x + ", y = " + y);
+      x = x + xDotInWorld * RobotChallenge01.dt;
+      y = y + yDotInWorld * RobotChallenge01.dt;
+      
+//      System.out.println("heading = " + heading + ", xDot = " + xDotInWorld + ", yDot = " + yDotInWorld + ", x = " + x + ", y = " + y);
+//      sleep(0.03);
       
       Vector2D mouse = new Vector2D(mousePressedX, mousePressedY);
       Vector2D me = new Vector2D(x, y);
@@ -71,10 +76,6 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
       meToMouse.sub(me);
       meToMouse.normalize();
 
-      Vector2D headingVector = new Vector2D(0.0, 1.0);
-      RigidBodyTransform transform = new RigidBodyTransform();
-      transform.getRotation().appendYawRotation(heading);
-      transform.transform(headingVector);
 
       double cross = headingVector.cross(meToMouse);
       double dot = headingVector.dot(meToMouse);
@@ -83,6 +84,18 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
       double acceleration = 4.0 * dot;
 
       return new double[] {acceleration, turnRate};
+   }
+
+   private void sleep(double d)
+   {
+      try
+      {
+         Thread.sleep((long) (d * 1000));
+      }
+      catch (InterruptedException e)
+      {
+      }
+      
    }
 
    @Override

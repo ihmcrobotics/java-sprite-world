@@ -17,6 +17,9 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeRules;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeTools;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
 
+/*
+ * Sense in Body Frame instead of World Frame.
+ */
 public class RobotChallengeRules05 implements RobotChallengeRules
 {
    private final Robot02 robot;
@@ -54,7 +57,7 @@ public class RobotChallengeRules05 implements RobotChallengeRules
          robotBehavior.senseHeading(senseRobotHeading());
          robotBehavior.senseVelocity(senseRobotVelocity());
 
-         ArrayList<Pair<Point2D, Vector2D>> locationOfAllFoodInBodyFrame = senseLocationOfFood();
+         ArrayList<Pair<Point2D, Vector2D>> locationOfAllFoodInBodyFrame = senseLocationOfFoodInBodyFrame();
          robotBehavior.senseFoodInBodyFrame(locationOfAllFoodInBodyFrame);
 
          ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredatorsInBodyFrame = senseLocationOfPredatorsInBodyFrame();
@@ -93,7 +96,7 @@ public class RobotChallengeRules05 implements RobotChallengeRules
       return locationOfAllPredatorsInBodyFrame;
    }
 
-   protected ArrayList<Pair<Point2D, Vector2D>> senseLocationOfFood()
+   protected ArrayList<Pair<Point2D, Vector2D>> senseLocationOfFoodInBodyFrame()
    {
       ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
       ArrayList<Pair<Point2D, Vector2D>> locationOfAllFoodInBodyFrame = RobotChallengeTools.convertFromWorldToBodyFrame(robot.getPosition(), locationOfAllFood, senseRobotHeading());

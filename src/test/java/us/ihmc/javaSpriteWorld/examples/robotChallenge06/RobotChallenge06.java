@@ -35,7 +35,9 @@ public class RobotChallenge06
          simpleBehavior = new StephenRobot05Behavior();
       else
          simpleBehavior = new SimpleRobot05Behavior();
-      RobotChallengeRules rules = new RobotChallengeRules06(robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);
+      
+      RobotChallenge06NoiseParameters noiseParameters = new RobotChallenge06NoiseParameters();
+      RobotChallengeRules rules = new RobotChallengeRules06(random, noiseParameters, robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);
 
       robotChallenge.setRootChallengeRules(rules);
       robotChallenge.runSimulation();

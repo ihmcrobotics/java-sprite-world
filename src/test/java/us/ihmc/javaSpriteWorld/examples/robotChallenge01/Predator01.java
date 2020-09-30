@@ -3,7 +3,6 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 import java.util.Random;
 
 import us.ihmc.euclid.transform.RigidBodyTransform;
-import us.ihmc.euclid.transform.interfaces.Transform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.SampleSprites;
@@ -146,11 +145,6 @@ public class Predator01
       x += xDot * dt;
       y += yDot * dt;
 
-//      if (isOutOfBounds())
-//      {
-//         teleportToRandomLocation(random);
-//      }
-
       sprite.setX(x);
       sprite.setY(y);
 
@@ -164,21 +158,6 @@ public class Predator01
 
       setSpeed(random.nextDouble() * 1.0);
       setHeading(random.nextDouble() * 2.0 * Math.PI);
-   }
-
-   private boolean isOutOfBounds()
-   {
-      if (x > xMax)
-         return true;
-      if (y > yMax)
-         return true;
-
-      if (x < 0.0)
-         return true;
-      if (y < 0.0)
-         return true;
-
-      return false;
    }
 
 }

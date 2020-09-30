@@ -17,6 +17,8 @@ import us.ihmc.javaSpriteWorld.SpriteWorldViewerUsingSwing;
 
 public class RobotChallenge01
 {
+   public static final double dt = 0.01;
+
    private final double xMax, yMax;
    private final Random random;
 
@@ -194,10 +196,9 @@ public class RobotChallenge01
 
    public void runSimulation()
    {
-      double dt = 0.01;
-
       while (true)
       {
+//         System.out.println("robotPosition = " + robot.getPosition());
          if (mousePressed)
          {
             robotChallengeRules.senseMousePressed(mousePressedX, mousePressedY);
