@@ -28,6 +28,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private Pair<Point2D, Integer> closestFlag;
    private Point2D me;
 
+   private double lastVelocityForFilter = 0.0;
+   private double lastHeadingForFilter = 0.0;
    private final ArrayDeque<Double> velocities = new ArrayDeque<>();
    private final ArrayDeque<Double> headings = new ArrayDeque<>();
 
@@ -38,17 +40,24 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseVelocity(double velocity)
    {
-      this.velocity = filter(velocity, velocities);
+      this.velocity = alphaFilter(velocity, lastVelocityForFilter, 0.1);
+      LogTools.info("Alpha'd {} -> {}", velocity, this.velocity);
    }
 
    @Override
    public void senseHeading(double heading)
    {
-      this.heading = filter(heading, headings);
+      this.heading = alphaFilter(heading, lastHeadingForFilter, 0.1);
    }
 
-   private double filter(double currentData, ArrayDeque<Double> dataHistory)
+   private double alphaFilter(double current, double last, double alpha)
    {
+      return current + alpha * (current - last);
+   }
+
+   private double filter(double currentData, ArrayDeque<Double> dataHistory, double alpha)
+   {
+      // TODO: Low pass filter or alpha filter
       dataHistory.addFirst(currentData);
       while (dataHistory.size() > 15)
          dataHistory.removeLast();
@@ -65,6 +74,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseWallRangeInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame)
    {
+      // 0, 1 is straight ahead
       this.wallDistance = wallDistance;
    }
 
@@ -179,7 +189,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          }
       }
       double wallDistanceError = wallDistance - toWallAhead.length();
-      LogTools.info("Wall distance error: {}", wallDistanceError);
+//      LogTools.info("Wall distance error: {}", wallDistanceError);
 
       Vector2D boundaryRepulsion = new Vector2D();
       double boundaryStrength = 2.0;
