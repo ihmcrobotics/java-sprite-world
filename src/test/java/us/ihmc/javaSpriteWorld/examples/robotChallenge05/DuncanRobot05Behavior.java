@@ -1,6 +1,6 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -15,9 +15,6 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 import us.ihmc.log.LogTools;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
 
 public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 {
@@ -31,6 +28,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private Pair<Point2D, Integer> closestFlag;
    private Point2D me;
 
+   private final ArrayDeque<Double> velocities = new ArrayDeque<>();
+   private final ArrayDeque<Double> headings = new ArrayDeque<>();
+
    public DuncanRobot05Behavior()
    {
    }
@@ -38,17 +38,32 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseVelocity(double velocity)
    {
-      this.velocity = velocity;
+      this.velocity = filter(velocity, velocities);
    }
 
    @Override
    public void senseHeading(double heading)
    {
-      this.heading = heading;
+      this.heading = filter(heading, headings);
+   }
+
+   private double filter(double currentData, ArrayDeque<Double> dataHistory)
+   {
+      dataHistory.addFirst(currentData);
+      while (dataHistory.size() > 15)
+         dataHistory.removeLast();
+
+      double average = 0.0;
+      for (Double dataPoint : dataHistory)
+      {
+         average += dataPoint;
+      }
+      average /= dataHistory.size();
+      return average;
    }
 
    @Override
-   public void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance) // to wall directly in front
+   public void senseWallRangeInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame)
    {
       this.wallDistance = wallDistance;
    }
