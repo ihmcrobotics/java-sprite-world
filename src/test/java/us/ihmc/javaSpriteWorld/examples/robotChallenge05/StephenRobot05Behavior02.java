@@ -323,12 +323,6 @@ public class StephenRobot05Behavior02 implements Robot05Behavior, Robot06Behavio
    private void computeWallAction()
    {
       double cost = -maxForceWall * Math.pow(baseWall, -wallDistance);
-
-//      double distanceBottom = xyPosition.getY();
-//      double distanceTop = 10.0 - distanceBottom;
-//      double distanceLeft = xyPosition.getX();
-//      double distanceRight = 10.0 - distanceLeft;
-
       responseDescriptions.add(new ObjectResponseDescription(0.0, wallAngularCostRange, cost));
    }
 

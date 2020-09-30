@@ -43,13 +43,12 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final Vector2D flagForce = new Vector2D();
 
    private final Vector2D totalForce = new Vector2D();
-   private final double alphaFilter = 1.0;
    private boolean firstTick = true;
    private final double[] previousAction = new double[2];
    private final double[] totalAction = new double[2];
    private final double[] filteredAction = new double[2];
 
-   private final double maxForceWall = 4.5;
+   private final double maxForceWall = 0.4;
    private final double maxForceFood = 1.25;
    private final double maxForcePredator = 1.2;
    private final double maxForceAvoidFlagWhileDelivering = 3.0;
@@ -69,7 +68,7 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final Point2D areaToExplore = new Point2D();
    private final Random random = new Random(3920);
 
-   private final double baseWall = 2.5;
+   private final double baseWall = 2.75;
    private double baseFood = 2.2;
    private final double basePredator = 2.0;
    private final double baseFlag = 2.5;
@@ -81,8 +80,19 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private double percentageFlagAttractor;
    private double percentageFlagRepulsive;
 
+   // toggle sub-behaviors
+   private boolean enableWall = true;
+   private boolean enableFood = true;
+   private boolean enablePredators = false;
+   private boolean enableFlags = true;
+
    private int flagIdToChase = 1;
    private boolean inDeliverFlagMode = false;
+
+   // filter parameters
+   private final double alphaAction = 1.0;
+   private final double alphaVelocity = 1.0;
+   private final double alphaRangeSensor = 1.0; // not an alpha filter, just scales down correction
 
    public StephenRobot05Behavior()
    {
@@ -112,7 +122,7 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseVelocity(double velocity)
    {
-      this.velocity = velocity;
+      this.velocity = filter(alphaVelocity, velocity, this.velocity);
    }
 
    @Override
@@ -223,6 +233,7 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
          }
       }
 
+      toggleOffSubBehaviors();
       totalForce.setX(wallForce.getX() + predatorForce.getX() + foodForce.getX() + flagForce.getX());
       totalForce.setY(wallForce.getY() + predatorForce.getY() + foodForce.getY() + flagForce.getY());
 
@@ -261,12 +272,16 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
       if (firstTick)
       {
          firstTick = false;
+         for (int i = 0; i < 2; i++)
+         {
+            filteredAction[i] = totalAction[i];
+         }
       }
       else
       {
          for (int i = 0; i < 2; i++)
          {
-            filteredAction[i] = alphaFilter * totalAction[i] + (1.0 - alphaFilter) * previousAction[i];
+            filteredAction[i] = filter(alphaAction, totalAction[i], previousAction[i]);
          }
       }
 
@@ -280,24 +295,63 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
    private void doLocalization()
    {
-//      Point2D wallPointInBody = new Point2D(0.0, wallDistance);
-//      Point2D wallPointInWorldEstimatedFrame = new Point2D();
-//      bodyFrameToWorldFrame(wallPointInBody, wallPointInWorldEstimatedFrame);
-//
-//      for (int i = 0; i < wallPoints.size(); i++)
-//      {
-//         Point2D expectedIntersectionPoint = EuclidGeometryTools.intersectionBetweenRay2DAndLineSegment2D(xyPosition,
-//                                                                                             xyHeading,
-//                                                                                             wallPoints.get(i),
-//                                                                                             wallPoints.get((i + 1) % wallPoints.size()));
-//         if (expectedIntersectionPoint != null)
-//         {
-//            Vector2D correctionVector = new Vector2D(expectedIntersectionPoint);
-//            correctionVector.sub(wallPointInWorldEstimatedFrame);
-//            xyPosition.add(correctionVector);
-//            return;
-//         }
-//      }
+      int numberOfCorrections = 0;
+      Vector2D totalCorrectionVector = new Vector2D();
+
+      for (int i = 0; i < vectorsAndDistancesToWallInBodyFrame.size(); i++)
+      {
+         Pair<Vector2D, Double> sensorReading = vectorsAndDistancesToWallInBodyFrame.get(i);
+
+         Vector2D wallPointInBody = new Vector2D(sensorReading.getLeft());
+         wallPointInBody.normalize();
+         wallPointInBody.scale(sensorReading.getRight());
+
+         Point2D wallPointInWorldEstimatedFrame = new Point2D();
+         bodyFrameToWorldFrame(wallPointInBody, wallPointInWorldEstimatedFrame);
+
+         for (int j = 0; j < wallPoints.size(); j++)
+         {
+            Point2D expectedIntersectionPoint = EuclidGeometryTools.intersectionBetweenRay2DAndLineSegment2D(xyPosition,
+                                                                                                             sensorReading.getLeft(),
+                                                                                                             wallPoints.get(j),
+                                                                                                             wallPoints.get((j + 1) % wallPoints.size()));
+            if (expectedIntersectionPoint != null)
+            {
+               numberOfCorrections++;
+
+               Vector2D correctionVector = new Vector2D(expectedIntersectionPoint);
+               correctionVector.sub(wallPointInWorldEstimatedFrame);
+               totalCorrectionVector.add(correctionVector);
+               return;
+            }
+         }
+      }
+
+      if (numberOfCorrections > 0)
+      {
+         totalCorrectionVector.scale(alphaRangeSensor / numberOfCorrections);
+         xyPosition.add(totalCorrectionVector);
+      }
+   }
+
+   private void toggleOffSubBehaviors()
+   {
+      if (!enableWall)
+      {
+         wallForce.setToZero();
+      }
+      if (!enableFood)
+      {
+         foodForce.setToZero();
+      }
+      if (!enablePredators)
+      {
+         predatorForce.setToZero();
+      }
+      if (!enableFlags)
+      {
+         flagForce.setToZero();
+      }
    }
 
    private void updateAreaToExplore()
@@ -342,8 +396,16 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
    private void computeWallForce()
    {
-//      wallForce.set(0.0, -1.0);
-//      wallForce.scale(maxForceWall * Math.pow(baseWall, -wallDistance));
+      for (int i = 0; i < vectorsAndDistancesToWallInBodyFrame.size(); i++)
+      {
+         Pair<Vector2D, Double> sensorData = vectorsAndDistancesToWallInBodyFrame.get(i);
+         Vector2D sensedWallForce = new Vector2D(sensorData.getLeft());
+         sensedWallForce.normalize();
+         sensedWallForce.scale(-1.0);
+         sensedWallForce.scale(maxForceWall * Math.pow(baseWall, - sensorData.getRight()));
+
+         wallForce.add(sensedWallForce);
+      }
    }
 
    private void computeFoodForce(Vector2D forceToAddTo, Tuple2DReadOnly foodInBodyFrame)
@@ -473,6 +535,7 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
    {
       System.out.println("droppedFlag " + flagId);
    }
+
    @Override
    public void senseHitWall()
    {
@@ -530,6 +593,11 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private static int clamp(int x, int min, int max)
    {
       return Math.min(Math.max(x, min), max);
+   }
+
+   private static double filter(double alpha, double value, double previous)
+   {
+      return alpha * value + (1.0 - alpha) * previous;
    }
 
    /////////////////////////////////// entering the xtreme section ///////////////////////////////////////////////////
