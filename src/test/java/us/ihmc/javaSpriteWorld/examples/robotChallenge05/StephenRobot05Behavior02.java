@@ -422,13 +422,13 @@ public class StephenRobot05Behavior02 implements Robot05Behavior
    }
 
    @Override
-   public void droppedFlag(int flagId)
+   public void senseDroppedFlag(int flagId)
    {
       System.out.println("droppedFlag " + flagId);
    }
 
    @Override
-   public void pickedUpFlag(int id)
+   public void sensePickedUpFlag(int id)
    {
       if (id == flagIdToChase)
       {
@@ -447,7 +447,7 @@ public class StephenRobot05Behavior02 implements Robot05Behavior
    private int numberOfRoundsCompleted = 0;
 
    @Override
-   public void deliveredFlag(int flagId)
+   public void senseDeliveredFlag(int flagId)
    {
       System.out.println("deliveredFlag " + flagId);
 
@@ -473,6 +473,12 @@ public class StephenRobot05Behavior02 implements Robot05Behavior
       {
          throw new RuntimeException("Shouldn't get here...");
       }
+   }
+
+   @Override
+   public void senseHitWall()
+   {
+
    }
 
    private class ObjectResponseDescription
