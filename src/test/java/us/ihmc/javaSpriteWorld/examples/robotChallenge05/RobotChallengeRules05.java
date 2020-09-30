@@ -93,11 +93,14 @@ public class RobotChallengeRules05 implements RobotChallengeRules
 
    protected ArrayList<Pair<Vector2D, Double>> senseWallRangeFinderPointsInBodyFrame()
    {
-//      double[] rangeSensorAngles = new double[] {-4.0/8.0*Math.PI, -Math.PI/4.0, -Math.PI/8.0}; 
-      Pair<Vector2D, Double> straightAhead = senseWallDistanceGivenSensingVectorInBody(0.0);
-
+      double[] rangeSensorAngles = new double[] {-4.0/8.0*Math.PI, -3.0/8.0*Math.PI, -2.0/8.0*Math.PI, -1.0/8.0*Math.PI, 0.0, 1.0/8.0*Math.PI, 2.0/8.0*Math.PI, 3.0/8.0*Math.PI, 4.0/8.0*Math.PI}; 
       ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame = new ArrayList<Pair<Vector2D, Double>>();
-      vectorsAndDistancesToWallInBodyFrame.add(straightAhead);
+
+      for (double rangeSensorAngle : rangeSensorAngles)
+      {
+         Pair<Vector2D, Double> vectorAndDistance = senseWallDistanceGivenSensingVectorInBody(rangeSensorAngle);
+         vectorsAndDistancesToWallInBodyFrame.add(vectorAndDistance);
+      }
 
       return vectorsAndDistancesToWallInBodyFrame;
    }

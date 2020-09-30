@@ -117,6 +117,7 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseWallRangeInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame)
    {
+//      System.out.println();
 //      for (Pair<Vector2D, Double> rangePoint : vectorsAndDistancesToWallInBodyFrame)
 //      {
 //         System.out.println(rangePoint.getLeft() + ": " + rangePoint.getRight());
