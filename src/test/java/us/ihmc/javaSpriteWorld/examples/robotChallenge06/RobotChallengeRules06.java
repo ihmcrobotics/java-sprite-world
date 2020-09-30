@@ -44,6 +44,7 @@ public class RobotChallengeRules06 extends RobotChallengeRules05
       return noisyLocationOfPredatorsInBodyFrame;
    }
 
+   @Override
    protected ArrayList<Pair<Point2D, Vector2D>> senseLocationOfFoodInBodyFrame()
    {
       ArrayList<Pair<Point2D, Vector2D>> locationOfFood = super.senseLocationOfFoodInBodyFrame();
@@ -51,6 +52,7 @@ public class RobotChallengeRules06 extends RobotChallengeRules05
       return locationOfFood;
    }
 
+   @Override
    protected double senseRobotVelocity()
    {
       double robotVelocity = super.senseRobotVelocity();
@@ -62,15 +64,7 @@ public class RobotChallengeRules06 extends RobotChallengeRules05
       return noisyRobotVelocity;
    }
 
-   private double limitMagnitude(double data, double magnitudeLimit)
-   {
-      if (data < -magnitudeLimit)
-         return -magnitudeLimit;
-      if (data > magnitudeLimit)
-         return magnitudeLimit;
-      return data;
-   }
-
+   @Override
    protected double senseRobotHeading()
    {
       double robotHeading = super.senseRobotHeading();
@@ -79,14 +73,24 @@ public class RobotChallengeRules06 extends RobotChallengeRules05
       return noisyRobotHeading;
    }
 
-   protected double senseWallDistanceStraightAhead()
+   @Override
+   protected ArrayList<Pair<Vector2D, Double>> senseWallRangeFinderPointsInBodyFrame()
    {
-      double wallDistanceStraightAhead = super.senseWallDistanceStraightAhead();
-      double noisyWallDistance = addNoise(wallDistanceStraightAhead, noiseParameters.getWallDistanceNoiseMagnitude());
+      ArrayList<Pair<Vector2D, Double>> wallRangeFinderPointsInBodyFrame = super.senseWallRangeFinderPointsInBodyFrame();
 
-      return noisyWallDistance;
+      ArrayList<Pair<Vector2D, Double>> noisyWallRangeFinderPointsInBodyFrame = new ArrayList<Pair<Vector2D, Double>>();
+
+      for (Pair<Vector2D, Double> rangeFinderPoint : wallRangeFinderPointsInBodyFrame)
+      {
+         double noisyDistance = addNoise(rangeFinderPoint.getRight(), noiseParameters.getWallDistanceNoiseMagnitude());
+         Pair<Vector2D, Double> noisyRangeFinderPoint = new ImmutablePair<Vector2D, Double>(rangeFinderPoint.getLeft(), noisyDistance);
+         noisyWallRangeFinderPointsInBodyFrame.add(noisyRangeFinderPoint);
+      }
+
+      return noisyWallRangeFinderPointsInBodyFrame;
    }
 
+   @Override
    protected Pair<Point2D, Integer> senseVectorToClosestFlagInBodyFrame()
    {
       Pair<Point2D, Integer> vectorToClosestFlagInBodyFrame = super.senseVectorToClosestFlagInBodyFrame();
@@ -139,4 +143,12 @@ public class RobotChallengeRules06 extends RobotChallengeRules05
       return noisyData;
    }
 
+   private double limitMagnitude(double data, double magnitudeLimit)
+   {
+      if (data < -magnitudeLimit)
+         return -magnitudeLimit;
+      if (data > magnitudeLimit)
+         return magnitudeLimit;
+      return data;
+   }
 }

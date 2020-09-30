@@ -15,7 +15,7 @@ public interface Robot05Behavior
 
    public abstract void senseMousePressed(double mousePressedX, double mousePressedY);
 
-   public abstract void senseWallRangeInBodyFrame(Vector2D vectorToWallInBodyFrame, double wallDistance);
+   public abstract void senseWallRangeInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame);
 
    public abstract void senseFoodInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood);
 
