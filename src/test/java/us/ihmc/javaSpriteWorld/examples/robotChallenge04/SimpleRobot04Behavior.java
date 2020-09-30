@@ -8,7 +8,6 @@ import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.Robot05Behavior;
-import us.ihmc.log.LogTools;
 
 public class SimpleRobot04Behavior implements Robot04Behavior, Robot05Behavior
 {
