@@ -147,7 +147,10 @@ public class RobotChallengeRules05 implements RobotChallengeRules
       transform.transform(rangeVectorInWorld);
 
       Point2DBasics intersectionWithWall = challenge.getIntersectionWithWall(robot.getPosition(), rangeVectorInWorld);
-      double wallDistance = intersectionWithWall.distance(robot.getPosition());
+      double wallDistance = Double.POSITIVE_INFINITY;
+      
+      if (intersectionWithWall != null)
+         wallDistance = intersectionWithWall.distance(robot.getPosition());
 
       ImmutablePair<Vector2D, Double> vectorAndDistance = new ImmutablePair<Vector2D, Double>(rangeVectorInBody, wallDistance);
 
