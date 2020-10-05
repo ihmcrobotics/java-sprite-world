@@ -149,8 +149,8 @@ public class Robot02 implements RobotChallengeRobot
    @Override
    public void teleportHome()
    {
-      setX(0.5);
-      setY(0.5);
+      setX(1.5);
+      setY(1.5);
       setVelocity(0.0);
       setHeading(0.0);
    }

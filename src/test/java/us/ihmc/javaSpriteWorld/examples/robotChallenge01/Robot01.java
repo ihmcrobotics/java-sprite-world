@@ -116,8 +116,8 @@ public class Robot01 implements RobotChallengeRobot
    @Override
    public void teleportHome()
    {
-      setX(0.5);
-      setY(0.5);
+      setX(1.5);
+      setY(1.5);
    }
 
    @Override
@@ -180,6 +180,9 @@ public class Robot01 implements RobotChallengeRobot
       health = health - 5.0;
       if (health < 1.0)
          health = 1.0;
+      
+      if (Math.abs(xDot) < 0.01 & (Math.abs(yDot) < 0.01)) 
+         return;
       
       Vector2D unitVelocity = new Vector2D(xDot, yDot);
       unitVelocity.normalize();
