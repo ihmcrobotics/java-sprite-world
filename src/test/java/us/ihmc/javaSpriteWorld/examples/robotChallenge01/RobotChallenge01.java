@@ -311,6 +311,9 @@ public class RobotChallenge01
       
       Line2D ray = new Line2D(position, sensingVectorInWorld);
       
+      double closestDistance = Double.POSITIVE_INFINITY;
+      Point2DBasics closestIntersection = null;
+      
       for (LineSegment2DReadOnly wall : walls)
       {
          Point2DBasics intersection = wall.intersectionWith(ray);
@@ -321,17 +324,17 @@ public class RobotChallenge01
             
             if (sensingVectorInWorld.dot(vectorToWall) > 0.0)
             {
-               return intersection;
+               double distance = vectorToWall.length();
+               if (distance < closestDistance)
+               {
+                  closestDistance = distance;
+                  closestIntersection = intersection;
+               }
             }
          }
       }
 
-//      System.err.println("walls = " + walls);
-//      System.err.println("ray = " + ray);
-//      
-//      System.err.println("Shouldn't get here. Intersection with wall not found...");
-      return null;
-//      throw new RuntimeException("Shouldn't get here. Intersection with wall not found...");
+      return closestIntersection;
    }
    
 
