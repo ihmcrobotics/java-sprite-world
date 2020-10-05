@@ -88,7 +88,7 @@ public class FlagList
    {
       ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags = getLocationAndIdsOfAllFlags();
      
-      double closestDistance = Double.MAX_VALUE;
+      double closestDistance = Double.POSITIVE_INFINITY;
       Pair<Point2D, Integer> closestFlag = null;
       
       for (Pair<Point2D, Integer> flag : locationAndIdsOfAllFlags)
