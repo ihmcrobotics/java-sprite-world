@@ -12,7 +12,9 @@ import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
+import us.ihmc.euclid.tuple2D.interfaces.Point2DReadOnly;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
+import us.ihmc.euclid.tuple2D.interfaces.Vector2DReadOnly;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 import us.ihmc.log.LogTools;
 import us.ihmc.simulationconstructionset.Robot;
@@ -283,24 +285,41 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       Line2D top = new Line2D(0.0, 10.0, 1.0, 0.0);
       List<Line2D> walls = Arrays.asList(left, right, bottom, top);
 
+
+
+      Vector2D slamCorrection = new Vector2D();
+      ArrayList<Point2D> estimatedHits = new ArrayList<>();
+      ArrayList<Point2D> actualHits = new ArrayList<>();
       for (int i = 0; i < sensors.size(); i++)
       {
          Pair<Vector2D, Double> sensor = sensors.get(i);
-         Vector2D toWall = new Vector2D(sensor.getLeft());
-         toWall.scale(100.0);
+
+         Vector2D scanRayWorld = bodyToWorld(sensor.getLeft());
+         Point2D estimatedIntersection = new Point2D();
+         double closest = 100.0;
          for (Line2D wall : walls)
          {
-            Point2D intersection = new Point2D();
-            wall.intersectionWith(new Line2D(me, sensor.getLeft()), intersection);
-            Vector2D toLine = new Vector2D();
-            toLine.sub(intersection, me);
-            if (toLine.dot(headingVector) > 0.0 && toLine.length() < toWall.length())
+            Point2D potentialEstimatedIntersection = new Point2D();
+            wall.intersectionWith(new Line2D(me, scanRayWorld), potentialEstimatedIntersection);
+
+            Vector2D toIntersection = new Vector2D();
+            toIntersection.sub(estimatedIntersection, me);
+            if (toIntersection.dot(scanRayWorld) > 0.0 && potentialEstimatedIntersection.distance(me) < closest)
             {
-               toWall = toLine;
+               estimatedIntersection = potentialEstimatedIntersection;
+               closest = estimatedIntersection.distance(me);
             }
          }
-         double wallDistanceError = sensors.get(i).getRight() - toWall.length();
-         wallErrors.get(i).set(wallDistanceError);
+
+         estimatedHits.add(estimatedIntersection);
+
+         Point2D actualHit = new Point2D(me);
+         Vector2D hitMovement = new Vector2D(scanRayWorld);
+         hitMovement.scale(sensor.getRight());
+         actualHit.add(hitMovement);
+         actualHits.add(actualHit);
+
+         wallErrors.get(i).set(estimatedHits.get(i).distance(actualHits.get(i)));
       }
 
 
@@ -379,7 +398,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
    double lastVelocity = 0.0;
 
-   private Point2D bodyToWorld(Tuple2DReadOnly pointInBody)
+   private Point2D bodyToWorld(Point2DReadOnly pointInBody)
    {
       Point2D pointInWorld = new Point2D(pointInBody);
       RigidBodyTransform transform = new RigidBodyTransform();
@@ -387,6 +406,15 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       pointInWorld.applyInverseTransform(transform);
       pointInWorld.add(me);
       return pointInWorld;
+   }
+
+   private Vector2D bodyToWorld(Vector2DReadOnly vectorInBody)
+   {
+      Vector2D vectorInWorld = new Vector2D(vectorInBody);
+      RigidBodyTransform transform = new RigidBodyTransform();
+      transform.getRotation().setYawPitchRoll(-heading, 0.0, 0.0);
+      vectorInWorld.applyInverseTransform(transform);
+      return vectorInWorld;
    }
 
    private Vector2D fieldVector(Tuple2DReadOnly from, Tuple2DReadOnly to, Function<Double, Double> magnitude)
