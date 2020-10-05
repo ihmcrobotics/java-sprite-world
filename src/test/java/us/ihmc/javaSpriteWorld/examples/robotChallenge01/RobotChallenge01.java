@@ -84,6 +84,7 @@ public class RobotChallenge01
                                                     foodList,
                                                     predatorList,
                                                     flagList,
+                                                    wallList,
                                                     random,
                                                     xMax,
                                                     yMax,
@@ -145,6 +146,11 @@ public class RobotChallenge01
       addWall(0.0, yMax, 0.0, 0.0);
    }
 
+   public void createAWall()
+   {
+      addWall(2.0/3.0*xMax, 1.0/3.0 * yMax, 2.0/3.0*xMax, 2.0/3.0*yMax);
+   }
+   
    public void addWall(double xOne, double yOne, double xTwo, double yTwo)
    {
       addWall(new Point2D(xOne, yOne), new Point2D(xTwo, yTwo));
@@ -319,11 +325,13 @@ public class RobotChallenge01
             }
          }
       }
-      
-      System.err.println("walls = " + walls);
-      System.err.println("ray = " + ray);
-      
-      throw new RuntimeException("Shouldn't get here. Intersection with wall not found...");
+
+//      System.err.println("walls = " + walls);
+//      System.err.println("ray = " + ray);
+//      
+//      System.err.println("Shouldn't get here. Intersection with wall not found...");
+      return null;
+//      throw new RuntimeException("Shouldn't get here. Intersection with wall not found...");
    }
    
 

@@ -45,7 +45,7 @@ public class Wall
          wallPointsForCollisionPolygon.add(new Point(wallPoint.getX() - minPoint.getX(), wallPoint.getY() - minPoint.getY()));
       }
       
-      System.out.println("\nCreating wall. LineSegment = " + lineSegment + " with points : " + wallPoints + " with collision polygon points = " + wallPointsForCollisionPolygon);
+//      System.out.println("\nCreating wall. LineSegment = " + lineSegment + " with points : " + wallPoints + " with collision polygon points = " + wallPointsForCollisionPolygon);
 
 
       ConvexPolygon collisionPolygon = new ConvexPolygon(wallPointsForCollisionPolygon);

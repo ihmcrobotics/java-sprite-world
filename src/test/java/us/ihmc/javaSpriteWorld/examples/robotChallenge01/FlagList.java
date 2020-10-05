@@ -7,7 +7,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import us.ihmc.euclid.tuple2D.Point2D;
-import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.Sprite;
 import us.ihmc.javaSpriteWorld.SpriteCollisionGroup;
 import us.ihmc.javaSpriteWorld.SpriteWorld;
