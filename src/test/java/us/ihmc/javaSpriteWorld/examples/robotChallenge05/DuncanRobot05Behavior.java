@@ -295,6 +295,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          Pair<Vector2D, Double> sensor = sensors.get(i);
 
          Vector2D scanRayWorld = bodyToWorld(sensor.getLeft());
+//         Vector2D scanRayWorld = sensor.getLeft();
          Point2D estimatedIntersection = new Point2D();
          double closest = 100.0;
          for (Line2D wall : walls)
@@ -303,7 +304,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
             wall.intersectionWith(new Line2D(me, scanRayWorld), potentialEstimatedIntersection);
 
             Vector2D toIntersection = new Vector2D();
-            toIntersection.sub(estimatedIntersection, me);
+            toIntersection.sub(potentialEstimatedIntersection, me);
             if (toIntersection.dot(scanRayWorld) > 0.0 && potentialEstimatedIntersection.distance(me) < closest)
             {
                estimatedIntersection = potentialEstimatedIntersection;
@@ -321,6 +322,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
          wallErrors.get(i).set(estimatedHits.get(i).distance(actualHits.get(i)));
       }
+
+      Vector2D moveOne = new Vector2D();
+      moveOne.sub(estimatedHits.get(4), actualHits.get(4));
 
 
       Vector2D boundaryRepulsion = new Vector2D();
@@ -369,9 +373,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          attractionVector.add(flagField);
       }
 
-      attractionVector.add(meToMouse);
-//      attractionVector.add(meToCenter);
-      attractionVector.add(boundaryRepulsion);
+//      attractionVector.add(meToMouse);
+      attractionVector.add(meToCenter);
+//      attractionVector.add(boundaryRepulsion);
       attractionVector.add(predatorRepulsion);
 //      attractionVector.add(foodAttraction);
 
