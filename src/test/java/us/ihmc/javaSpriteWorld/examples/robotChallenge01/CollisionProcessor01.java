@@ -14,6 +14,7 @@ public class CollisionProcessor01 implements SpriteCollisionListener
    private RobotChallengeRules robotChallengeRules;
    private final RobotChallengeRobot robot;
    private final FoodList01 foodList;
+   private final WallList wallList;
    private final PredatorList01 predatorList;
    private final FlagList flagList;
    private final Random random;
@@ -22,12 +23,13 @@ public class CollisionProcessor01 implements SpriteCollisionListener
    private final SpriteCollisionGroup collisionGroup;
 
    public CollisionProcessor01(RobotChallengeRobot robot, FoodList01 foodList, PredatorList01 predatorList,
-                               FlagList flagList, Random random, double xMax, double yMax, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
+                               FlagList flagList, WallList wallList, Random random, double xMax, double yMax, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
    {
       this.robot = robot;
       this.foodList = foodList;
       this.predatorList = predatorList;
       this.flagList = flagList;
+      this.wallList = wallList;
       this.random = random;
       this.xMax = xMax;
       this.yMax = yMax;
@@ -142,6 +144,18 @@ public class CollisionProcessor01 implements SpriteCollisionListener
          return;
       }
 
+      Wall wall = wallList.findWall(sprite);
+      if (wall != null)
+      {
+         processRobotAndWallCollision(robot, wall);
+         return;
+      }
+
+   }
+
+   private void processRobotAndWallCollision(RobotChallengeRobot robot, Wall wall)
+   {
+      robot.hitWall();
    }
 
    private void processRobotAndFlagCollision(RobotChallengeRobot robot, Flag flag)
