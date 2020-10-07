@@ -72,6 +72,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          predatorPositionFiltersY.add(new AlphaFilter(10.0));
       }
    }
+   private final YoDouble slamCorrectionX = new YoDouble("SlamCorrectionX", yoRegistry);
+   private final YoDouble slamCorrectionY = new YoDouble("SlamCorrectionY", yoRegistry);
 
    public DuncanRobot05Behavior()
    {
@@ -97,6 +99,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       }
       scs.setupGraph(predatorGraphsX);
       scs.setupGraph(predatorGraphsY);
+      scs.setupGraph(new String[] {slamCorrectionX.getName(), slamCorrectionY.getName()});
       scs.hideViewport();
       scs.changeBufferSize(4096);
 
@@ -290,11 +293,20 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          actualHits.add(actualHit);
 
          wallErrors.get(i).set(estimatedHits.get(i).distance(actualHits.get(i)));
+
+         slamCorrection.add(estimatedHits.get(i).getX() - actualHits.get(i).getX(),
+                            estimatedHits.get(i).getY() - actualHits.get(i).getY());
       }
 
-      Vector2D moveOne = new Vector2D();
-      moveOne.sub(estimatedHits.get(4), actualHits.get(4));
-
+      slamCorrection.scale(1.0 / sensors.size());
+      slamCorrectionX.set(slamCorrection.getX());
+      slamCorrectionY.set(slamCorrection.getY());
+      x += slamCorrection.getX();
+      y += slamCorrection.getY();
+      me.add(slamCorrection);
+//      x -= slamCorrection.getX();
+//      y -= slamCorrection.getY();
+//      me.sub(slamCorrection);
 
       Vector2D boundaryRepulsion = new Vector2D();
       double boundaryStrength = 2.0;
