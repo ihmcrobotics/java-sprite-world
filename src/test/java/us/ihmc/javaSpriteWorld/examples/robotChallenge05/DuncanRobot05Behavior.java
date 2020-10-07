@@ -5,7 +5,6 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import us.ihmc.commons.thread.Notification;
 import us.ihmc.commons.thread.ThreadTools;
 import us.ihmc.euclid.geometry.Line2D;
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
@@ -37,8 +36,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private Pair<Point2D, Integer> closestFlag;
    private Point2D me;
 
-   private double lastVelocityForFilter = 0.0;
-   private double lastHeadingForFilter = 0.0;
+   private AlphaFilter velocityFilter = new AlphaFilter(30.0);
+   private AlphaFilter headingFilter = new AlphaFilter(15.0);
    private final ArrayDeque<Double> velocities = new ArrayDeque<>();
    private final ArrayDeque<Double> headings = new ArrayDeque<>();
 
@@ -49,24 +48,28 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final YoDouble filteredVelocity = new YoDouble("FilteredVelocity", yoRegistry);
    private final YoDouble noisyHeading = new YoDouble("NoisyHeading", yoRegistry);
    private final YoDouble filteredHeading = new YoDouble("FilteredHeading", yoRegistry);
+   private final List<AlphaFilter> sensorFilters = new ArrayList<>();
    private final List<YoDouble> wallErrors = new ArrayList<>();
    {
       for (int i = 0; i < 9; i++)
       {
          YoDouble wallError = new YoDouble("WallError" + i, yoRegistry);
          wallErrors.add(wallError);
+         sensorFilters.add(new AlphaFilter(15.0));
       }
    }
    private final List<Point2D> lastFoodPositions = new ArrayList<>();
    private final List<YoPoint2D> yoPredators = new ArrayList<>();
-   private final List<Point2D> lastPredatorPositions = new ArrayList<>();
+   private final List<AlphaFilter> predatorPositionFiltersX = new ArrayList<>();
+   private final List<AlphaFilter> predatorPositionFiltersY = new ArrayList<>();
    private final List<YoPoint2D> filteredYoPredators = new ArrayList<>();
    {
       for (int i = 0; i < 3; i++)
       {
          yoPredators.add(new YoPoint2D("Predator" + i, yoRegistry));
          filteredYoPredators.add(new YoPoint2D("FilteredPredator" + i, yoRegistry));
-         lastPredatorPositions.add(new Point2D());
+         predatorPositionFiltersX.add(new AlphaFilter(10.0));
+         predatorPositionFiltersY.add(new AlphaFilter(10.0));
       }
    }
 
@@ -106,8 +109,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    public void senseVelocity(double rawVelocity)
    {
       noisyVelocity.set(rawVelocity);
-      velocity = alphaFilter(rawVelocity, lastVelocityForFilter, 30.0);
-      lastVelocityForFilter = velocity;
+      velocity = velocityFilter.filter(rawVelocity);
       filteredVelocity.set(velocity);
    }
 
@@ -115,51 +117,20 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    public void senseHeading(double rawHeading)
    {
       noisyHeading.set(rawHeading);
-      heading = alphaFilter(rawHeading, lastHeadingForFilter, 15.0);
-      lastHeadingForFilter = heading;
+      heading = headingFilter.filter(rawHeading);
       filteredHeading.set(heading);
    }
-
-   private double alphaFilter(double current, double last, double alpha)
-   {
-//      return current + alpha * (current - last) ;
-      return last + (current - last) / alpha;
-   }
-
-   private double filter(double currentData, ArrayDeque<Double> dataHistory, double alpha)
-   {
-      // TODO: Low pass filter or alpha filter
-      dataHistory.addFirst(currentData);
-      while (dataHistory.size() > 15)
-         dataHistory.removeLast();
-
-      double average = 0.0;
-      for (Double dataPoint : dataHistory)
-      {
-         average += dataPoint;
-      }
-      average /= dataHistory.size();
-      return average;
-   }
-
    @Override
    public void senseWallRangeInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame)
    {
-      // 0, 1 is straight ahead
-      double[] rangeSensorAngles = new double[] {-4.0/8.0*Math.PI,
-                                                 -3.0/8.0*Math.PI,
-                                                 -2.0/8.0*Math.PI,
-                                                 -1.0/8.0*Math.PI,
-                                                 0.0,
-                                                 1.0/8.0*Math.PI,
-                                                 2.0/8.0*Math.PI,
-                                                 3.0/8.0*Math.PI,
-                                                 4.0/8.0*Math.PI};
+      ArrayList<Pair<Vector2D, Double>> filteredSensors = new ArrayList<>();
+      for (int i = 0; i < vectorsAndDistancesToWallInBodyFrame.size(); i++)
+      {
+         Pair<Vector2D, Double> sensor = vectorsAndDistancesToWallInBodyFrame.get(i);
+         filteredSensors.add(Pair.of(sensor.getLeft(), sensorFilters.get(i).filter(sensor.getRight())));
+      }
 
-
-
-
-      this.sensors = vectorsAndDistancesToWallInBodyFrame;
+      this.sensors = filteredSensors;
    }
 
    @Override
@@ -194,10 +165,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          Pair<Point2D, Vector2D> predator = rawPredators.get(i);
          yoPredators.get(i).set(predator.getLeft());
          Point2D filteredLocation = new Point2D();
-         double alpha = 10.0;
-         filteredLocation.setX(alphaFilter(predator.getLeft().getX(), lastPredatorPositions.get(i).getX(), alpha));
-         filteredLocation.setY(alphaFilter(predator.getLeft().getY(), lastPredatorPositions.get(i).getY(), alpha));
-         lastPredatorPositions.get(i).set(filteredLocation);
+         filteredLocation.setX(predatorPositionFiltersX.get(i).filter(predator.getLeft().getX()));
+         filteredLocation.setY(predatorPositionFiltersY.get(i).filter(predator.getLeft().getY()));
          filteredYoPredators.get(i).set(filteredLocation);
          filteredPredators.add(Pair.of(filteredLocation, predator.getRight()));
       }
@@ -375,9 +344,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
 //      attractionVector.add(meToMouse);
       attractionVector.add(meToCenter);
-//      attractionVector.add(boundaryRepulsion);
+      attractionVector.add(boundaryRepulsion);
       attractionVector.add(predatorRepulsion);
-//      attractionVector.add(foodAttraction);
+      attractionVector.add(foodAttraction);
 
       double desiredSpeed = attractionVector.length();
 
@@ -429,6 +398,33 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       vector.normalize();
       vector.scale(magnitude.apply(distance));
       return vector;
+   }
+
+   static class AlphaFilter
+   {
+      private final double alpha;
+      private double last = Double.NaN;
+
+      public AlphaFilter(double alpha)
+      {
+         this.alpha = alpha;
+      }
+
+      public double filter(double value)
+      {
+         double filtered;
+         if (Double.isNaN(last)) // feed forward to initial value
+         {
+            last = value;
+            filtered = value;
+         }
+         else
+         {
+            filtered = last + (value - last) / alpha;
+            last = filtered;
+         }
+         return filtered;
+      }
    }
 
    @Override
