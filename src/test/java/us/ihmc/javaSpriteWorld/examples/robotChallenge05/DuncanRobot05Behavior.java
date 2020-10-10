@@ -14,10 +14,12 @@ import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Point2DReadOnly;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
 import us.ihmc.euclid.tuple2D.interfaces.Vector2DReadOnly;
+import us.ihmc.jMonkeyEngineToolkit.NullGraphics3DAdapter;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 import us.ihmc.log.LogTools;
 import us.ihmc.simulationconstructionset.Robot;
 import us.ihmc.simulationconstructionset.SimulationConstructionSet;
+import us.ihmc.simulationconstructionset.SimulationConstructionSetParameters;
 import us.ihmc.yoVariables.euclid.YoPoint2D;
 import us.ihmc.yoVariables.registry.YoRegistry;
 import us.ihmc.yoVariables.variable.YoDouble;
@@ -41,7 +43,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final ArrayDeque<Double> velocities = new ArrayDeque<>();
    private final ArrayDeque<Double> headings = new ArrayDeque<>();
 
-   SimulationConstructionSet scs = new SimulationConstructionSet(new Robot("Robot"));
+   SimulationConstructionSet scs = new SimulationConstructionSet(new Robot("Robot"),
+                                                                 new NullGraphics3DAdapter(),
+                                                                 new SimulationConstructionSetParameters());
    private final YoRegistry yoRegistry = new YoRegistry(getClass().getSimpleName());
 //   private final YoRegistry yoRegistry = scs.getRootRegistry();
    private final YoDouble noisyVelocity = new YoDouble("NoisyVelocity", yoRegistry);
