@@ -33,6 +33,7 @@ public class Flag
    {
       this.x = x;
       this.y = y;
+      doDynamicsAndUpdateSprite(0.0);
    }
 
    public void setLocation(Point2D position)

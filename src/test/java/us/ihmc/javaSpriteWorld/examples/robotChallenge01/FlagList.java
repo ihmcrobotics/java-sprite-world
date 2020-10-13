@@ -14,7 +14,13 @@ import us.ihmc.javaSpriteWorld.SpriteWorld;
 public class FlagList
 {
    private final ArrayList<Flag> flagsInPlay = new ArrayList<Flag>();
+   private final ArrayList<Flag> deliveredFlags = new ArrayList<Flag>();
+
    private final HashMap<Sprite, Flag> map = new HashMap<Sprite, Flag>();
+   
+   public FlagList()
+   {
+   }
 
    public void createAFlag(int id, double x, double y, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
    {
@@ -49,6 +55,18 @@ public class FlagList
       spriteWorld.removeSprite(flag.getSprite());
       flagsInPlay.remove(flag);
       flag.getSprite().hide();
+
+      map.remove(flag.getSprite(), flag);
+   }
+   
+   public void deliveredFlag(Flag flag)
+   {
+      if (!flagsInPlay.contains(flag))
+      {
+         flagsInPlay.add(flag);
+      }
+      
+      deliveredFlags.add(flag);
 
       map.remove(flag.getSprite(), flag);
    }

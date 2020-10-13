@@ -22,6 +22,7 @@ public class RobotChallenge01
 
    private final double xMax, yMax;
    private final Random random;
+   private int nextFlagToDeliver = 1;
 
    private final SpriteWorldViewerUsingSwing viewer;
    private final SpriteWorldMouseListener spriteWorldMouseListener;
@@ -205,17 +206,34 @@ public class RobotChallenge01
    public void robotDroppedFlag(Flag flag)
    {
       Point2D position = robot.getPosition();
-      if ((position.getX() > 0.8 * xMax) && (position.getY() > 0.8 * yMax))
+      if ((flag.getId() == nextFlagToDeliver) && (position.getX() > 0.8 * xMax) && (position.getY() > 0.8 * yMax))
       {
-         System.out.println("Flag " + flag.getId() + "returned home!!");
+         System.out.println("Flag " + flag.getId() + " was delivered!!");
+
+         nextFlagToDeliver++;
+         collisionGroup.removeSprite(flag.getSprite());
+
+         flag.setLocation(xMax * 0.98, yMax * 0.98);
+
+         if (!spriteWorld.getSprites().contains(flag.getSprite()))
+         {
+            spriteWorld.addSprite(flag.getSprite());
+         }
+
+         flag.getSprite().show();
+
+         flagList.deliveredFlag(flag);
          robotChallengeRules.deliveredFlag(flag.getId());
       }
-      
-      Vector2D headingVector = robot.getHeadingVector();
-      headingVector.scale(-1.5);
-      position.add(headingVector);
-      flag.setLocation(position);
-      flagList.addFlag(flag, spriteWorld, collisionGroup);
+
+     else
+      {
+         Vector2D headingVector = robot.getHeadingVector();
+         headingVector.scale(-1.0);
+         position.add(headingVector);
+         flag.setLocation(position);
+         flagList.addFlag(flag, spriteWorld, collisionGroup);
+      }
    }
 
    private double randomDoubleBetween(double min, double max)

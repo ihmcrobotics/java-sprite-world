@@ -9,6 +9,9 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge05.DuncanRobot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.SimpleRobot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.StephenRobot05Behavior;
 
+/**
+ * Adds noise to the sensors.
+ */
 public class RobotChallenge06
 {
    public static final String PLAYER = System.getProperty("player", "Simple");

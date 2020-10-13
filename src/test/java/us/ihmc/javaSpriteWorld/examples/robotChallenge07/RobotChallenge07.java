@@ -28,7 +28,7 @@ public class RobotChallenge07
       
       Robot02 robot = new Robot02(xMax, yMax);
 
-      RobotChallenge01 robotChallenge = new RobotChallenge01("RobotChallenge06", robot, random, xMax, yMax);
+      RobotChallenge01 robotChallenge = new RobotChallenge01("RobotChallenge07", robot, random, xMax, yMax);
       robotChallenge.createSomeFood(10);
       double maximumPredatorSpeed = 1.5;
       robotChallenge.createSomePredators(3, maximumPredatorSpeed);
