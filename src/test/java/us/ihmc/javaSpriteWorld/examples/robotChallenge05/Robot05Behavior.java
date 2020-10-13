@@ -3,6 +3,7 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
 import java.util.ArrayList;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
@@ -17,7 +18,7 @@ public interface Robot05Behavior
 
    public abstract void senseWallRangeInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame);
 
-   public abstract void senseFoodInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood);
+   public abstract void senseFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood);
 
    public abstract void sensePredatorsInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators);
 

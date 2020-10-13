@@ -1,6 +1,7 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.Assertions;
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
 import us.ihmc.euclid.tools.EuclidCoreTools;
@@ -30,7 +31,7 @@ public class StephenRobot05Behavior02 implements Robot05Behavior, Robot06Behavio
    private final Vector2D xyHeading = new Vector2D();
 
    // environment state
-   private ArrayList<Pair<Point2D, Vector2D>> locationOfAllFoodInBodyFrame;
+   private ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFoodInBodyFrame;
    private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
    private Pair<Point2D, Integer> positionInBodyFrameAndIdOfClosestFlag;
    private double wallDistance;
@@ -123,7 +124,7 @@ public class StephenRobot05Behavior02 implements Robot05Behavior, Robot06Behavio
    }
 
    @Override
-   public void senseFoodInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
+   public void senseFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
       this.locationOfAllFoodInBodyFrame = locationOfAllFood;
    }
@@ -170,7 +171,7 @@ public class StephenRobot05Behavior02 implements Robot05Behavior, Robot06Behavio
       // food
       for (int i = 0; i < locationOfAllFoodInBodyFrame.size(); i++)
       {
-         computeFoodAction(locationOfAllFoodInBodyFrame.get(i).getLeft());
+         computeFoodAction(locationOfAllFoodInBodyFrame.get(i).getMiddle());
       }
 
       // predators

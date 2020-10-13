@@ -2,7 +2,7 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 
 import java.util.ArrayList;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
@@ -17,14 +17,14 @@ public class ExperimentalBehavior01 implements Robot01Behavior
    private double xPosition, yPosition;
    private double velocity, heading;
 
-   private ArrayList<Pair<Point2D, Vector2D>> locationAndVelocityOfAllFood;
+   private ArrayList<Triple<Integer, Point2D, Vector2D>> locationAndVelocityOfAllFood;
    private final double[] xyVelocity = new double[2];
 
    private final Vector2D nearestFood = new Vector2D();
    private final Vector2D foodCentroid = new Vector2D();
 
    @Override
-   public void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationAndVelocityOfAllFood)
+   public void senseFood(ArrayList<Triple<Integer, Point2D, Vector2D>> locationAndVelocityOfAllFood)
    {
       this.locationAndVelocityOfAllFood = locationAndVelocityOfAllFood;
    }
@@ -94,7 +94,7 @@ public class ExperimentalBehavior01 implements Robot01Behavior
 
       for (int i = 0; i < locationAndVelocityOfAllFood.size(); i++)
       {
-         Point2D food = locationAndVelocityOfAllFood.get(i).getKey();
+         Point2D food = locationAndVelocityOfAllFood.get(i).getMiddle();
          double distance = EuclidCoreTools.norm(food.getX() - xPosition, food.getY() - yPosition);
          if (distance < closestFoodDistance)
          {
@@ -103,7 +103,7 @@ public class ExperimentalBehavior01 implements Robot01Behavior
          }
       }
 
-      nearestFood.set(locationAndVelocityOfAllFood.get(closestIndex).getKey());
+      nearestFood.set(locationAndVelocityOfAllFood.get(closestIndex).getMiddle());
    }
 
    private void computeFoodCentroid()
@@ -113,7 +113,7 @@ public class ExperimentalBehavior01 implements Robot01Behavior
 
       for (int i = 0; i < locationAndVelocityOfAllFood.size(); i++)
       {
-         Point2D food = locationAndVelocityOfAllFood.get(i).getKey();
+         Point2D food = locationAndVelocityOfAllFood.get(i).getMiddle();
          double distance = EuclidCoreTools.norm(food.getX() - xPosition, food.getY() - yPosition);
          double weight = 1.0 / distance;
 

@@ -1,6 +1,8 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge04;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+
 import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
@@ -19,7 +21,7 @@ public class StephensRobot04Behavior02 implements Robot04Behavior
    private final Vector2D xyVelocity = new Vector2D();
 
    // environment state
-   private ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood;
+   private ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood;
    private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
    private ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags;
 
@@ -82,7 +84,7 @@ public class StephensRobot04Behavior02 implements Robot04Behavior
    }
 
    @Override
-   public void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
+   public void senseFood(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
       this.locationOfAllFood = locationOfAllFood;
    }
@@ -153,7 +155,7 @@ public class StephensRobot04Behavior02 implements Robot04Behavior
       // food
       for (int i = 0; i < locationOfAllFood.size(); i++)
       {
-         computeFlagAttractForce(foodForce, locationOfAllFood.get(i).getKey(), maxForceFood, expFood, true);
+         computeFlagAttractForce(foodForce, locationOfAllFood.get(i).getMiddle(), maxForceFood, expFood, true);
       }
 
       // flag attract

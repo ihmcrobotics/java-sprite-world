@@ -3,6 +3,7 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
 import java.util.ArrayList;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
@@ -36,7 +37,7 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
    }
 
    @Override
-   public void senseFoodInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
+   public void senseFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
    }
 

@@ -2,7 +2,7 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge02;
 
 import java.util.ArrayList;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
@@ -38,7 +38,7 @@ public class RobotChallengeRules02 implements RobotChallengeRules
          robotBehavior.senseHeading(robot.getHeading());
          robotBehavior.senseVelocity(robot.getVelocity());
 
-         ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
+         ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
          robotBehavior.senseFood(locationOfAllFood);
 
          double[] accelerationAndTurnRate = robotBehavior.getAccelerationAndTurnRate();

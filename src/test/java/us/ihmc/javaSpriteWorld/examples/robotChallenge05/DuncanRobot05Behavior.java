@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import us.ihmc.euclid.geometry.Line2D;
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
@@ -23,7 +24,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private double heading = 0.0;
    private double velocity;
    private double wallDistance;
-   private ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood;
+   private ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood;
    private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
    private Pair<Point2D, Integer> closestFlag;
    private Point2D me;
@@ -85,7 +86,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    }
 
    @Override
-   public void senseFoodInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
+   public void senseFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
       this.locationOfAllFood = locationOfAllFood;
    }
@@ -210,9 +211,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 //      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
 
       Vector2D foodAttraction = new Vector2D();
-      for (Pair<Point2D, Vector2D> food : locationOfAllFood)
+      for (Triple<Integer, Point2D, Vector2D> food : locationOfAllFood)
       {
-         foodAttraction.add(fieldVector(me, bodyToWorld(food.getLeft()), distance -> 0.5 / Math.pow(distance, 1.5)));
+         foodAttraction.add(fieldVector(me, bodyToWorld(food.getMiddle()), distance -> 0.5 / Math.pow(distance, 1.5)));
       }
 
       if (closestFlag != null)

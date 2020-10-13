@@ -1,6 +1,8 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge04;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+
 import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
@@ -19,7 +21,7 @@ public class StephensRobot04Behavior implements Robot04Behavior
    private final Vector2D xyVelocity = new Vector2D();
 
    // environment state
-   private ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood;
+   private ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood;
    private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
    private ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags;
    private final Point2D nearestFood = new Point2D();
@@ -74,7 +76,7 @@ public class StephensRobot04Behavior implements Robot04Behavior
    }
 
    @Override
-   public void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
+   public void senseFood(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
       this.locationOfAllFood = locationOfAllFood;
    }
@@ -248,7 +250,7 @@ public class StephensRobot04Behavior implements Robot04Behavior
 
       for (int i = 0; i < locationOfAllFood.size(); i++)
       {
-         Point2D food = locationOfAllFood.get(i).getKey();
+         Point2D food = locationOfAllFood.get(i).getMiddle();
          double distance = EuclidCoreTools.norm(food.getX() - xPosition, food.getY() - yPosition);
          if (distance < closestFoodDistance)
          {
@@ -257,7 +259,7 @@ public class StephensRobot04Behavior implements Robot04Behavior
          }
       }
 
-      nearestFood.set(locationOfAllFood.get(closestIndex).getKey());
+      nearestFood.set(locationOfAllFood.get(closestIndex).getMiddle());
       nearestDistanceToFood = nearestFood.distance(new Point2D(xPosition, yPosition));
       return nearestDistanceToFood < foodProximityThreshold;
    }
