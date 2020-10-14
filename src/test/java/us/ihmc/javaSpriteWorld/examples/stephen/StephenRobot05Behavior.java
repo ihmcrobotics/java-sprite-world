@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static us.ihmc.javaSpriteWorld.examples.stephen.BehaviorUtils.*;
+
 public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
 {
    // simulator parameters
@@ -24,11 +26,11 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final List<Point2D> wallPoints = new ArrayList<>();
 
    // robot state
-   private double velocity;
-   private double heading;
-   private final Point2D xyPosition = new Point2D(initialX, initialY);
-   private final Vector2D xyVelocity = new Vector2D();
-   private final Vector2D xyHeading = new Vector2D();
+   double velocity;
+   double heading;
+   final Point2D xyPosition = new Point2D(initialX, initialY);
+   final Vector2D xyVelocity = new Vector2D();
+   final Vector2D xyHeading = new Vector2D();
 
    // environment state
    private ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFoodInBodyFrame;
@@ -200,7 +202,7 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
       {
          Point2D dropPointWorld = new Point2D(9.0, 9.0);
          Point2D dropPointBody = new Point2D();
-         worldFrameToBodyFrame(dropPointWorld, dropPointBody);
+         worldFrameToBodyFrame(dropPointWorld, dropPointBody, heading, xyPosition);
 
          computeGoToFlagForce(flagForce, dropPointBody);
          computeAvoidFlagForce(flagForce, positionInBodyFrameAndIdOfClosestFlag.getLeft());
@@ -299,11 +301,11 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
          wallPointInBody.scale(sensorReading.getRight());
 
          Point2D wallPointInWorldEstimatedFrame = new Point2D();
-         bodyFrameToWorldFrame(wallPointInBody, wallPointInWorldEstimatedFrame);
+         bodyFrameToWorldFrame(wallPointInBody, wallPointInWorldEstimatedFrame, heading, xyPosition);
 
          Vector2D sensorDirectionInBody = new Vector2D(sensorReading.getLeft());
          Vector2D sensorDirectionInWorld = new Vector2D();
-         bodyFrameToWorldFrame(sensorDirectionInBody, sensorDirectionInWorld);
+         bodyFrameToWorldFrame(sensorDirectionInBody, sensorDirectionInWorld, heading);
 
          for (int j = 0; j < wallPoints.size(); j++)
          {
@@ -393,7 +395,7 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
       int flagZeroIndexId = positionInBodyFrameAndIdOfClosestFlag.getRight() - 1;
       if (flagLocations[flagZeroIndexId].containsNaN())
       {
-         bodyFrameToWorldFrame(positionInBodyFrameAndIdOfClosestFlag.getLeft(), flagLocations[flagZeroIndexId]);
+         bodyFrameToWorldFrame(positionInBodyFrameAndIdOfClosestFlag.getLeft(), flagLocations[flagZeroIndexId], heading, xyPosition);
       }
    }
 
@@ -484,7 +486,7 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private void computeGoToWorldCoordinate(Vector2D forceToAddTo, Point2DReadOnly worldCoordinate, double forceMagnitude)
    {
       Point2D bodyFrameCoordinate = new Point2D();
-      worldFrameToBodyFrame(worldCoordinate, bodyFrameCoordinate);
+      worldFrameToBodyFrame(worldCoordinate, bodyFrameCoordinate, heading, xyPosition);
 
       Vector2D force = new Vector2D(bodyFrameCoordinate);
       force.normalize();
@@ -496,49 +498,10 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private double computeDistanceToWall(Point2DReadOnly foodInBodyFrame)
    {
       Point2D foodInWorld = new Point2D();
-      bodyFrameToWorldFrame(foodInBodyFrame, foodInWorld);
+      bodyFrameToWorldFrame(foodInBodyFrame, foodInWorld, heading, xyPosition);
       return Math.min(Math.min(foodInWorld.getX(), foodInWorld.getY()), Math.min(10.0 - foodInWorld.getX(), 10.0 - foodInWorld.getY()));
    }
 
-   private static double headingFromVector(Tuple2DReadOnly vector)
-   {
-      return headingFromVector(vector.getX(), vector.getY());
-   }
-
-   private static double headingFromVector(double x, double y)
-   {
-      return Math.atan2(-x, y);
-   }
-
-   private void bodyFrameToWorldFrame(Point2DReadOnly bodyFramePoint, Point2DBasics worldFramePointToSet)
-   {
-      double relativeWorldVectorX = bodyFramePoint.getX() * Math.cos(heading) - bodyFramePoint.getY() * Math.sin(heading);
-      double relativeWorldVectorY = bodyFramePoint.getX() * Math.sin(heading) + bodyFramePoint.getY() * Math.cos(heading);
-
-      worldFramePointToSet.setX(relativeWorldVectorX + xyPosition.getX());
-      worldFramePointToSet.setY(relativeWorldVectorY + xyPosition.getY());
-   }
-
-   private void worldFrameToBodyFrame(Point2DReadOnly worldFramePoint, Point2DBasics bodyFramePointToSet)
-   {
-      double dx = worldFramePoint.getX() - xyPosition.getX();
-      double dy = worldFramePoint.getY() - xyPosition.getY();
-
-      bodyFramePointToSet.setX(dx * Math.cos(heading) + dy * Math.sin(heading));
-      bodyFramePointToSet.setY(-dx * Math.sin(heading) + dy * Math.cos(heading));
-   }
-
-   private void bodyFrameToWorldFrame(Vector2DReadOnly bodyFrameVector, Vector2DBasics worldFrameVectorToSet)
-   {
-      worldFrameVectorToSet.setX(bodyFrameVector.getX() * Math.cos(heading) - bodyFrameVector.getY() * Math.sin(heading));
-      worldFrameVectorToSet.setY(bodyFrameVector.getX() * Math.sin(heading) + bodyFrameVector.getY() * Math.cos(heading));
-   }
-
-   private void worldFrameToBodyFrame(Vector2DReadOnly worldFrameVector, Vector2DBasics bodyFrameVectorToSet)
-   {
-      bodyFrameVectorToSet.setX(worldFrameVector.getX() * Math.cos(heading) + worldFrameVector.getY() * Math.sin(heading));
-      bodyFrameVectorToSet.setY(-worldFrameVector.getX() * Math.sin(heading) + worldFrameVector.getY() * Math.cos(heading));
-   }
 
    @Override
    public boolean getDropFlag()
@@ -604,61 +567,6 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
       {
          throw new RuntimeException("Shouldn't get here...");
       }
-   }
-
-   private static int clamp(int x, int min, int max)
-   {
-      return Math.min(Math.max(x, min), max);
-   }
-
-   private static double filter(double alpha, double value, double previous)
-   {
-      return alpha * value + (1.0 - alpha) * previous;
-   }
-
-   /////////////////////////////////// entering the xtreme section ///////////////////////////////////////////////////
-
-   static void testBodyWorldTransforms()
-   {
-      StephenRobot05Behavior behavior = new StephenRobot05Behavior();
-      Random random = new Random(38932);
-
-      for (int i = 0; i < 100; i++)
-      {
-         behavior.heading = random.nextDouble() * Math.PI;
-         behavior.xyPosition.setX(random.nextDouble() * 5.0);
-         behavior.xyPosition.setY(random.nextDouble() * 5.0);
-
-         // test point conversion
-
-         Point2D bodyFramePointInput = new Point2D(random.nextDouble() * 3.0, random.nextDouble() * 3.0);
-         Point2D worldFramePointResult = new Point2D();
-         Point2D bodyFramePointOutput = new Point2D();
-
-         behavior.bodyFrameToWorldFrame(bodyFramePointInput, worldFramePointResult);
-         behavior.worldFrameToBodyFrame(worldFramePointResult, bodyFramePointOutput);
-
-         Assertions.assertTrue(bodyFramePointInput.epsilonEquals(bodyFramePointOutput, 1e-12));
-
-         // test vector conversion
-
-         Vector2D bodyFrameVectortInput = new Vector2D(random.nextDouble() * 3.0, random.nextDouble() * 3.0);
-         Vector2D worldFrameVectorResult = new Vector2D();
-         Vector2D bodyFrameVectorOutput = new Vector2D();
-
-         behavior.bodyFrameToWorldFrame(bodyFrameVectortInput, worldFrameVectorResult);
-         behavior.worldFrameToBodyFrame(worldFrameVectorResult, bodyFrameVectorOutput);
-
-         Assertions.assertTrue(bodyFrameVectortInput.epsilonEquals(bodyFrameVectorOutput, 1e-12));
-
-      }
-   }
-
-   /////////////////////////////////// exiting the xtreme section ///////////////////////////////////////////////////
-
-   public static void main(String[] args)
-   {
-      testBodyWorldTransforms();
    }
 
    @Override
