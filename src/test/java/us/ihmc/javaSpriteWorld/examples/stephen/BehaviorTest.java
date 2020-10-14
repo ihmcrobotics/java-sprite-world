@@ -13,7 +13,7 @@ public class BehaviorTest
 {
    static void testBodyWorldTransforms()
    {
-      StephenRobot05Behavior behavior = new StephenRobot05Behavior();
+      StephenRobotBehavior behavior = new StephenRobotBehavior();
       Random random = new Random(38932);
 
       for (int i = 0; i < 100; i++)
