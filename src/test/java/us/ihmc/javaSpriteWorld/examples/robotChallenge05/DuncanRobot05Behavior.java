@@ -290,4 +290,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    {
       return ((x > 8.0) && (y > 8.0));
    }
+
+   @Override
+   public void senseGlobalPositionForTestingOnly(double x, double y)
+   {      
+   }
 }

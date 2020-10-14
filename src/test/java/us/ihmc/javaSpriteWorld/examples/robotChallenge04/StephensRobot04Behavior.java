@@ -357,4 +357,11 @@ public class StephensRobot04Behavior implements Robot04Behavior
    public void senseHitWall()
    {      
    }
+
+   @Override
+   public void senseGlobalPositionForTestingOnly(double x, double y)
+   {
+      // TODO Auto-generated method stub
+      
+   }
 }

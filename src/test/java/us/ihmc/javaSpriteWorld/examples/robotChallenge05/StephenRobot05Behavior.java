@@ -563,4 +563,11 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
       testBodyWorldTransforms();
    }
 
+   @Override
+   public void senseGlobalPositionForTestingOnly(double x, double y)
+   {
+      // TODO Auto-generated method stub
+      
+   }
+
 }

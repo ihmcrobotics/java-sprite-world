@@ -32,6 +32,13 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
    }
 
    @Override
+   public void senseGlobalPositionForTestingOnly(double x, double y)
+   {
+      this.x = x;
+      this.y = y;
+   }
+   
+   @Override
    public void senseVelocity(double velocity)
    {
       this.velocity = alphaVelocity * this.velocity + (1.0 - alphaVelocity) * velocity;
