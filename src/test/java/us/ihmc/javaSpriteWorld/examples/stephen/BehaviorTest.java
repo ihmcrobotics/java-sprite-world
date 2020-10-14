@@ -18,9 +18,10 @@ public class BehaviorTest
 
       for (int i = 0; i < 100; i++)
       {
-         behavior.heading = random.nextDouble() * Math.PI;
-         behavior.xyPosition.setX(random.nextDouble() * 5.0);
-         behavior.xyPosition.setY(random.nextDouble() * 5.0);
+         SLAMManager slamManager = behavior.getSlamManager();
+         slamManager.setHeading(random.nextDouble() * Math.PI);
+         slamManager.getXYPosition().setX(random.nextDouble() * 5.0);
+         slamManager.getXYPosition().setY(random.nextDouble() * 5.0);
 
          // test point conversion
 
@@ -28,8 +29,8 @@ public class BehaviorTest
          Point2D worldFramePointResult = new Point2D();
          Point2D bodyFramePointOutput = new Point2D();
 
-         bodyFrameToWorldFrame(bodyFramePointInput, worldFramePointResult, behavior.heading, behavior.xyPosition);
-         worldFrameToBodyFrame(worldFramePointResult, bodyFramePointOutput, behavior.heading, behavior.xyPosition);
+         bodyFrameToWorldFrame(bodyFramePointInput, worldFramePointResult, slamManager.getHeading(), slamManager.getXYPosition());
+         worldFrameToBodyFrame(worldFramePointResult, bodyFramePointOutput, slamManager.getHeading(), slamManager.getXYPosition());
 
          Assertions.assertTrue(bodyFramePointInput.epsilonEquals(bodyFramePointOutput, 1e-12));
 
@@ -39,8 +40,8 @@ public class BehaviorTest
          Vector2D worldFrameVectorResult = new Vector2D();
          Vector2D bodyFrameVectorOutput = new Vector2D();
 
-         bodyFrameToWorldFrame(bodyFrameVectortInput, worldFrameVectorResult, behavior.heading);
-         worldFrameToBodyFrame(worldFrameVectorResult, bodyFrameVectorOutput, behavior.heading);
+         bodyFrameToWorldFrame(bodyFrameVectortInput, worldFrameVectorResult, slamManager.getHeading());
+         worldFrameToBodyFrame(worldFrameVectorResult, bodyFrameVectorOutput, slamManager.getHeading());
 
          Assertions.assertTrue(bodyFrameVectortInput.epsilonEquals(bodyFrameVectorOutput, 1e-12));
 

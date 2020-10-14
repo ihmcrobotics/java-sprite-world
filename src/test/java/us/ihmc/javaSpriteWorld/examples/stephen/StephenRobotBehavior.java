@@ -112,6 +112,11 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
       return filteredAction;
    }
 
+   public SLAMManager getSlamManager()
+   {
+      return slamManager;
+   }
+
    @Override
    public void senseNoiseFreeHeadingForTestingOnly(double heading)
    {
