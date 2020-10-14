@@ -1,5 +1,7 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.function.Function;
 
@@ -22,37 +24,36 @@ import us.ihmc.simulationconstructionset.Robot;
 import us.ihmc.simulationconstructionset.SimulationConstructionSet;
 import us.ihmc.simulationconstructionset.SimulationConstructionSetParameters;
 import us.ihmc.yoVariables.euclid.YoPoint2D;
+import us.ihmc.yoVariables.euclid.YoVector2D;
 import us.ihmc.yoVariables.registry.YoRegistry;
 import us.ihmc.yoVariables.variable.YoDouble;
 
+import javax.swing.*;
 import java.util.ArrayList;
 
 public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 {
+   private boolean paused = false;
    private double mousePressedX = 5.0, mousePressedY = 5.0;
-   private double x = 0.5, y = 0.5;
-   private double heading = 0.0;
-   private double velocity;
    private ArrayList<Pair<Vector2D, Double>> sensors;
    private ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood;
    private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
    private Pair<Point2D, Integer> closestFlag;
-   private Point2D me;
 
    private AlphaFilter velocityFilter = new AlphaFilter(30.0);
    private AlphaFilter headingFilter = new AlphaFilter(15.0);
-   private final ArrayDeque<Double> velocities = new ArrayDeque<>();
-   private final ArrayDeque<Double> headings = new ArrayDeque<>();
 
    SimulationConstructionSet scs = new SimulationConstructionSet(new Robot("Robot"),
                                                                  new NullGraphics3DAdapter(),
                                                                  new SimulationConstructionSetParameters());
    private final YoRegistry yoRegistry = new YoRegistry(getClass().getSimpleName());
 //   private final YoRegistry yoRegistry = scs.getRootRegistry();
+   private final YoDouble headingAngle = new YoDouble("HeadingAngle", yoRegistry);
+   private final YoVector2D headingVector = new YoVector2D("HeadingVector", yoRegistry);
+   private final YoPoint2D me = new YoPoint2D("Me", yoRegistry);
    private final YoDouble noisyVelocity = new YoDouble("NoisyVelocity", yoRegistry);
-   private final YoDouble filteredVelocity = new YoDouble("FilteredVelocity", yoRegistry);
+   private final YoDouble velocity = new YoDouble("Velocity", yoRegistry);
    private final YoDouble noisyHeading = new YoDouble("NoisyHeading", yoRegistry);
-   private final YoDouble filteredHeading = new YoDouble("FilteredHeading", yoRegistry);
    private final List<AlphaFilter> sensorFilters = new ArrayList<>();
    private final List<YoDouble> wallErrors = new ArrayList<>();
    {
@@ -77,16 +78,14 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          predatorPositionFiltersY.add(new AlphaFilter(10.0));
       }
    }
-   private final YoDouble slamCorrectionX = new YoDouble("SlamCorrectionX", yoRegistry);
-   private final YoDouble slamCorrectionY = new YoDouble("SlamCorrectionY", yoRegistry);
+   private final YoVector2D slamCorrection = new YoVector2D("SlamCorrection", yoRegistry);
 
    public DuncanRobot05Behavior()
    {
       scs.addYoRegistry(yoRegistry);
       scs.setDT(1.0, 1);
       scs.setCameraFix(0.4, 0.0, 0.0);
-      scs.setupGraph(new String[] {noisyVelocity.getName(), filteredVelocity.getName()});
-      scs.setupGraph(new String[] {noisyHeading.getName(), filteredHeading.getName()});
+      scs.setupGraph(noisyVelocity.getName(), velocity.getName());
       String[] sensorErrors = new String[wallErrors.size()];
       for (int i = 0; i < wallErrors.size(); i++)
       {
@@ -104,9 +103,15 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       }
       scs.setupGraph(predatorGraphsX);
       scs.setupGraph(predatorGraphsY);
-      scs.setupGraph(new String[] {slamCorrectionX.getName(), slamCorrectionY.getName()});
+      scs.setupGraph(noisyHeading.getName(), headingAngle.getName());
+      scs.setupGraph(headingVector.getYoX().getName(), headingVector.getYoY().getName());
+      scs.setupGraph(me.getYoX().getName(), me.getYoY().getName());
+      scs.setupGraph(slamCorrection.getYoX().getName(), slamCorrection.getYoY().getName());
       scs.hideViewport();
       scs.changeBufferSize(4096);
+      JToggleButton pauseButton = new JToggleButton("Pause");
+      pauseButton.addActionListener(e -> paused = pauseButton.isSelected());
+      scs.addButton(pauseButton);
 
       scs.startOnAThread();
       while (!scs.hasSimulationThreadStarted())
@@ -117,16 +122,14 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    public void senseVelocity(double rawVelocity)
    {
       noisyVelocity.set(rawVelocity);
-      velocity = velocityFilter.filter(rawVelocity);
-      filteredVelocity.set(velocity);
+      velocity.set(velocityFilter.filter(rawVelocity));
    }
 
    @Override
    public void senseHeading(double rawHeading)
    {
       noisyHeading.set(rawHeading);
-      heading = headingFilter.filter(rawHeading);
-      filteredHeading.set(heading);
+      headingAngle.set(headingFilter.filter(rawHeading));
    }
    @Override
    public void senseWallRangeInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame)
@@ -237,19 +240,18 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public double[] getAccelerationAndTurnRate()
    {
-      Vector2D headingVector = new Vector2D(0.0, 1.0);
+      headingVector.set(0.0, 1.0);
       RigidBodyTransform transform = new RigidBodyTransform();
-      transform.getRotation().appendYawRotation(heading);
+      transform.getRotation().appendYawRotation(headingAngle.getValue());
       transform.transform(headingVector);
 
       // 0 heading is y+ (up)
       double dt = 0.01;
-      x += dt * velocity * -Math.sin(heading);
-      y += dt * velocity * Math.cos(heading);
+      me.add(dt * velocity.getValue() * -Math.sin(headingAngle.getValue()),
+             dt * velocity.getValue() * Math.cos(headingAngle.getValue()));
 
       double fieldGraduation = 1.5;
       Vector2D mouse = new Vector2D(mousePressedX, mousePressedY);
-      me = new Point2D(x, y);
       Vector2D attractionVector = new Vector2D();
 
       Vector2D meToMouse = fieldVector(me, mouse, distance -> 10.0 * Math.pow(distance, 1.5));
@@ -262,9 +264,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       Line2D top = new Line2D(0.0, 10.0, 1.0, 0.0);
       List<Line2D> walls = Arrays.asList(left, right, bottom, top);
 
-
-
-      Vector2D slamCorrection = new Vector2D();
+      slamCorrection.setToZero();
       ArrayList<Point2D> estimatedHits = new ArrayList<>();
       ArrayList<Point2D> actualHits = new ArrayList<>();
       for (int i = 0; i < sensors.size(); i++)
@@ -304,14 +304,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       }
 
       slamCorrection.scale(1.0 / sensors.size());
-      slamCorrectionX.set(slamCorrection.getX());
-      slamCorrectionY.set(slamCorrection.getY());
-      x += slamCorrection.getX();
-      y += slamCorrection.getY();
       me.add(slamCorrection);
-//      x -= slamCorrection.getX();
-//      y -= slamCorrection.getY();
-//      me.sub(slamCorrection);
 
       Vector2D boundaryRepulsion = new Vector2D();
       double boundaryStrength = 2.0;
@@ -372,16 +365,17 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
                                                                                     attractionVector.getX(),
                                                                                     attractionVector.getY());
 
-      double acceleration = (1.0 * (desiredSpeed - velocity));
+      double acceleration = (1.0 * (desiredSpeed - velocity.getValue()));
 
-      double angularVelocity = (velocity - lastVelocity) / dt;
+      double angularVelocity = (velocity.getValue() - lastVelocity) / dt;
       double turnRate = (5.0 * angleToAttraction) + (-0.5 * angularVelocity);
-      lastVelocity = velocity;
+      lastVelocity = velocity.getValue();
 
       if (Double.isNaN(acceleration)) acceleration = 0.0;
       if (Double.isNaN(turnRate)) turnRate = 0.0;
 
-      scs.tickAndUpdate();
+      if (!paused)
+         scs.tickAndUpdate();
 
       return new double[] {acceleration, turnRate};
    }
@@ -392,7 +386,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    {
       Point2D pointInWorld = new Point2D(pointInBody);
       RigidBodyTransform transform = new RigidBodyTransform();
-      transform.getRotation().setYawPitchRoll(-heading, 0.0, 0.0);
+      transform.getRotation().setYawPitchRoll(-headingAngle.getValue(), 0.0, 0.0);
       pointInWorld.applyInverseTransform(transform);
       pointInWorld.add(me);
       return pointInWorld;
@@ -402,7 +396,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    {
       Vector2D vectorInWorld = new Vector2D(vectorInBody);
       RigidBodyTransform transform = new RigidBodyTransform();
-      transform.getRotation().setYawPitchRoll(-heading, 0.0, 0.0);
+      transform.getRotation().setYawPitchRoll(-headingAngle.getValue(), 0.0, 0.0);
       vectorInWorld.applyInverseTransform(transform);
       return vectorInWorld;
    }
@@ -447,6 +441,6 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public boolean getDropFlag()
    {
-      return ((x > 8.0) && (y > 8.0));
+      return ((me.getX() > 8.0) && (me.getY() > 8.0));
    }
 }
