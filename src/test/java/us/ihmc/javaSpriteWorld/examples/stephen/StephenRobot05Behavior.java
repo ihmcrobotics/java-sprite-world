@@ -1,4 +1,4 @@
-package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
+package us.ihmc.javaSpriteWorld.examples.stephen;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -8,6 +8,7 @@ import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.*;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge05.Robot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 
 import java.util.ArrayList;

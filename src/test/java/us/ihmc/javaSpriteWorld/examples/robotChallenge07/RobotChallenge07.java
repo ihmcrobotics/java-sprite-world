@@ -7,7 +7,7 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeRules;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.DuncanRobot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.SimpleRobot05Behavior;
-import us.ihmc.javaSpriteWorld.examples.robotChallenge05.StephenRobot05Behavior;
+import us.ihmc.javaSpriteWorld.examples.stephen.StephenRobot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.RobotChallenge06NoiseParameters;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.RobotChallengeRules06;

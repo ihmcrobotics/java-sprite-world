@@ -5,7 +5,7 @@ import java.util.Random;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallenge01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeRules;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
-import us.ihmc.javaSpriteWorld.examples.robotChallenge04.SimpleRobot04Behavior;
+import us.ihmc.javaSpriteWorld.examples.stephen.StephenRobot05Behavior;
 
 public class RobotChallenge05 
 {
