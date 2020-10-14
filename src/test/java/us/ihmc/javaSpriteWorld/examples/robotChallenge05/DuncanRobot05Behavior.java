@@ -42,6 +42,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
    private AlphaFilter velocityFilter = new AlphaFilter(30.0);
    private AlphaFilter headingFilter = new AlphaFilter(15.0);
+   private AlphaFilter slamCorrectionFilterX = new AlphaFilter(20.0);
+   private AlphaFilter slamCorrectionFilterY = new AlphaFilter(20.0);
 
    SimulationConstructionSet scs = new SimulationConstructionSet(new Robot("Robot"),
                                                                  new NullGraphics3DAdapter(),
@@ -55,12 +57,16 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final YoDouble velocity = new YoDouble("Velocity", yoRegistry);
    private final YoDouble noisyHeading = new YoDouble("NoisyHeading", yoRegistry);
    private final List<AlphaFilter> sensorFilters = new ArrayList<>();
-   private final List<YoDouble> wallErrors = new ArrayList<>();
+   private final List<YoPoint2D> estimatedHits = new ArrayList<>();
+   private final List<YoPoint2D> actualHits = new ArrayList<>();
+   private final List<YoVector2D> hitErrors = new ArrayList<>();
+   public static final int NUMBER_OF_SENSORS = 9;
    {
-      for (int i = 0; i < 9; i++)
+      for (int i = 0; i < NUMBER_OF_SENSORS; i++)
       {
-         YoDouble wallError = new YoDouble("WallError" + i, yoRegistry);
-         wallErrors.add(wallError);
+         estimatedHits.add(new YoPoint2D("EstimatedHit" + i, yoRegistry));
+         actualHits.add(new YoPoint2D("ActualHit" + i, yoRegistry));
+         hitErrors.add(new YoVector2D("HitError" + i, yoRegistry));
          sensorFilters.add(new AlphaFilter(15.0));
       }
    }
@@ -86,12 +92,6 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       scs.setDT(1.0, 1);
       scs.setCameraFix(0.4, 0.0, 0.0);
       scs.setupGraph(noisyVelocity.getName(), velocity.getName());
-      String[] sensorErrors = new String[wallErrors.size()];
-      for (int i = 0; i < wallErrors.size(); i++)
-      {
-         sensorErrors[i] = wallErrors.get(i).getName();
-      }
-      scs.setupGraph(sensorErrors);
       String[] predatorGraphsX = new String[6];
       String[] predatorGraphsY = new String[6];
       for (int i = 0; i < 3; i++)
@@ -101,11 +101,23 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          predatorGraphsY[i * 2] = yoPredators.get(i).getYoY().getName();
          predatorGraphsY[i * 2 + 1] = filteredYoPredators.get(i).getYoY().getName();
       }
-      scs.setupGraph(predatorGraphsX);
-      scs.setupGraph(predatorGraphsY);
+//      scs.setupGraph(predatorGraphsX);
+//      scs.setupGraph(predatorGraphsY);
       scs.setupGraph(noisyHeading.getName(), headingAngle.getName());
       scs.setupGraph(headingVector.getYoX().getName(), headingVector.getYoY().getName());
+      me.set(2.0, 2.0);
       scs.setupGraph(me.getYoX().getName(), me.getYoY().getName());
+      String[] hitErrorsX = new String[NUMBER_OF_SENSORS];
+      String[] hitErrorsY = new String[NUMBER_OF_SENSORS];
+      for (int i = 0; i < NUMBER_OF_SENSORS; i++)
+      {
+         hitErrorsX[i] = hitErrors.get(i).getYoX().getName();
+         hitErrorsY[i] = hitErrors.get(i).getYoY().getName();
+//         scs.setupGraph(estimatedHits.get(i).getYoX().getName(), actualHits.get(i).getYoX().getName());
+//         scs.setupGraph(estimatedHits.get(i).getYoY().getName(), actualHits.get(i).getYoY().getName());
+      }
+      scs.setupGraph(hitErrorsX);
+      scs.setupGraph(hitErrorsY);
       scs.setupGraph(slamCorrection.getYoX().getName(), slamCorrection.getYoY().getName());
       scs.hideViewport();
       scs.changeBufferSize(4096);
@@ -265,8 +277,6 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       List<Line2D> walls = Arrays.asList(left, right, bottom, top);
 
       slamCorrection.setToZero();
-      ArrayList<Point2D> estimatedHits = new ArrayList<>();
-      ArrayList<Point2D> actualHits = new ArrayList<>();
       for (int i = 0; i < sensors.size(); i++)
       {
          Pair<Vector2D, Double> sensor = sensors.get(i);
@@ -289,22 +299,23 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
             }
          }
 
-         estimatedHits.add(estimatedIntersection);
+         estimatedHits.get(i).set(estimatedIntersection);
 
          Point2D actualHit = new Point2D(me);
          Vector2D hitMovement = new Vector2D(scanRayWorld);
          hitMovement.scale(sensor.getRight());
          actualHit.add(hitMovement);
-         actualHits.add(actualHit);
+         actualHits.get(i).set(actualHit);
 
-         wallErrors.get(i).set(estimatedHits.get(i).distance(actualHits.get(i)));
+         hitErrors.get(i).set(estimatedHits.get(i).getX() - actualHits.get(i).getX(),
+                              estimatedHits.get(i).getY() - actualHits.get(i).getY());
 
-         slamCorrection.add(estimatedHits.get(i).getX() - actualHits.get(i).getX(),
-                            estimatedHits.get(i).getY() - actualHits.get(i).getY());
+         // should add up the "wrench" of each instead
+         slamCorrection.add(hitErrors.get(i));
       }
-
-      slamCorrection.scale(1.0 / sensors.size());
-//      me.add(slamCorrection);
+      slamCorrection.scale(1.0 / NUMBER_OF_SENSORS);
+      slamCorrection.set(slamCorrectionFilterX.filter(slamCorrection.getX()), slamCorrectionFilterY.filter(slamCorrection.getY()));
+      me.add(slamCorrection);
 
       Vector2D boundaryRepulsion = new Vector2D();
       double boundaryStrength = 2.0;
