@@ -152,6 +152,31 @@ public class RobotChallenge01
       addWall(2.0/3.0*xMax, 1.0/3.0 * yMax, 2.0/3.0*xMax, 2.0/3.0*yMax);
    }
    
+   public void createSomeRooms()
+   {
+      double x0 = 0.0;
+      double x1 = 0.35 * xMax;
+      double x2 = 0.6 * xMax;
+      
+      double y0 = 0.0;
+      double y1 = 0.3 * yMax;
+      double y2 = 0.45 * yMax;
+      double y3 = 0.65 * yMax;
+      double y4 = 0.8 * yMax;
+      
+      addWall(x0, y2, x1, y2);
+      addWall(x1, y2, x1, y3);
+      addWall(x1, y4, x1, yMax);
+      
+      addWall(x2, y0, x2, y1);
+      addWall(x2, y2, x2, y3);
+      addWall(x2, y3, xMax, y3);
+      
+      addWall(x2, y4, x2, yMax);
+
+
+   }
+   
    public void addWall(double xOne, double yOne, double xTwo, double yTwo)
    {
       addWall(new Point2D(xOne, yOne), new Point2D(xTwo, yTwo));
