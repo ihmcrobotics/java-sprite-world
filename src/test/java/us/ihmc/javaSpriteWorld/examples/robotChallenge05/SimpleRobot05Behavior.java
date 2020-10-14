@@ -13,6 +13,8 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 
 public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
 {
+   private final double xMax, yMax;
+
    private double mousePressedX = 5.0, mousePressedY = 5.0;
    private double velocity = 0.0;
    private double heading = 0.0;
@@ -20,20 +22,32 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private double xDotInWorld = 0.0;
    private double yDotInWorld = 0.0;
 
-   public SimpleRobot05Behavior()
+   private final double alphaVelocity = 0.5;
+   private final double alphaHeading = 0.5;
+   
+   public SimpleRobot05Behavior(double xMax, double yMax)
    {
+      this.xMax = xMax;
+      this.yMax = yMax;
    }
 
    @Override
+   public void senseGlobalPositionForTestingOnly(double x, double y)
+   {
+      this.x = x;
+      this.y = y;
+   }
+   
+   @Override
    public void senseVelocity(double velocity)
    {
-      this.velocity = velocity;
+      this.velocity = alphaVelocity * this.velocity + (1.0 - alphaVelocity) * velocity;
    }
 
    @Override
    public void senseHeading(double heading)
    {
-      this.heading = heading;
+      this.heading = alphaHeading * this.heading + (1.0 - alphaHeading) * heading;
    }
 
    @Override
@@ -89,7 +103,7 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public boolean getDropFlag()
    {
-      return ((x > 8.0) && (y > 8.0));
+      return ((x > 0.9*xMax) && (y > 0.9 * yMax));
    }
 
    @Override

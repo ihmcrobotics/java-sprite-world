@@ -7,7 +7,7 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeRules;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.DuncanRobot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.SimpleRobot05Behavior;
-import us.ihmc.javaSpriteWorld.examples.robotChallenge05.StephenRobot05Behavior;
+import us.ihmc.javaSpriteWorld.examples.stephen.StephenRobot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.RobotChallenge06NoiseParameters;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.RobotChallengeRules06;
@@ -41,10 +41,11 @@ public class RobotChallenge07
       else if (PLAYER.equals("Stephen"))
          simpleBehavior = new StephenRobot05Behavior();
       else
-         simpleBehavior = new SimpleRobot05Behavior();
+         simpleBehavior = new SimpleRobot05Behavior(xMax, yMax);
       
       RobotChallenge06NoiseParameters noiseParameters = new RobotChallenge06NoiseParameters();
-      RobotChallengeRules rules = new RobotChallengeRules06(random, noiseParameters, robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);
+      RobotChallengeRules06 rules = new RobotChallengeRules06(random, noiseParameters, robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);
+//      rules.setTesting(true);
 
       robotChallenge.setRootChallengeRules(rules);
       robotChallenge.runSimulation();

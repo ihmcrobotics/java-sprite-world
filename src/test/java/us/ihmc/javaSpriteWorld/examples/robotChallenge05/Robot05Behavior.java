@@ -10,6 +10,8 @@ import us.ihmc.euclid.tuple2D.Vector2D;
 
 public interface Robot05Behavior
 {
+   public abstract void senseGlobalPositionForTestingOnly(double x, double y);
+
    public abstract void senseVelocity(double velocity);
 
    public abstract void senseHeading(double heading);

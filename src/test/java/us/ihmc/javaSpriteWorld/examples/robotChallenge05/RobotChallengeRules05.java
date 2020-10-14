@@ -31,6 +31,8 @@ public class RobotChallengeRules05 implements RobotChallengeRules
    private final Robot05Behavior robotBehavior;
    private final RobotChallenge01 challenge;
 
+   private boolean testing = false;
+   
    public RobotChallengeRules05(RobotChallenge01 challenge, Robot02 robot, FoodList01 foodList, PredatorList01 predatorList, FlagList flagList,
                                 Robot05Behavior robotBehavior)
    {
@@ -41,6 +43,11 @@ public class RobotChallengeRules05 implements RobotChallengeRules
       this.predatorList = predatorList;
       this.flagList = flagList;
       this.robotBehavior = robotBehavior;
+   }
+   
+   public void setTesting(boolean testing)
+   {
+      this.testing = testing;
    }
 
    @Override
@@ -54,6 +61,9 @@ public class RobotChallengeRules05 implements RobotChallengeRules
    {
       if (robotBehavior != null)
       {
+         if (testing)
+            robotBehavior.senseGlobalPositionForTestingOnly(robot.getX(), robot.getY());
+         
          ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame = senseWallRangeFinderPointsInBodyFrame();
          robotBehavior.senseWallRangeInBodyFrame(vectorsAndDistancesToWallInBodyFrame);
 

@@ -224,10 +224,14 @@ public class Robot02 implements RobotChallengeRobot
       System.out.println("Hit the wall. Ouch! Health = " + health);
       
       heading = heading + Math.PI;
+      if (velocity < 0.0001)
+         velocity = 0.0001;
+
       double xDot = -velocity * Math.sin(heading);
       double yDot = velocity * Math.cos(heading);
-      
+
       Vector2D unitVelocity = new Vector2D(xDot, yDot);
+
       unitVelocity.normalize();
       unitVelocity.scale(0.05 * xMax);
       x = x + unitVelocity.getX();

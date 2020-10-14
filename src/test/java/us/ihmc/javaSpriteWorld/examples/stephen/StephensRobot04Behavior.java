@@ -1,4 +1,4 @@
-package us.ihmc.javaSpriteWorld.examples.robotChallenge04;
+package us.ihmc.javaSpriteWorld.examples.stephen;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -7,6 +7,7 @@ import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge04.Robot04Behavior;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -357,4 +358,5 @@ public class StephensRobot04Behavior implements Robot04Behavior
    public void senseHitWall()
    {      
    }
+
 }

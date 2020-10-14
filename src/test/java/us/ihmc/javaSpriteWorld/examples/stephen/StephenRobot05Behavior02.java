@@ -1,4 +1,4 @@
-package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
+package us.ihmc.javaSpriteWorld.examples.stephen;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -9,6 +9,7 @@ import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DBasics;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge05.Robot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 
 import java.util.ArrayList;
@@ -323,12 +324,6 @@ public class StephenRobot05Behavior02 implements Robot05Behavior, Robot06Behavio
    private void computeWallAction()
    {
       double cost = -maxForceWall * Math.pow(baseWall, -wallDistance);
-
-//      double distanceBottom = xyPosition.getY();
-//      double distanceTop = 10.0 - distanceBottom;
-//      double distanceLeft = xyPosition.getX();
-//      double distanceRight = 10.0 - distanceLeft;
-
       responseDescriptions.add(new ObjectResponseDescription(0.0, wallAngularCostRange, cost));
    }
 
