@@ -26,8 +26,8 @@ public class RobotChallenge06
 
       RobotChallenge01 robotChallenge = new RobotChallenge01("RobotChallenge06", robot, random, xMax, yMax);
 //      robotChallenge.createSomeFood(10);
-//      double maximumPredatorSpeed = 1.5;
-//      robotChallenge.createSomePredators(3, maximumPredatorSpeed);
+      double maximumPredatorSpeed = 1.5;
+      robotChallenge.createSomePredators(3, maximumPredatorSpeed);
 //      robotChallenge.createSomeFlags(5);
 
       Robot06Behavior simpleBehavior;

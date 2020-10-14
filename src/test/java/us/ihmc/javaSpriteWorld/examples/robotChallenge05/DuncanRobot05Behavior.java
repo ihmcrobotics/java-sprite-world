@@ -346,7 +346,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          // should add up the "wrench" of each instead
          slamCorrection.add(hitErrors.get(i));
       }
-      slamCorrection.scale(1.0 / NUMBER_OF_SENSORS);
+      slamCorrection.scale(0.01 * 1.0 / NUMBER_OF_SENSORS);
       slamCorrection.set(slamCorrectionFilterX.filter(slamCorrection.getX()), slamCorrectionFilterY.filter(slamCorrection.getY()));
       me.add(slamCorrection);
 
@@ -409,7 +409,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
                                                                                     attractionVector.getX(),
                                                                                     attractionVector.getY());
 
-      acceleration.set(0.25 * (desiredSpeed - velocity.getValue()));
+      acceleration.set(1.0 * (desiredSpeed - velocity.getValue()));
 
       double angularVelocity = (velocity.getValue() - lastVelocity) / dt;
       turnRate.set((5.0 * angleToAttraction) + (-0.5 * angularVelocity));
