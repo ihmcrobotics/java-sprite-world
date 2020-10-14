@@ -64,6 +64,13 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
       steeringBasedAction.senseWallRangeInBodyFrame(vectorsAndDistancesToWallInBodyFrame);
    }
 
+
+   @Override
+   public void senseGlobalPositionForTestingOnly(double x, double y)
+   {
+      slamManager.senseGlobalPositionForTestingOnly(x, y);
+   }
+
    @Override
    public void senseFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
@@ -165,10 +172,5 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    public void senseDeliveredFlag(int flagId)
    {
       flagManager.senseDeliveredFlag(flagId);
-   }
-
-   @Override
-   public void senseGlobalPositionForTestingOnly(double x, double y)
-   {
    }
 }

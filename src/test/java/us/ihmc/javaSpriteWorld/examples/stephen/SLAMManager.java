@@ -12,9 +12,12 @@ import static us.ihmc.javaSpriteWorld.examples.stephen.BehaviorUtils.bodyFrameTo
 
 public class SLAMManager
 {
+   private double xDebug = Double.NaN;
+   private double yDebug = Double.NaN;
+
    private static final double dt = 0.01;
-   private static final double initialX = 0.5;
-   private static final double initialY = 0.5;
+   private static final double initialX = 1.5;
+   private static final double initialY = 1.5;
    private static final double correctionMultiplier = 0.33;
 
    private double velocity;
@@ -92,11 +95,24 @@ public class SLAMManager
          totalCorrectionVector.scale(correctionMultiplier / numberOfCorrections);
          xyPosition.add(totalCorrectionVector);
       }
+
+      if (!Double.isNaN(xDebug))
+      {
+         double xError = Math.abs(xDebug - xyPosition.getX());
+         double yError = Math.abs(yDebug - xyPosition.getY());
+         System.out.println("X Error = " + xError + "\t\t Y Error = " + yError);
+      }
    }
 
    public void setVectorsAndDistancesToWallInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame)
    {
       this.vectorsAndDistancesToWallInBodyFrame = vectorsAndDistancesToWallInBodyFrame;
+   }
+
+   public void senseGlobalPositionForTestingOnly(double x, double y)
+   {
+      this.xDebug = x;
+      this.yDebug = y;
    }
 
    public void setVelocity(double velocity)
