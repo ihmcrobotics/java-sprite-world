@@ -365,6 +365,12 @@ public class StephenRobot05Behavior implements Robot05Behavior, Robot06Behavior
       }
    }
 
+   @Override
+   public void senseNoiseFreeHeadingForTestingOnly(double heading)
+   {
+
+   }
+
    private void switchAreaToExplore()
    {
       while (true)
