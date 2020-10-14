@@ -37,7 +37,13 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
       this.x = x;
       this.y = y;
    }
-   
+
+   @Override
+   public void senseNoiseFreeHeadingForTestingOnly(double heading)
+   {
+      this.heading = heading;      
+   }
+
    @Override
    public void senseVelocity(double velocity)
    {
