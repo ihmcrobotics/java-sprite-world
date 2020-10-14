@@ -53,7 +53,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final YoRegistry yoRegistry = new YoRegistry(getClass().getSimpleName());
 //   private final YoRegistry yoRegistry = scs.getRootRegistry();
    private final YoDouble headingAngle = new YoDouble("HeadingAngle", yoRegistry);
+   private final YoDouble groundTruthHeading = new YoDouble("GroundTruthHeading", yoRegistry);
    private final YoVector2D headingVector = new YoVector2D("HeadingVector", yoRegistry);
+   private final YoPoint2D groundTruthPosition = new YoPoint2D("GroundTruthPosition", yoRegistry);
    private final YoPoint2D me = new YoPoint2D("Me", yoRegistry);
    private final YoDouble noisyVelocity = new YoDouble("NoisyVelocity", yoRegistry);
    private final YoDouble velocity = new YoDouble("Velocity", yoRegistry);
@@ -107,10 +109,10 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       }
 //      scs.setupGraph(predatorGraphsX);
 //      scs.setupGraph(predatorGraphsY);
-      scs.setupGraph(noisyHeading.getName(), headingAngle.getName());
+      scs.setupGraph(noisyHeading.getName(), headingAngle.getName(), groundTruthHeading.getName());
       scs.setupGraph(headingVector.getYoX().getName(), headingVector.getYoY().getName());
       me.set(2.0, 2.0);
-      scs.setupGraph(me.getYoX().getName(), me.getYoY().getName());
+      scs.setupGraph(me.getYoX().getName(), me.getYoY().getName(), groundTruthPosition.getYoX().getName(), groundTruthPosition.getYoY().getName());
       GraphArrayWindow sensorGraphs = scs.createNewGraphWindow();
       String[] hitErrorsX = new String[NUMBER_OF_SENSORS];
       String[] hitErrorsY = new String[NUMBER_OF_SENSORS];
@@ -478,11 +480,13 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
    @Override
    public void senseGlobalPositionForTestingOnly(double x, double y)
-   {      
+   {
+      groundTruthPosition.set(x, y);
    }
 
    @Override
    public void senseNoiseFreeHeadingForTestingOnly(double heading)
-   {      
+   {
+      groundTruthHeading.set(heading);
    }
 }
