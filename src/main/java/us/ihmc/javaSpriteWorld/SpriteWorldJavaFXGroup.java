@@ -45,7 +45,7 @@ public class SpriteWorldJavaFXGroup extends Group
       this.setOnMouseDragged(mouseDraggedHandler);
       this.setOnMouseReleased(mouseReleasedHandler);
       this.setOnMouseClicked(mouseClickedHandler);
-      
+
       KeyPressedHandler keyPressedHandler = new KeyPressedHandler();
       KeyReleasedHandler keyReleasedHandler = new KeyReleasedHandler();
       KeyTypedHandler keyTypedHandler = new KeyTypedHandler();
@@ -132,7 +132,7 @@ public class SpriteWorldJavaFXGroup extends Group
       @Override
       public void handle(KeyEvent keyEvent)
       {
-         keyEventHandler.keyPressed(keyEvent.getCharacter());
+         keyEventHandler.keyPressed(keyEvent.getText());
          keyEvent.consume();
       }
    }

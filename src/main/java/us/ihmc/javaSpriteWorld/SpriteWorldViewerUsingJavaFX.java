@@ -68,7 +68,8 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
          @Override
          public void run()
          {
-            spriteWorldViewerJavaFXGroup.getChildren().add(spriteWorldJavaFXGroup);
+            spriteWorldViewerJavaFXGroup.getChildren().add(spriteWorldJavaFXGroup); 
+            spriteWorldJavaFXGroup.requestFocus();
          }
       });
    }
@@ -145,6 +146,9 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
             }
 
             stage.show();
+
+            if (spriteWorldJavaFXGroup != null)
+               spriteWorldJavaFXGroup.requestFocus();
 
             countDownLatch.countDown();
          }
