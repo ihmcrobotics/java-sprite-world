@@ -13,12 +13,13 @@ import static us.ihmc.javaSpriteWorld.examples.stephen.BehaviorUtils.filter;
 
 public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
 {
-   private static final boolean useSteeringAction = false;
+   private static final boolean useSteeringAction = true;
 
+   private final EnabledBehaviors enabledBehaviors = new EnabledBehaviors();
    private final SLAMManager slamManager = new SLAMManager();
    private final FlagManager flagManager = new FlagManager(slamManager);
-   private final RadialVectorAction radialVectorAction = new RadialVectorAction(slamManager, flagManager);
-   private final SteeringBasedAction steeringBasedAction = new SteeringBasedAction(slamManager, flagManager);
+   private final RadialVectorAction radialVectorAction = new RadialVectorAction(slamManager, flagManager, enabledBehaviors);
+   private final SteeringBasedAction steeringBasedAction = new SteeringBasedAction(slamManager, flagManager, enabledBehaviors);
 
    private boolean firstTick = true;
    private final double[] totalAction = new double[2];
@@ -28,6 +29,14 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    // filter parameters
    private final double alphaAction = 1.0;
    private final double alphaVelocity = 1.0;
+
+   public StephenRobotBehavior()
+   {
+      enabledBehaviors.setFoodEnabled(true);
+      enabledBehaviors.setWallEnabled(false);
+      enabledBehaviors.setPredatorEnabled(false);
+      enabledBehaviors.setFlagEnabled(false);
+   }
 
    @Override
    public void senseVelocity(double velocity)
@@ -52,18 +61,21 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    {
       slamManager.setVectorsAndDistancesToWallInBodyFrame(vectorsAndDistancesToWallInBodyFrame);
       radialVectorAction.senseWallRangeInBodyFrame(vectorsAndDistancesToWallInBodyFrame);
+      steeringBasedAction.senseWallRangeInBodyFrame(vectorsAndDistancesToWallInBodyFrame);
    }
 
    @Override
    public void senseFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
       radialVectorAction.senseFoodInBodyFrame(locationOfAllFood);
+      steeringBasedAction.senseFoodInBodyFrame(locationOfAllFood);
    }
 
    @Override
    public void sensePredatorsInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators)
    {
       radialVectorAction.sensePredatorsInBodyFrame(locationOfAllPredators);
+      steeringBasedAction.sensePredatorsInBodyFrame(locationOfAllPredators);
    }
 
    @Override
@@ -71,6 +83,7 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    {
       flagManager.senseClosestFlagInBodyFrame(positionInBodyFrameAndIdOfClosestFlag);
       radialVectorAction.senseClosestFlagInBodyFrame(positionInBodyFrameAndIdOfClosestFlag);
+      steeringBasedAction.senseClosestFlagInBodyFrame(positionInBodyFrameAndIdOfClosestFlag);
    }
 
    @Override
@@ -139,7 +152,7 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseHitWall()
    {
-
+      // TODO reset SLAM
    }
 
    @Override
@@ -157,8 +170,5 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseGlobalPositionForTestingOnly(double x, double y)
    {
-      // TODO Auto-generated method stub
-      
    }
-
 }

@@ -14,6 +14,7 @@ import static us.ihmc.javaSpriteWorld.examples.stephen.BehaviorUtils.*;
 
 public class RadialVectorAction
 {
+   private final EnabledBehaviors enabledBehaviors;
    private final SLAMManager slamManager;
    private final FlagManager flagManager;
 
@@ -47,16 +48,11 @@ public class RadialVectorAction
    private final double basePredator = 2.0;
    private final double baseFlag = 2.5;
 
-   // toggle sub-behaviors
-   private boolean enableWall = true;
-   private boolean enableFood = true;
-   private boolean enablePredators = true;
-   private boolean enableFlags = false;
-
-   public RadialVectorAction(SLAMManager slamManager, FlagManager flagManager)
+   public RadialVectorAction(SLAMManager slamManager, FlagManager flagManager, EnabledBehaviors enabledBehaviors)
    {
       this.slamManager = slamManager;
       this.flagManager = flagManager;
+      this.enabledBehaviors = enabledBehaviors;
    }
 
    public void computeAction(double[] totalAction)
@@ -253,19 +249,19 @@ public class RadialVectorAction
 
    private void toggleOffSubBehaviors()
    {
-      if (!enableWall)
+      if (!enabledBehaviors.isWallEnabled())
       {
          wallForce.setToZero();
       }
-      if (!enableFood)
+      if (!enabledBehaviors.isFoodEnabled())
       {
          foodForce.setToZero();
       }
-      if (!enablePredators)
+      if (!enabledBehaviors.isPredatorEnabled())
       {
          predatorForce.setToZero();
       }
-      if (!enableFlags)
+      if (!enabledBehaviors.isFlagEnabled())
       {
          flagForce.setToZero();
       }
