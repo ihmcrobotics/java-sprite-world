@@ -42,8 +42,7 @@ public class RobotChallenge06
 //      noiseParameters.removeAllNoise();
 
       RobotChallengeRules06 rules = new RobotChallengeRules06(random, noiseParameters, robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);
-//      rules.setTesting(true);
-
+      rules.setTesting(true);
       robotChallenge.setRootChallengeRules(rules);
       robotChallenge.runSimulation();
    }
