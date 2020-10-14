@@ -1,6 +1,8 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge04;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+
 import us.ihmc.euclid.geometry.Line2D;
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
 import us.ihmc.euclid.transform.RigidBodyTransform;
@@ -20,7 +22,7 @@ public class DuncanRobot04Behavior implements Robot04Behavior
    private double x = 0.0, y = 0.0;
    private double heading = 0.0;
    private double velocity;
-   private ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood;
+   private ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood;
    private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
    private TreeMap<Integer, Point2D> flags;
    private TreeSet<Integer> changedFlags = new TreeSet<>();
@@ -49,7 +51,7 @@ public class DuncanRobot04Behavior implements Robot04Behavior
    }
 
    @Override
-   public void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
+   public void senseFood(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
       this.locationOfAllFood = locationOfAllFood;
    }
@@ -149,9 +151,9 @@ public class DuncanRobot04Behavior implements Robot04Behavior
 //      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
 
       Vector2D foodAttraction = new Vector2D();
-      for (Pair<Point2D, Vector2D> food : locationOfAllFood)
+      for (Triple<Integer, Point2D, Vector2D> food : locationOfAllFood)
       {
-         foodAttraction.add(fieldVector(me, food.getLeft(), distance -> 0.5 / Math.pow(distance, 1.5)));
+         foodAttraction.add(fieldVector(me, food.getMiddle(), distance -> 0.5 / Math.pow(distance, 1.5)));
       }
 
       if (changedFlags.size() == 1)

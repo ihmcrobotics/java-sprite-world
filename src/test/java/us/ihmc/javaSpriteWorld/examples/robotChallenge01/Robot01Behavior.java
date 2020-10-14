@@ -2,7 +2,7 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 
 import java.util.ArrayList;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
@@ -15,7 +15,7 @@ public interface Robot01Behavior
 
    public abstract void senseHeading(double heading);
 
-   public abstract void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationAndVelocityOfAllFood);
+   public abstract void senseFood(ArrayList<Triple<Integer, Point2D, Vector2D>> locationAndVelocityOfAllFood);
 
    public abstract void senseMousePressed(double mousePressedX, double mousePressedY);
 

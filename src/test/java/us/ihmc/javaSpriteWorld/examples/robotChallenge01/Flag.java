@@ -20,7 +20,7 @@ public class Flag
       this.y = y;
 
       sprite = SampleSprites.createSixSidedRedPipsOnWhiteDie();
-      sprite.setCostume(id - 1);
+      sprite.setCostume((id - 1) % 6);
       sprite.setHeightPreserveScale(0.3, 0);
 
       ConvexPolygon collisionPolygon = ConvexPolygon.createRectangle(new Point(-0.15, -0.15), new Vector(0.3, 0.3));
@@ -33,6 +33,7 @@ public class Flag
    {
       this.x = x;
       this.y = y;
+      doDynamicsAndUpdateSprite(0.0);
    }
 
    public void setLocation(Point2D position)

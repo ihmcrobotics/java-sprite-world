@@ -14,12 +14,14 @@ public class Food01
    private final Sprite sprite;
    private final Random random;
 
+   private final int id;
    private double x, y;
    private double heading, speed;
    private double acceleration, turnRate;
 
-   public Food01(Random random, double xMax, double yMax)
+   public Food01(int id, Random random, double xMax, double yMax)
    {
+      this.id = id;
       this.random = random;
       this.xMax = xMax;
       this.yMax = yMax;
@@ -31,6 +33,11 @@ public class Food01
       sprite.addCollisionPolygon(collisionPolygon);
 
       teleportToRandomLocation(random);
+   }
+
+   public int getId()
+   {
+      return id;
    }
 
    public double getX()

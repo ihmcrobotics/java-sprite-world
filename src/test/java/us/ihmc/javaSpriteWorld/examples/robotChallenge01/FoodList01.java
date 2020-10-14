@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
@@ -21,6 +21,8 @@ public class FoodList01
    private final ArrayList<Food01> recycledFood = new ArrayList<Food01>();
    private final HashMap<Sprite, Food01> map = new HashMap<Sprite, Food01>();
 
+   private int nextId = 1;
+   
    public FoodList01(double xMax, double yMax)
    {
       this.xMax = xMax;
@@ -43,7 +45,7 @@ public class FoodList01
       }
       else
       {
-         food = new Food01(random, xMax, yMax);
+         food = new Food01(nextId++, random, xMax, yMax);
          spriteWorld.addSprite(food.getSprite());
          collisionGroup.addSprite(food.getSprite());
       }
@@ -80,9 +82,9 @@ public class FoodList01
       }
    }
 
-   public ArrayList<Pair<Point2D, Vector2D>> getLocationAndVelocityOfAllFood()
+   public ArrayList<Triple<Integer, Point2D, Vector2D>> getLocationAndVelocityOfAllFood()
    {
-      ArrayList<Pair<Point2D, Vector2D>> locationsAndVelocities = new ArrayList<Pair<Point2D, Vector2D>>();
+      ArrayList<Triple<Integer, Point2D, Vector2D>> locationsAndVelocities = new ArrayList<Triple<Integer, Point2D, Vector2D>>();
 
       for (Food01 food : foodInPlay)
       {
@@ -92,7 +94,7 @@ public class FoodList01
          double speed = food.getSpeed();
 
          Vector2D velocity = new Vector2D(speed * Math.cos(heading), speed * Math.sin(heading));
-         locationsAndVelocities.add(new ImmutablePair<Point2D, Vector2D>(location, velocity));
+         locationsAndVelocities.add(new ImmutableTriple<Integer, Point2D, Vector2D>(food.getId(), location, velocity));
       }
 
       return locationsAndVelocities;

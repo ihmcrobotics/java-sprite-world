@@ -1,6 +1,8 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge02;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
 import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
@@ -68,12 +70,12 @@ public class DuncansRobot02Behavior implements Robot02Behavior
    }
 
    @Override
-   public void senseFood(ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood)
+   public void senseFood(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
       foods = new ArrayList<>();
-      for (Pair<Point2D, Vector2D> vector2DVector2DPair : locationOfAllFood)
+      for (Triple<Integer, Point2D, Vector2D> vector2DVector2DPair : locationOfAllFood)
       {
-         foods.add(new Food(new Point2D(vector2DVector2DPair.getLeft()), new Vector2D(vector2DVector2DPair.getRight())));
+         foods.add(new Food(new Point2D(vector2DVector2DPair.getMiddle()), new Vector2D(vector2DVector2DPair.getRight())));
       }
    }
    

@@ -3,7 +3,9 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 import java.util.ArrayList;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
@@ -61,6 +63,26 @@ public class RobotChallengeTools
          Vector2D velocityInBody = computeVectorInBodyFrame(velocityInWorld, robotHeading);
 
          Pair<Point2D, Vector2D> locationAndVelocityInBody = new ImmutablePair<Point2D, Vector2D>(locationInBody, velocityInBody);
+         positionAndVelocityInBodyFrame.add(locationAndVelocityInBody);
+      }
+      
+      return positionAndVelocityInBodyFrame;
+   }
+   
+   public static ArrayList<Triple<Integer, Point2D, Vector2D>> convertFromWorldToBodyFrameKeepingIds(Point2D robotLocationInWorld, ArrayList<Triple<Integer, Point2D, Vector2D>> locationAndVelocityInWorldFrame, double robotHeading)
+   {
+      ArrayList<Triple<Integer, Point2D, Vector2D>> positionAndVelocityInBodyFrame = new ArrayList<Triple<Integer, Point2D,Vector2D>>();
+      
+      for (Triple<Integer, Point2D, Vector2D> locationAndVelocity : locationAndVelocityInWorldFrame)
+      {
+         int id = locationAndVelocity.getLeft();
+         Point2D locationInWorld = locationAndVelocity.getMiddle();
+         Vector2D velocityInWorld = locationAndVelocity.getRight();
+         
+         Point2D locationInBody = computePositionInRobotBodyFrame(robotLocationInWorld, locationInWorld, robotHeading);
+         Vector2D velocityInBody = computeVectorInBodyFrame(velocityInWorld, robotHeading);
+
+         Triple<Integer, Point2D, Vector2D> locationAndVelocityInBody = new ImmutableTriple<Integer, Point2D, Vector2D>(id, locationInBody, velocityInBody);
          positionAndVelocityInBodyFrame.add(locationAndVelocityInBody);
       }
       

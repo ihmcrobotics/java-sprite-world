@@ -5,6 +5,7 @@ import java.util.Random;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
@@ -45,9 +46,9 @@ public class RobotChallengeRules06 extends RobotChallengeRules05
    }
 
    @Override
-   protected ArrayList<Pair<Point2D, Vector2D>> senseLocationOfFoodInBodyFrame()
+   protected ArrayList<Triple<Integer, Point2D, Vector2D>> senseLocationOfFoodInBodyFrame()
    {
-      ArrayList<Pair<Point2D, Vector2D>> locationOfFood = super.senseLocationOfFoodInBodyFrame();
+      ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfFood = super.senseLocationOfFoodInBodyFrame();
 
       return locationOfFood;
    }

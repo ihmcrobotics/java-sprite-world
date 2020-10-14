@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
@@ -59,7 +60,7 @@ public class RobotChallengeRules05 implements RobotChallengeRules
          robotBehavior.senseHeading(senseRobotHeading());
          robotBehavior.senseVelocity(senseRobotVelocity());
 
-         ArrayList<Pair<Point2D, Vector2D>> locationOfAllFoodInBodyFrame = senseLocationOfFoodInBodyFrame();
+         ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFoodInBodyFrame = senseLocationOfFoodInBodyFrame();
          robotBehavior.senseFoodInBodyFrame(locationOfAllFoodInBodyFrame);
 
          ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredatorsInBodyFrame = senseLocationOfPredatorsInBodyFrame();
@@ -114,10 +115,10 @@ public class RobotChallengeRules05 implements RobotChallengeRules
       return locationOfAllPredatorsInBodyFrame;
    }
 
-   protected ArrayList<Pair<Point2D, Vector2D>> senseLocationOfFoodInBodyFrame()
+   protected ArrayList<Triple<Integer, Point2D, Vector2D>> senseLocationOfFoodInBodyFrame()
    {
-      ArrayList<Pair<Point2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
-      ArrayList<Pair<Point2D, Vector2D>> locationOfAllFoodInBodyFrame = RobotChallengeTools.convertFromWorldToBodyFrame(robot.getPosition(),
+      ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
+      ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFoodInBodyFrame = RobotChallengeTools.convertFromWorldToBodyFrameKeepingIds(robot.getPosition(),
                                                                                                                         locationOfAllFood,
                                                                                                                         senseRobotHeading());
       return locationOfAllFoodInBodyFrame;
@@ -147,7 +148,10 @@ public class RobotChallengeRules05 implements RobotChallengeRules
       transform.transform(rangeVectorInWorld);
 
       Point2DBasics intersectionWithWall = challenge.getIntersectionWithWall(robot.getPosition(), rangeVectorInWorld);
-      double wallDistance = intersectionWithWall.distance(robot.getPosition());
+      double wallDistance = Double.POSITIVE_INFINITY;
+      
+      if (intersectionWithWall != null)
+         wallDistance = intersectionWithWall.distance(robot.getPosition());
 
       ImmutablePair<Vector2D, Double> vectorAndDistance = new ImmutablePair<Vector2D, Double>(rangeVectorInBody, wallDistance);
 

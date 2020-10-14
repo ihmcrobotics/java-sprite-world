@@ -14,6 +14,7 @@ public class CollisionProcessor01 implements SpriteCollisionListener
    private RobotChallengeRules robotChallengeRules;
    private final RobotChallengeRobot robot;
    private final FoodList01 foodList;
+   private final WallList wallList;
    private final PredatorList01 predatorList;
    private final FlagList flagList;
    private final Random random;
@@ -22,12 +23,13 @@ public class CollisionProcessor01 implements SpriteCollisionListener
    private final SpriteCollisionGroup collisionGroup;
 
    public CollisionProcessor01(RobotChallengeRobot robot, FoodList01 foodList, PredatorList01 predatorList,
-                               FlagList flagList, Random random, double xMax, double yMax, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
+                               FlagList flagList, WallList wallList, Random random, double xMax, double yMax, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
    {
       this.robot = robot;
       this.foodList = foodList;
       this.predatorList = predatorList;
       this.flagList = flagList;
+      this.wallList = wallList;
       this.random = random;
       this.xMax = xMax;
       this.yMax = yMax;
@@ -66,17 +68,80 @@ public class CollisionProcessor01 implements SpriteCollisionListener
          return;
       }
 
-      Food01 foodOne = foodList.findFood(spriteOne);
-      Food01 foodTwo = foodList.findFood(spriteTwo);
-
-      if ((foodOne != null) && (foodTwo != null))
+      Food01 food = foodList.findFood(spriteOne);
+      if (food != null)
       {
-         processFoodFoodCollision(foodOne, foodTwo);
+         processFoodCollision(food, spriteTwo);
+         return;
+      }
+      
+      food = foodList.findFood(spriteTwo);
+      if (food != null)
+      {
+         processFoodCollision(food, spriteOne);
+         return;
+      }
+
+      Wall wall = wallList.findWall(spriteOne);
+      if (wall != null)
+      {
+         processWallCollision(wall, spriteTwo);
+         return;
+      }
+      
+      wall = wallList.findWall(spriteTwo);
+      if (wall != null)
+      {
+         processWallCollision(wall, spriteOne);
       }
 
    }
 
-   private void processFoodFoodCollision(Food01 foodOne, Food01 foodTwo)
+   private void processWallCollision(Wall wall, Sprite sprite)
+   {
+      Flag flag = flagList.findFlag(sprite);
+      if (flag != null)
+      {
+         System.out.println("Scootching flag " + flag.getId());
+         double x = flag.getX();
+         double y = flag.getY();
+
+         if (x < 1.0) 
+            x = x + 0.1;
+         else
+            x = x - 0.1;
+         if (y < 1.0)
+            y = y + 0.1;
+         else
+            y = y - 0.1;
+         
+         flag.setLocation(new Point2D(x, y));
+      }
+      
+   }
+
+   private void processFoodCollision(Food01 food, Sprite sprite)
+   {
+      Food01 foodTwo = foodList.findFood(sprite);
+
+      if ((foodTwo != null))
+      {
+         processFoodAndFoodCollision(food, foodTwo);
+      }
+    
+      Wall wall = wallList.findWall(sprite);
+      if (wall != null)
+      {
+         processFoodAndWallCollision(food, wall);
+      }
+   }
+
+   private void processFoodAndWallCollision(Food01 food, Wall wall)
+   {
+      // Go through for now.
+   }
+
+   private void processFoodAndFoodCollision(Food01 foodOne, Food01 foodTwo)
    {
       double xOne = foodOne.getX();
       double yOne = foodOne.getY();
@@ -112,7 +177,17 @@ public class CollisionProcessor01 implements SpriteCollisionListener
       {
          processPredatorAndFoodCollision(predator, food);
       }
+      
+      Wall wall = wallList.findWall(sprite);
+      if (wall != null)
+      {
+         processPredatorAndWallCollision(predator, wall);
+      }
+   }
 
+   private void processPredatorAndWallCollision(Predator01 predator, Wall wall)
+   {
+      // Go right through for now.
    }
 
    private void processPredatorAndFoodCollision(Predator01 predator, Food01 food)
@@ -142,6 +217,18 @@ public class CollisionProcessor01 implements SpriteCollisionListener
          return;
       }
 
+      Wall wall = wallList.findWall(sprite);
+      if (wall != null)
+      {
+         processRobotAndWallCollision(robot, wall);
+         return;
+      }
+
+   }
+
+   private void processRobotAndWallCollision(RobotChallengeRobot robot, Wall wall)
+   {
+      robot.hitWall();
    }
 
    private void processRobotAndFlagCollision(RobotChallengeRobot robot, Flag flag)
