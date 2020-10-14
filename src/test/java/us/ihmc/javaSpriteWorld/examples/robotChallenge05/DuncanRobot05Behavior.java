@@ -23,6 +23,7 @@ import us.ihmc.log.LogTools;
 import us.ihmc.simulationconstructionset.Robot;
 import us.ihmc.simulationconstructionset.SimulationConstructionSet;
 import us.ihmc.simulationconstructionset.SimulationConstructionSetParameters;
+import us.ihmc.simulationconstructionset.gui.GraphArrayWindow;
 import us.ihmc.yoVariables.euclid.YoPoint2D;
 import us.ihmc.yoVariables.euclid.YoVector2D;
 import us.ihmc.yoVariables.registry.YoRegistry;
@@ -36,6 +37,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private boolean paused = false;
    private double mousePressedX = 5.0, mousePressedY = 5.0;
    private ArrayList<Pair<Vector2D, Double>> sensors;
+   private ArrayList<Pair<Vector2D, Double>> noisySensors;
    private ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood;
    private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
    private Pair<Point2D, Integer> closestFlag;
@@ -59,6 +61,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final List<AlphaFilter> sensorFilters = new ArrayList<>();
    private final List<YoPoint2D> estimatedHits = new ArrayList<>();
    private final List<YoPoint2D> actualHits = new ArrayList<>();
+   private final List<YoPoint2D> noisyHits = new ArrayList<>();
    private final List<YoVector2D> hitErrors = new ArrayList<>();
    public static final int NUMBER_OF_SENSORS = 9;
    {
@@ -66,8 +69,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       {
          estimatedHits.add(new YoPoint2D("EstimatedHit" + i, yoRegistry));
          actualHits.add(new YoPoint2D("ActualHit" + i, yoRegistry));
+         noisyHits.add(new YoPoint2D("NoisyHit" + i, yoRegistry));
          hitErrors.add(new YoVector2D("HitError" + i, yoRegistry));
-         sensorFilters.add(new AlphaFilter(15.0));
+         sensorFilters.add(new AlphaFilter(3.0));
       }
    }
    private final List<Point2D> lastFoodPositions = new ArrayList<>();
@@ -107,18 +111,28 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       scs.setupGraph(headingVector.getYoX().getName(), headingVector.getYoY().getName());
       me.set(2.0, 2.0);
       scs.setupGraph(me.getYoX().getName(), me.getYoY().getName());
+      GraphArrayWindow sensorGraphs = scs.createNewGraphWindow();
       String[] hitErrorsX = new String[NUMBER_OF_SENSORS];
       String[] hitErrorsY = new String[NUMBER_OF_SENSORS];
       for (int i = 0; i < NUMBER_OF_SENSORS; i++)
       {
          hitErrorsX[i] = hitErrors.get(i).getYoX().getName();
          hitErrorsY[i] = hitErrors.get(i).getYoY().getName();
-//         scs.setupGraph(estimatedHits.get(i).getYoX().getName(), actualHits.get(i).getYoX().getName());
-//         scs.setupGraph(estimatedHits.get(i).getYoY().getName(), actualHits.get(i).getYoY().getName());
+         sensorGraphs.setupGraph(new String[] {noisyHits.get(i).getYoX().getName(),
+                                               estimatedHits.get(i).getYoX().getName(),
+                                               actualHits.get(i).getYoX().getName()});
+      }
+      sensorGraphs.getGraphArrayPanel().addColumn();
+      for (int i = 0; i < NUMBER_OF_SENSORS; i++)
+      {
+         sensorGraphs.setupGraph(new String[] {noisyHits.get(i).getYoY().getName(),
+                                               estimatedHits.get(i).getYoY().getName(),
+                                               actualHits.get(i).getYoY().getName()});
       }
       scs.setupGraph(hitErrorsX);
       scs.setupGraph(hitErrorsY);
       scs.setupGraph(slamCorrection.getYoX().getName(), slamCorrection.getYoY().getName());
+      scs.skipLoadingDefaultConfiguration();
       scs.hideViewport();
       scs.changeBufferSize(4096);
       JToggleButton pauseButton = new JToggleButton("Pause");
@@ -154,6 +168,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       }
 
       this.sensors = filteredSensors;
+      this.noisySensors = vectorsAndDistancesToWallInBodyFrame;
    }
 
    @Override
@@ -307,6 +322,12 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          actualHit.add(hitMovement);
          actualHits.get(i).set(actualHit);
 
+         Point2D noisyHit = new Point2D(me);
+         Vector2D noisyHitMovement = new Vector2D(scanRayWorld);
+         noisyHitMovement.scale(noisySensors.get(i).getRight());
+         noisyHit.add(noisyHitMovement);
+         noisyHits.get(i).set(noisyHit);
+
          hitErrors.get(i).set(estimatedHits.get(i).getX() - actualHits.get(i).getX(),
                               estimatedHits.get(i).getY() - actualHits.get(i).getY());
 
@@ -315,7 +336,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       }
       slamCorrection.scale(1.0 / NUMBER_OF_SENSORS);
       slamCorrection.set(slamCorrectionFilterX.filter(slamCorrection.getX()), slamCorrectionFilterY.filter(slamCorrection.getY()));
-      me.add(slamCorrection);
+//      me.add(slamCorrection);
 
       Vector2D boundaryRepulsion = new Vector2D();
       double boundaryStrength = 2.0;
