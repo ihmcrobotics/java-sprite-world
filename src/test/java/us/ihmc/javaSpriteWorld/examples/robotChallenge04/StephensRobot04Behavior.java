@@ -358,10 +358,4 @@ public class StephensRobot04Behavior implements Robot04Behavior
    {      
    }
 
-   @Override
-   public void senseGlobalPositionForTestingOnly(double x, double y)
-   {
-      // TODO Auto-generated method stub
-      
-   }
 }
