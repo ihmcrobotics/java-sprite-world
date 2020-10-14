@@ -41,7 +41,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
    private Pair<Point2D, Integer> closestFlag;
 
-   private AlphaFilter velocityFilter = new AlphaFilter(30.0);
+   private AlphaFilter velocityFilter = new AlphaFilter(25.0);
    private AlphaFilter headingFilter = new AlphaFilter(15.0);
    private AlphaFilter slamCorrectionFilterX = new AlphaFilter(20.0);
    private AlphaFilter slamCorrectionFilterY = new AlphaFilter(20.0);
@@ -348,7 +348,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       }
       slamCorrection.scale(1.0 / NUMBER_OF_SENSORS);
       slamCorrection.set(slamCorrectionFilterX.filter(slamCorrection.getX()), slamCorrectionFilterY.filter(slamCorrection.getY()));
-//      me.add(slamCorrection);
+      me.add(slamCorrection);
 
       Vector2D boundaryRepulsion = new Vector2D();
       double boundaryStrength = 2.0;
@@ -409,7 +409,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
                                                                                     attractionVector.getX(),
                                                                                     attractionVector.getY());
 
-      acceleration.set(1.0 * (desiredSpeed - velocity.getValue()));
+      acceleration.set(0.25 * (desiredSpeed - velocity.getValue()));
 
       double angularVelocity = (velocity.getValue() - lastVelocity) / dt;
       turnRate.set((5.0 * angleToAttraction) + (-0.5 * angularVelocity));
