@@ -113,6 +113,12 @@ public class StephensRobot04Behavior implements Robot04Behavior
    }
 
    @Override
+   public void senseKeyPressed(String keyPressed)
+   {
+
+   }
+
+   @Override
    public double[] getAccelerationAndTurnRate()
    {
       if (locationOfAllFood == null || locationOfAllPredators == null || locationAndIdsOfAllFlags == null)

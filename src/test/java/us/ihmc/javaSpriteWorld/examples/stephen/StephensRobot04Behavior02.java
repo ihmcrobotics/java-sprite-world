@@ -115,6 +115,12 @@ public class StephensRobot04Behavior02 implements Robot04Behavior
    }
 
    @Override
+   public void senseKeyPressed(String keyPressed)
+   {
+
+   }
+
+   @Override
    public void senseFlags(ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags)
    {
       this.locationAndIdsOfAllFlags = locationAndIdsOfAllFlags;

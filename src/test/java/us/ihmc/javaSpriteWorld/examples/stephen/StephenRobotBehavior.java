@@ -67,7 +67,7 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseKeyPressed(String keyPressed)
    {
-      
+
    }
 
    @Override
