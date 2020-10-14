@@ -15,6 +15,7 @@ import us.ihmc.javaSpriteWorld.SpriteWorldKeyListener;
 import us.ihmc.javaSpriteWorld.SpriteWorldMouseListener;
 import us.ihmc.javaSpriteWorld.SpriteWorldViewer;
 import us.ihmc.javaSpriteWorld.SpriteWorldViewerUsingJavaFX;
+import us.ihmc.javaSpriteWorld.SpriteWorldViewerUsingSwing;
 
 public class RobotChallenge01
 {
@@ -24,8 +25,8 @@ public class RobotChallenge01
    private final Random random;
    private int nextFlagToDeliver = 1;
 
-   private final SpriteWorldViewerUsingJavaFX viewer;
-//   private final SpriteWorldViewerUsingSwing viewer;
+//   private final SpriteWorldViewerUsingJavaFX viewer;
+   private final SpriteWorldViewerUsingSwing viewer;
    private final SpriteWorldMouseListener spriteWorldMouseListener;
    private final SpriteWorldKeyListener spriteWorldKeyListener;
    
@@ -60,8 +61,8 @@ public class RobotChallenge01
       flagList = new FlagList();
       wallList = new WallList();
       
-//      viewer = new SpriteWorldViewerUsingSwing(name);
-      viewer = new SpriteWorldViewerUsingJavaFX(name);
+      viewer = new SpriteWorldViewerUsingSwing(name);
+//      viewer = new SpriteWorldViewerUsingJavaFX(name);
 
       viewer.setPreferredSizeInPixels(1000, 1000);
       viewer.setResizable(false);
