@@ -64,6 +64,11 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
       steeringBasedAction.senseWallRangeInBodyFrame(vectorsAndDistancesToWallInBodyFrame);
    }
 
+   @Override
+   public void senseKeyPressed(String keyPressed)
+   {
+      
+   }
 
    @Override
    public void senseGlobalPositionForTestingOnly(double x, double y)
