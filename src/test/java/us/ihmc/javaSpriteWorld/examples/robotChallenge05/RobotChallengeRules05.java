@@ -57,6 +57,12 @@ public class RobotChallengeRules05 implements RobotChallengeRules
    }
 
    @Override
+   public void senseKeyPressed(String keyPressed)
+   {
+      robotBehavior.senseKeyPressed(keyPressed);
+   }
+
+   @Override
    public void executeRules()
    {
       if (robotBehavior != null)

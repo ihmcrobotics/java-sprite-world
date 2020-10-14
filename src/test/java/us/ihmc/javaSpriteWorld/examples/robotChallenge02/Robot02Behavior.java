@@ -15,6 +15,8 @@ public interface Robot02Behavior
 
    public abstract void senseMousePressed(double mousePressedX, double mousePressedY);
 
+   public abstract void senseKeyPressed(String keyPressed);
+
    public abstract void senseGlobalLocation(double x, double y);
 
    public abstract void senseFood(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood);

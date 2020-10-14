@@ -6,6 +6,7 @@ import java.util.List;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 
@@ -13,6 +14,7 @@ public class SpriteWorldJavaFXGroup extends Group
 {
    private SpriteWorld spriteWorld;
    private GenericMouseEventHandler mouseEventHandler;
+   private GenericKeyEventHandler keyEventHandler;
 
    private final HashMap<Sprite, SpriteJavaFXGroup> spriteJavaFXGroups = new HashMap<>();
    private SpriteStageJavaFXGroup spriteStageJavaFXGroup = null;
@@ -43,12 +45,21 @@ public class SpriteWorldJavaFXGroup extends Group
       this.setOnMouseDragged(mouseDraggedHandler);
       this.setOnMouseReleased(mouseReleasedHandler);
       this.setOnMouseClicked(mouseClickedHandler);
+
+      KeyPressedHandler keyPressedHandler = new KeyPressedHandler();
+      KeyReleasedHandler keyReleasedHandler = new KeyReleasedHandler();
+      KeyTypedHandler keyTypedHandler = new KeyTypedHandler();
+
+      this.setOnKeyPressed(keyPressedHandler);
+      this.setOnKeyReleased(keyReleasedHandler);
+      this.setOnKeyTyped(keyTypedHandler);
    }
 
    public void setSpriteWorld(SpriteWorldViewer viewer, SpriteWorld spriteWorld)
    {
       this.spriteWorld = spriteWorld;
       this.mouseEventHandler = new GenericMouseEventHandler(viewer, spriteWorld);
+      this.keyEventHandler = new GenericKeyEventHandler(viewer, spriteWorld);
    }
 
    private void printAndPause(String string, long pause)
@@ -114,6 +125,36 @@ public class SpriteWorldJavaFXGroup extends Group
       
 //      printAndPause("Leaving SpriteWorldJavaFXGroup.update()", 1000L);
 
+   }
+
+   private class KeyPressedHandler implements EventHandler<KeyEvent>
+   {
+      @Override
+      public void handle(KeyEvent keyEvent)
+      {
+         keyEventHandler.keyPressed(keyEvent.getText());
+         keyEvent.consume();
+      }
+   }
+   
+   private class KeyReleasedHandler implements EventHandler<KeyEvent>
+   {
+      @Override
+      public void handle(KeyEvent keyEvent)
+      {
+         keyEventHandler.keyReleased(keyEvent.getCharacter());
+         keyEvent.consume();
+      }
+   }
+
+   private class KeyTypedHandler implements EventHandler<KeyEvent>
+   {
+      @Override
+      public void handle(KeyEvent keyEvent)
+      {
+         keyEventHandler.keyTyped(keyEvent.getCharacter());
+         keyEvent.consume();
+      }
    }
 
    private class MouseEnteredHandler implements EventHandler<MouseEvent>

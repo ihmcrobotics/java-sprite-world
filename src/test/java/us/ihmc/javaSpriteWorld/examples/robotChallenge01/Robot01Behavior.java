@@ -19,6 +19,8 @@ public interface Robot01Behavior
 
    public abstract void senseMousePressed(double mousePressedX, double mousePressedY);
 
+   public abstract void senseKeyPressed(String keyPressed);
+
    public abstract void senseDroppedFlag(int id);
 
    public abstract void sensePickedUpFlag(int id);
@@ -28,5 +30,6 @@ public interface Robot01Behavior
    public abstract void senseHitWall();
 
    double[] getXYVelocity();
+
 
 }

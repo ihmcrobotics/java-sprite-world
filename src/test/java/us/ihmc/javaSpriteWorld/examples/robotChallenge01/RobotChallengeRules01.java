@@ -19,7 +19,13 @@ public class RobotChallengeRules01 implements RobotChallengeRules
       this.foodList = foodList;
       this.robot01Behavior = robot01Behavior;
    }
-   
+
+   @Override
+   public void senseKeyPressed(String keyPressed)
+   {
+      robot01Behavior.senseKeyPressed(keyPressed);
+   }
+
    @Override
    public void senseMousePressed(double mousePressedX, double mousePressedY)
    {

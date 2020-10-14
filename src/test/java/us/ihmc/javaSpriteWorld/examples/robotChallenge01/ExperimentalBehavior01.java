@@ -51,7 +51,11 @@ public class ExperimentalBehavior01 implements Robot01Behavior
    @Override
    public void senseMousePressed(double mousePressedX, double mousePressedY)
    {
+   }
 
+   @Override
+   public void senseKeyPressed(String keyPressed)
+   {
    }
 
    @Override
@@ -145,6 +149,7 @@ public class ExperimentalBehavior01 implements Robot01Behavior
    public void senseHitWall()
    {      
    }
+
 
 
 }

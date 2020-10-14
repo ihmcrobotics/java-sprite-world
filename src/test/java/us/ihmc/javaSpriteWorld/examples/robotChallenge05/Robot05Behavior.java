@@ -20,6 +20,8 @@ public interface Robot05Behavior
 
    public abstract void senseMousePressed(double mousePressedX, double mousePressedY);
 
+   public abstract void senseKeyPressed(String keyPressed);
+
    public abstract void senseWallRangeInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame);
 
    public abstract void senseFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood);
@@ -39,5 +41,6 @@ public interface Robot05Behavior
    public abstract double[] getAccelerationAndTurnRate();
 
    public abstract boolean getDropFlag();
+
 
 }
