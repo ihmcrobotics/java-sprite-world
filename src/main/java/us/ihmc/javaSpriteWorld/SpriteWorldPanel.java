@@ -2,6 +2,8 @@ package us.ihmc.javaSpriteWorld;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -14,7 +16,7 @@ import javax.swing.JPanel;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
-public class SpriteWorldPanel extends JPanel implements MouseMotionListener, MouseListener
+public class SpriteWorldPanel extends JPanel implements MouseMotionListener, MouseListener, KeyListener
 {
    private static final long serialVersionUID = 4076112028926697537L;
    
@@ -31,6 +33,7 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
 
    private SpriteWorld spriteWorld;
    private GenericMouseEventHandler mouseEventHandler;
+   private GenericKeyEventHandler keyEventHandler;
 
    public SpriteWorldPanel(SpriteWorldViewer viewer, SpriteWorld spriteWorld)
    {
@@ -38,12 +41,14 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
 
       this.addMouseListener(this);
       this.addMouseMotionListener(this);
+      this.addKeyListener(this);
    }
 
    public void setSpriteWorld(SpriteWorldViewer viewer, SpriteWorld spriteWorld) 
    {
       this.spriteWorld = spriteWorld;
       this.mouseEventHandler = new GenericMouseEventHandler(viewer, spriteWorld);
+      this.keyEventHandler = new GenericKeyEventHandler(viewer, spriteWorld);
    }
 
    @Override
@@ -207,6 +212,24 @@ public class SpriteWorldPanel extends JPanel implements MouseMotionListener, Mou
       double yWorld = convertFromPanelPixelsToWorldY(mouseEvent.getY());
       int clickCount = mouseEvent.getClickCount();
       mouseEventHandler.mouseClicked(xWorld, yWorld, clickCount);
+   }
+
+   @Override
+   public void keyPressed(KeyEvent keyEvent)
+   {
+      keyEventHandler.keyPressed(String.valueOf(keyEvent.getKeyChar()));
+   }
+
+   @Override
+   public void keyReleased(KeyEvent keyEvent)
+   {
+      keyEventHandler.keyReleased(String.valueOf(keyEvent.getKeyChar()));
+   }
+
+   @Override
+   public void keyTyped(KeyEvent keyEvent)
+   {
+      keyEventHandler.keyTyped(String.valueOf(keyEvent.getKeyChar()));
    }
 
 }

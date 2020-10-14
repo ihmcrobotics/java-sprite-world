@@ -17,6 +17,7 @@ public class SpriteWorld
 
    private ArrayList<SpriteCollisionGroup> spriteCollisionGroups;
    private ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = new ArrayList<>();
+   private ArrayList<SpriteWorldKeyListener> spriteWorldKeyListeners = new ArrayList<>();
 
    public SpriteWorld()
    {
@@ -31,6 +32,16 @@ public class SpriteWorld
    public ArrayList<SpriteWorldMouseListener> getSpriteWorldMouseListeners()
    {
       return spriteWorldMouseListeners;
+   }
+
+   public void attacheSpriteWorldKeyListener(SpriteWorldKeyListener spriteWorldKeyListener)
+   {
+      this.spriteWorldKeyListeners.add(spriteWorldKeyListener);
+   }
+
+   public ArrayList<SpriteWorldKeyListener> getSpriteWorldKeyListeners()
+   {
+      return spriteWorldKeyListeners;
    }
 
    public void addSpriteCollisionGroup(SpriteCollisionGroup spriteCollisionGroup)

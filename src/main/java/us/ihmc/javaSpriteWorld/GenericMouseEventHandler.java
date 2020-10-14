@@ -164,7 +164,6 @@ public class GenericMouseEventHandler
             spriteWorldMouseListener.mouseDraggedInWorld(viewer, spriteWorld, xWorld, yWorld);
          }
       }
-
    }
 
 }
