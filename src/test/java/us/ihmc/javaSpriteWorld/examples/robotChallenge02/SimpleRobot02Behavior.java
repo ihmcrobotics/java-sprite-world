@@ -40,6 +40,12 @@ public class SimpleRobot02Behavior implements Robot02Behavior
    }
 
    @Override
+   public void senseKeyPressed(String keyPressed)
+   {      
+      System.out.println("Key Pressed: " + keyPressed);
+   }
+
+   @Override
    public double[] getAccelerationAndTurnRate()
    {
       return new double[] {1.0, -0.3};

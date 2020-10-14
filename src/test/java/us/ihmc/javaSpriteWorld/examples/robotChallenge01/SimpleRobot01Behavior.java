@@ -46,6 +46,12 @@ public class SimpleRobot01Behavior implements Robot01Behavior
    }
 
    @Override
+   public void senseKeyPressed(String keyPressed)
+   {      
+      System.out.println("Key Pressed: " + keyPressed);
+   }
+
+   @Override
    public void senseDroppedFlag(int id)
    {      
    }
@@ -64,5 +70,6 @@ public class SimpleRobot01Behavior implements Robot01Behavior
    public void senseHitWall()
    {      
    }
+
 
 }

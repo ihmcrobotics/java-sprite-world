@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import us.ihmc.euclid.geometry.Line2D;
-import us.ihmc.euclid.geometry.LineSegment2D;
 import us.ihmc.euclid.geometry.interfaces.LineSegment2DReadOnly;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
@@ -12,9 +11,10 @@ import us.ihmc.euclid.tuple2D.interfaces.Point2DBasics;
 import us.ihmc.javaSpriteWorld.SpriteCollisionGroup;
 import us.ihmc.javaSpriteWorld.SpriteStage;
 import us.ihmc.javaSpriteWorld.SpriteWorld;
+import us.ihmc.javaSpriteWorld.SpriteWorldKeyListener;
 import us.ihmc.javaSpriteWorld.SpriteWorldMouseListener;
 import us.ihmc.javaSpriteWorld.SpriteWorldViewer;
-import us.ihmc.javaSpriteWorld.SpriteWorldViewerUsingSwing;
+import us.ihmc.javaSpriteWorld.SpriteWorldViewerUsingJavaFX;
 
 public class RobotChallenge01
 {
@@ -24,8 +24,11 @@ public class RobotChallenge01
    private final Random random;
    private int nextFlagToDeliver = 1;
 
-   private final SpriteWorldViewerUsingSwing viewer;
+   private final SpriteWorldViewerUsingJavaFX viewer;
+//   private final SpriteWorldViewerUsingSwing viewer;
    private final SpriteWorldMouseListener spriteWorldMouseListener;
+   private final SpriteWorldKeyListener spriteWorldKeyListener;
+   
    private final SpriteWorld spriteWorld;
    private final SpriteStage stage;
    private final RobotChallengeRobot robot;
@@ -42,6 +45,9 @@ public class RobotChallenge01
    private boolean mousePressed;
    private double mousePressedX, mousePressedY;
 
+   private boolean keyWasPressed;
+   private String keyPressed;
+
    public RobotChallenge01(String name, RobotChallengeRobot robot, Random random, double xMax, double yMax)
    {
       this.robot = robot;
@@ -54,7 +60,8 @@ public class RobotChallenge01
       flagList = new FlagList();
       wallList = new WallList();
       
-      viewer = new SpriteWorldViewerUsingSwing(name);
+//      viewer = new SpriteWorldViewerUsingSwing(name);
+      viewer = new SpriteWorldViewerUsingJavaFX(name);
 
       viewer.setPreferredSizeInPixels(1000, 1000);
       viewer.setResizable(false);
@@ -136,6 +143,29 @@ public class RobotChallenge01
 
       spriteWorld.attacheSpriteWorldMouseListener(spriteWorldMouseListener);
       
+      spriteWorldKeyListener = new SpriteWorldKeyListener()
+      {
+         
+         @Override
+         public void KeyTyped(SpriteWorldViewer viewer, SpriteWorld spriteWorld, String character)
+         {  
+         }
+         
+         @Override
+         public void KeyReleased(SpriteWorldViewer viewer, SpriteWorld spriteWorld, String character)
+         {
+         }
+         
+         @Override
+         public void KeyPressed(SpriteWorldViewer viewer, SpriteWorld spriteWorld, String character)
+         {
+            keyPressed = character;
+            keyWasPressed = true;
+         }
+      };
+      
+      spriteWorld.attacheSpriteWorldKeyListener(spriteWorldKeyListener);
+
       addOutsideWalls();
    }
 
@@ -275,6 +305,12 @@ public class RobotChallenge01
          {
             robotChallengeRules.senseMousePressed(mousePressedX, mousePressedY);
             mousePressed = false;
+         }
+
+         if (keyWasPressed)
+         {
+            robotChallengeRules.senseKeyPressed(keyPressed);
+            keyWasPressed = false;
          }
 
          robotChallengeRules.executeRules();

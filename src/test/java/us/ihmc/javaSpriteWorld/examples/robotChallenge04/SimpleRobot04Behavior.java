@@ -45,6 +45,12 @@ public class SimpleRobot04Behavior implements Robot04Behavior
    }
 
    @Override
+   public void senseKeyPressed(String keyPressed)
+   {      
+      System.out.println("Key Pressed: " + keyPressed);
+   }
+
+   @Override
    public double[] getAccelerationAndTurnRate()
    {
       Vector2D mouse = new Vector2D(mousePressedX, mousePressedY);

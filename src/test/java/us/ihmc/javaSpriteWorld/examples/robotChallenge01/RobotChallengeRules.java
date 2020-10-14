@@ -14,4 +14,6 @@ public interface RobotChallengeRules
 
    public abstract void hitWall();
 
+   public abstract void senseKeyPressed(String keyPressed);
+
 }
