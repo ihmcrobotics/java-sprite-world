@@ -77,13 +77,13 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          sensorFilters.add(new AlphaFilter(3.0));
       }
    }
-   private final List<Point2D> lastFoodPositions = new ArrayList<>();
+   private static final int NUMBER_OF_PREDATORS = 3;
    private final List<YoPoint2D> yoPredators = new ArrayList<>();
    private final List<AlphaFilter> predatorPositionFiltersX = new ArrayList<>();
    private final List<AlphaFilter> predatorPositionFiltersY = new ArrayList<>();
    private final List<YoPoint2D> filteredYoPredators = new ArrayList<>();
    {
-      for (int i = 0; i < 3; i++)
+      for (int i = 0; i < NUMBER_OF_PREDATORS; i++)
       {
          yoPredators.add(new YoPoint2D("Predator" + i, yoRegistry));
          filteredYoPredators.add(new YoPoint2D("FilteredPredator" + i, yoRegistry));
@@ -91,6 +91,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          predatorPositionFiltersY.add(new AlphaFilter(10.0));
       }
    }
+   private final Map<Integer, Pair<AlphaFilter, AlphaFilter>> foodFilters = new HashMap<>();
+   private final Map<Integer, AlphaFilter> foodFiltersY = new HashMap<>();
    private final YoVector2D slamCorrection = new YoVector2D("SlamCorrection", yoRegistry);
 
    public DuncanRobot05Behavior()
@@ -99,21 +101,21 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       scs.setDT(1.0, 1);
       scs.setCameraFix(0.4, 0.0, 0.0);
       scs.setupGraph(noisyVelocity.getName(), velocity.getName());
-      String[] predatorGraphsX = new String[6];
-      String[] predatorGraphsY = new String[6];
-      for (int i = 0; i < 3; i++)
+      GraphArrayWindow predatorGraphs = scs.createNewGraphWindow("Predators");
+      for (int i = 0; i < NUMBER_OF_PREDATORS; i++)
       {
-         predatorGraphsX[i * 2] = yoPredators.get(i).getYoX().getName();
-         predatorGraphsX[i * 2 + 1] = filteredYoPredators.get(i).getYoX().getName();
-         predatorGraphsY[i * 2] = yoPredators.get(i).getYoY().getName();
-         predatorGraphsY[i * 2 + 1] = filteredYoPredators.get(i).getYoY().getName();
+         predatorGraphs.setupGraph(new String[] {yoPredators.get(i).getYoX().getName(), filteredYoPredators.get(i).getYoX().getName()});
       }
-//      scs.setupGraph(predatorGraphsX);
-//      scs.setupGraph(predatorGraphsY);
+
+      predatorGraphs.getGraphArrayPanel().addColumn();
+      for (int i = 0; i < NUMBER_OF_PREDATORS; i++)
+      {
+         predatorGraphs.setupGraph(new String[] {yoPredators.get(i).getYoY().getName(), filteredYoPredators.get(i).getYoY().getName()});
+      }
       scs.setupGraph(noisyHeading.getName(), headingAngle.getName(), groundTruthHeading.getName());
       scs.setupGraph(headingVector.getYoX().getName(), headingVector.getYoY().getName());
       scs.setupGraph(me.getYoX().getName(), me.getYoY().getName(), groundTruthPosition.getYoX().getName(), groundTruthPosition.getYoY().getName());
-      GraphArrayWindow sensorGraphs = scs.createNewGraphWindow();
+      GraphArrayWindow sensorGraphs = scs.createNewGraphWindow("Sensors");
       String[] hitErrorsX = new String[NUMBER_OF_SENSORS];
       String[] hitErrorsY = new String[NUMBER_OF_SENSORS];
       for (int i = 0; i < NUMBER_OF_SENSORS; i++)
@@ -184,17 +186,16 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
-//      ArrayList<Pair<Point2D, Vector2D>> filteredFood = new ArrayList<>();
-//      for (int i = 0; i < locationOfAllFood.size(); i++)
-//      {
-//         Pair<Point2D, Vector2D> food = locationOfAllFood.get(i);
-//         Point2D filteredLocation = new Point2D();
-//         double alpha = 10.0;
-//         filteredLocation.setX(alphaFilter(food.getLeft().getX(), lastFoodPositions.get(i).getX(), alpha));
-//         filteredLocation.setY(alphaFilter(food.getLeft().getY(), lastFoodPositions.get(i).getY(), alpha));
-//         lastFoodPositions.get(i).set(filteredLocation);
-//         filteredFood.add(Pair.of(filteredLocation, food.getRight()));
-//      }
+      ArrayList<Triple<Integer, Point2D, Vector2D>> filteredFood = new ArrayList<>();
+      for (int i = 0; i < locationOfAllFood.size(); i++)
+      {
+         Triple<Integer, Point2D, Vector2D> food = locationOfAllFood.get(i);
+         foodFilters.computeIfAbsent(food.getLeft(), index -> Pair.of(new AlphaFilter(10.0), new AlphaFilter(10.0)));
+         Point2D filteredLocation = new Point2D();
+         filteredLocation.setX(foodFilters.get(food.getLeft()).getLeft().filter(food.getMiddle().getX()));
+         filteredLocation.setY(foodFilters.get(food.getLeft()).getLeft().filter(food.getMiddle().getY()));
+         filteredFood.add(Triple.of(food.getLeft(), filteredLocation, food.getRight()));
+      }
       this.locationOfAllFood = locationOfAllFood;
    }
 
