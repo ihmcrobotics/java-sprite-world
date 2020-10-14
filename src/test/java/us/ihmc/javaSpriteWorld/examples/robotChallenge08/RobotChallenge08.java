@@ -9,6 +9,7 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge05.SimpleRobot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.RobotChallenge06NoiseParameters;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.RobotChallengeRules06;
+import us.ihmc.javaSpriteWorld.examples.stephen.StephenRobotBehavior;
 
 /**
  * Add some rooms and make the environment larger.
@@ -37,7 +38,7 @@ public class RobotChallenge08
       if (PLAYER.equals("Duncan"))
          simpleBehavior = new DuncanRobot05Behavior();
       else if (PLAYER.equals("Stephen"))
-         simpleBehavior = new StephenRobot05Behavior();
+         simpleBehavior = new StephenRobotBehavior();
       else
          simpleBehavior = new SimpleRobot05Behavior(xMax, yMax);
       

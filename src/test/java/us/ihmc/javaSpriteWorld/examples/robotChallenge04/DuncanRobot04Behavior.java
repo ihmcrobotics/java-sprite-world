@@ -107,6 +107,12 @@ public class DuncanRobot04Behavior implements Robot04Behavior
    }
 
    @Override
+   public void senseKeyPressed(String keyPressed)
+   {
+
+   }
+
+   @Override
    public void senseMousePressed(double mousePressedX, double mousePressedY)
    {
       this.mousePressedX = mousePressedX;

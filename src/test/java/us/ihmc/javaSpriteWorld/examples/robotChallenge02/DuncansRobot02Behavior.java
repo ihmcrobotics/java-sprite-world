@@ -86,6 +86,12 @@ public class DuncansRobot02Behavior implements Robot02Behavior
    }
 
    @Override
+   public void senseKeyPressed(String keyPressed)
+   {
+
+   }
+
+   @Override
    public double[] getAccelerationAndTurnRate()
    {
       double acceleration = 0.0;

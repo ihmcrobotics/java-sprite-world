@@ -286,6 +286,12 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    }
 
    @Override
+   public void senseKeyPressed(String keyPressed)
+   {
+
+   }
+
+   @Override
    public boolean getDropFlag()
    {
       return ((x > 8.0) && (y > 8.0));
