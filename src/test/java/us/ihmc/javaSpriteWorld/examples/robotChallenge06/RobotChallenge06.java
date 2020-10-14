@@ -39,6 +39,8 @@ public class RobotChallenge06
          simpleBehavior = new SimpleRobot05Behavior(xMax, yMax);
       
       RobotChallenge06NoiseParameters noiseParameters = new RobotChallenge06NoiseParameters();
+      noiseParameters.removeAllNoise();
+
       RobotChallengeRules rules = new RobotChallengeRules06(random, noiseParameters, robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);
 
       robotChallenge.setRootChallengeRules(rules);
