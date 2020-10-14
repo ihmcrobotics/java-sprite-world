@@ -142,6 +142,18 @@ public class StephenRobot05Behavior02 implements Robot05Behavior, Robot06Behavio
       this.positionInBodyFrameAndIdOfClosestFlag = positionInBodyFrameAndIdOfClosestFlag;
    }
 
+   @Override
+   public void senseGlobalPositionForTestingOnly(double x, double y)
+   {
+
+   }
+
+   @Override
+   public void senseNoiseFreeHeadingForTestingOnly(double heading)
+   {
+
+   }
+
    private void calculateWorldFrameCoordinates()
    {
       xyHeading.setX(-Math.sin(heading));
