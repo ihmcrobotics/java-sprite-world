@@ -247,8 +247,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
       // 0 heading is y+ (up)
       double dt = 0.01;
-      me.add(dt * velocity.getValue() * -Math.sin(headingAngle.getValue()),
-             dt * velocity.getValue() * Math.cos(headingAngle.getValue()));
+      me.add(dt * velocity.getValue() * headingVector.getX(),
+             dt * velocity.getValue() * headingVector.getY());
 
       double fieldGraduation = 1.5;
       Vector2D mouse = new Vector2D(mousePressedX, mousePressedY);
@@ -304,7 +304,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       }
 
       slamCorrection.scale(1.0 / sensors.size());
-      me.add(slamCorrection);
+//      me.add(slamCorrection);
 
       Vector2D boundaryRepulsion = new Vector2D();
       double boundaryStrength = 2.0;
