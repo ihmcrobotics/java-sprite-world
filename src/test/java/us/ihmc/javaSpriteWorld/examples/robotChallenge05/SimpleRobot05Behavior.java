@@ -20,6 +20,9 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private double xDotInWorld = 0.0;
    private double yDotInWorld = 0.0;
 
+   private final double alphaVelocity = 0.5;
+   private final double alphaHeading = 0.5;
+   
    public SimpleRobot05Behavior()
    {
    }
@@ -27,13 +30,13 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseVelocity(double velocity)
    {
-      this.velocity = velocity;
+      this.velocity = alphaVelocity * this.velocity + (1.0 - alphaVelocity) * velocity;
    }
 
    @Override
    public void senseHeading(double heading)
    {
-      this.heading = heading;
+      this.heading = alphaHeading * this.heading + (1.0 - alphaHeading) * heading;
    }
 
    @Override
