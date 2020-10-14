@@ -480,4 +480,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    public void senseGlobalPositionForTestingOnly(double x, double y)
    {      
    }
+
+   @Override
+   public void senseNoiseFreeHeadingForTestingOnly(double heading)
+   {      
+   }
 }

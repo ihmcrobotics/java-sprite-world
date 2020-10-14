@@ -62,8 +62,11 @@ public class RobotChallengeRules05 implements RobotChallengeRules
       if (robotBehavior != null)
       {
          if (testing)
+         {
             robotBehavior.senseGlobalPositionForTestingOnly(robot.getX(), robot.getY());
-         
+            robotBehavior.senseNoiseFreeHeadingForTestingOnly(robot.getHeading());
+         }
+
          ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame = senseWallRangeFinderPointsInBodyFrame();
          robotBehavior.senseWallRangeInBodyFrame(vectorsAndDistancesToWallInBodyFrame);
 
