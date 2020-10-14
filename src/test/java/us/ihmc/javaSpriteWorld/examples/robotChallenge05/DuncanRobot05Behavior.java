@@ -1,7 +1,5 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.function.Function;
 
@@ -35,6 +33,7 @@ import java.util.ArrayList;
 public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 {
    private boolean paused = false;
+   private boolean initializedValues = false;
    private double mousePressedX = 5.0, mousePressedY = 5.0;
    private ArrayList<Pair<Vector2D, Double>> sensors;
    private ArrayList<Pair<Vector2D, Double>> noisySensors;
@@ -60,6 +59,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final YoDouble noisyVelocity = new YoDouble("NoisyVelocity", yoRegistry);
    private final YoDouble velocity = new YoDouble("Velocity", yoRegistry);
    private final YoDouble noisyHeading = new YoDouble("NoisyHeading", yoRegistry);
+   private final YoDouble acceleration = new YoDouble("Acceleration", yoRegistry);
+   private final YoDouble turnRate = new YoDouble("TurnRate", yoRegistry);
    private final List<AlphaFilter> sensorFilters = new ArrayList<>();
    private final List<YoPoint2D> estimatedHits = new ArrayList<>();
    private final List<YoPoint2D> actualHits = new ArrayList<>();
@@ -111,7 +112,6 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 //      scs.setupGraph(predatorGraphsY);
       scs.setupGraph(noisyHeading.getName(), headingAngle.getName(), groundTruthHeading.getName());
       scs.setupGraph(headingVector.getYoX().getName(), headingVector.getYoY().getName());
-      me.set(2.0, 2.0);
       scs.setupGraph(me.getYoX().getName(), me.getYoY().getName(), groundTruthPosition.getYoX().getName(), groundTruthPosition.getYoY().getName());
       GraphArrayWindow sensorGraphs = scs.createNewGraphWindow();
       String[] hitErrorsX = new String[NUMBER_OF_SENSORS];
@@ -134,6 +134,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       scs.setupGraph(hitErrorsX);
       scs.setupGraph(hitErrorsY);
       scs.setupGraph(slamCorrection.getYoX().getName(), slamCorrection.getYoY().getName());
+      scs.setupGraph(acceleration.getName());
+      scs.setupGraph(turnRate.getName());
       scs.skipLoadingDefaultConfiguration();
       scs.hideViewport();
       scs.changeBufferSize(4096);
@@ -263,6 +265,12 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       this.mousePressedY = mousePressedY;
    }
 
+   private void initializeValues()
+   {
+      initializedValues = true;
+      me.set(1.5, 1.5);
+   }
+
    int currentFlagId = 1;
    int carrying = -1;
 
@@ -273,6 +281,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       RigidBodyTransform transform = new RigidBodyTransform();
       transform.getRotation().appendYawRotation(headingAngle.getValue());
       transform.transform(headingVector);
+
+      if (!initializedValues) initializeValues();
 
       // 0 heading is y+ (up)
       double dt = 0.01;
@@ -399,19 +409,21 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
                                                                                     attractionVector.getX(),
                                                                                     attractionVector.getY());
 
-      double acceleration = (1.0 * (desiredSpeed - velocity.getValue()));
+      acceleration.set(1.0 * (desiredSpeed - velocity.getValue()));
 
       double angularVelocity = (velocity.getValue() - lastVelocity) / dt;
-      double turnRate = (5.0 * angleToAttraction) + (-0.5 * angularVelocity);
+      turnRate.set((5.0 * angleToAttraction) + (-0.5 * angularVelocity));
       lastVelocity = velocity.getValue();
 
-      if (Double.isNaN(acceleration)) acceleration = 0.0;
-      if (Double.isNaN(turnRate)) turnRate = 0.0;
+      double accelerationToReturn = acceleration.getValue();
+      double turnRateToReturn = turnRate.getValue();
+      if (Double.isNaN(acceleration.getValue())) accelerationToReturn = 0.0;
+      if (Double.isNaN(turnRate.getValue())) turnRateToReturn = 0.0;
 
       if (!paused)
          scs.tickAndUpdate();
 
-      return new double[] {acceleration, turnRate};
+      return new double[] {accelerationToReturn, turnRateToReturn};
    }
 
    double lastVelocity = 0.0;
