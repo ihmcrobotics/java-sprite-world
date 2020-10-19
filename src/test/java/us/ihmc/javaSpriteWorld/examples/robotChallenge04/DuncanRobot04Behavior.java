@@ -284,6 +284,18 @@ public class DuncanRobot04Behavior implements Robot04Behavior
    }
 
    @Override
+   public void senseScoreHealthTime(double score, double health, double time)
+   {
+
+   }
+
+   @Override
+   public void reset()
+   {
+
+   }
+
+   @Override
    public void senseDroppedFlag(int id)
    {
       // TODO Auto-generated method stub

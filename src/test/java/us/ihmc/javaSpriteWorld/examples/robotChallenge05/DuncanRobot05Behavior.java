@@ -528,6 +528,18 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    }
 
    @Override
+   public void senseScoreHealthTime(double score, double health, double elapsedTime)
+   {
+
+   }
+
+   @Override
+   public void reset()
+   {
+
+   }
+
+   @Override
    public void senseGlobalPositionForTestingOnly(double x, double y)
    {
       groundTruthPosition.set(x, y);
