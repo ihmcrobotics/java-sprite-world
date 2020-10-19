@@ -108,6 +108,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final YoVector2D foodAttraction = new YoVector2D("FoodAttraction", yoRegistry);
    private final YoVector2D flagField = new YoVector2D("FlagField", yoRegistry);
    private final YoVector2D attractionVector = new YoVector2D("Attraction", yoRegistry);
+   private final AlphaFilter attractionFilterX = new AlphaFilter(20.0);
+   private final AlphaFilter attractionFilterY = new AlphaFilter(20.0);
 
    public DuncanRobot05Behavior()
    {
@@ -428,6 +430,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       attractionVector.add(boundaryRepulsion);
       attractionVector.add(predatorRepulsion);
       attractionVector.add(foodAttraction);
+
+      attractionVector.set(attractionFilterX.filter(attractionVector.getX()), attractionFilterY.filter(attractionVector.getY()));
 
       double desiredSpeed = attractionVector.length();
 
