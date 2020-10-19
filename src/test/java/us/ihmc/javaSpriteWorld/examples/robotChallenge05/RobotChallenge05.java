@@ -15,7 +15,8 @@ public class RobotChallenge05
       RobotChallenge01 robotChallenge = createRobotChallenge(player);
 //      robotChallenge.runSimulation();
 
-      robotChallenge.runATrial(30, 20.0, 60.0);
+      robotChallenge.runATrial(12, 10.0, 30.0);
+      robotChallenge.exit();
    }
 
    private static RobotChallenge01 createRobotChallenge(String player)

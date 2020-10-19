@@ -354,7 +354,9 @@ public class RobotChallenge01
 
          try
          {
-            Thread.sleep((long) (dt * 1000.0 / realtimeSpeedup));
+            long sleepMillis = (long) (dt * 1000.0 / realtimeSpeedup);
+            if (sleepMillis > 1)
+               Thread.sleep(sleepMillis);
          }
          catch (InterruptedException e)
          {
@@ -503,6 +505,12 @@ public class RobotChallenge01
       System.out.println("topScore = " + topScore);
 
       return new double[] {averageScore, topScore};
+   }
+
+   public void exit()
+   {
+      viewer.exit();
+      
    }
 
 }

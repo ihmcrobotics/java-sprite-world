@@ -248,4 +248,10 @@ public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
       }
    }
 
+   @Override
+   public void exit()
+   {
+      stage.close();
+   }
+
 }

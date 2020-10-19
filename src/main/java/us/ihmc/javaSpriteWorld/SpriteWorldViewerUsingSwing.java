@@ -134,4 +134,10 @@ public class SpriteWorldViewerUsingSwing implements SpriteWorldViewer
          startupLocationOnScreenY = y;
       }
    }
+
+   @Override
+   public void exit()
+   {
+      jFrame.dispose();
+   }
 }
