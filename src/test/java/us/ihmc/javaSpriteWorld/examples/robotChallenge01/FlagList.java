@@ -59,22 +59,25 @@ public class FlagList
 
    public void reset(Random random, double xMax, double yMax, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
    {
-      flagsInPlay.addAll(deliveredFlags);
-      flagsInPlay.addAll(capturedFlags);
-
+      ArrayList<Flag> flagsToAdd = new ArrayList<Flag>();
+      
+      flagsToAdd.addAll(deliveredFlags);
+      flagsToAdd.addAll(capturedFlags);
+      flagsToAdd.addAll(flagsInPlay);
+      
       deliveredFlags.clear();
       capturedFlags.clear();
+      flagsInPlay.clear();
 
-      for (Flag flag : flagsInPlay)
+      for (Flag flag : flagsToAdd)
       {
          double x = randomDoubleBetween(random, xMax * 0.1, xMax * 0.9);
          double y = randomDoubleBetween(random, yMax * 0.3, yMax * 0.9);
 
-         flag.setLocation(x, y);
-         
+         flag.setLocation(x, y); 
          addFlag(flag, spriteWorld, collisionGroup);
-         
-         System.out.println("Resetting flag " + flag.getId() + " to " + x + ", " + y);
+ 
+//         System.out.println("Resetting flag " + flag.getId() + " to " + x + ", " + y);
       }
    }
    
@@ -95,6 +98,12 @@ public class FlagList
       deliveredFlags.add(flag);
 
       map.remove(flag.getSprite(), flag);
+   }
+   
+   public void droppedFlag(Flag droppedFlag, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
+   {
+      capturedFlags.remove(droppedFlag);
+      addFlag(droppedFlag, spriteWorld, collisionGroup);
    }
 
    public Flag findFlag(Sprite sprite)

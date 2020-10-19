@@ -3,7 +3,6 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
 import java.util.Random;
 
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallenge01;
-import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeRules;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
 import us.ihmc.javaSpriteWorld.examples.stephen.StephenRobotBehavior;
 
@@ -11,8 +10,16 @@ public class RobotChallenge05
 {
    public static void main(String[] args)
    {
-      String player = System.getProperty("player", "Simple");
-      
+      String player = System.getProperty("player", "Stephen");
+//      String player = System.getProperty("player", "Simple");
+      RobotChallenge01 robotChallenge = createRobotChallenge(player);
+//      robotChallenge.runSimulation();
+
+      robotChallenge.runATrial(30, 20.0, 60.0);
+   }
+
+   private static RobotChallenge01 createRobotChallenge(String player)
+   { 
       double xMax = 10.0;
       double yMax = 10.0;
 
@@ -22,9 +29,14 @@ public class RobotChallenge05
       Robot02 robot = new Robot02(xMax, yMax);
       RobotChallenge01 robotChallenge = createRobotChallenge(xMax, yMax, random, robot);
 
-      RobotChallengeRules rules = new RobotChallengeRules05(robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);      
+      RobotChallengeRules05 rules = new RobotChallengeRules05(robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);      
       robotChallenge.setRobotChallengeRules(rules);
-      robotChallenge.runSimulation();
+      
+      if (player.equals("Simple"))
+      {
+         rules.setTesting(true);
+      }
+      return robotChallenge;
    }
 
    private static RobotChallenge01 createRobotChallenge(double xMax, double yMax, Random random, Robot02 robot)

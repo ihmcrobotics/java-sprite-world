@@ -161,7 +161,7 @@ public class Robot02 implements RobotChallengeRobot
       if (health > 100.0)
          health = 100.0;
 
-      System.out.println("Yummy food! Health = " + health);
+//      System.out.println("Yummy food! Health = " + health);
    }
 
    @Override
@@ -171,7 +171,7 @@ public class Robot02 implements RobotChallengeRobot
       if (health < 1.0)
          health = 1.0;
 
-      System.out.println("Ouch! Health = " + health);
+//      System.out.println("Ouch! Health = " + health);
    }
 
    @Override
@@ -220,7 +220,7 @@ public class Robot02 implements RobotChallengeRobot
       if (health < 1.0)
          health = 1.0;
       
-      System.out.println("Hit the wall. Ouch! Health = " + health);
+//      System.out.println("Hit the wall. Ouch! Health = " + health);
       
       heading = heading + Math.PI;
       if (velocity < 0.0001)

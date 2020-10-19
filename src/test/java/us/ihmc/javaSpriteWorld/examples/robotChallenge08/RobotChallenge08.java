@@ -19,20 +19,16 @@ public class RobotChallenge08
 {
    public static void main(String[] args)
    {
-      RobotChallenge01 robotChallenge = createRobotChallenge();
-//      robotChallenge.runSimulation();
+      String player = System.getProperty("player", "Stephen");
+//    String player = System.getProperty("player", "Simple");
+    RobotChallenge01 robotChallenge = createRobotChallenge(player);
+//    robotChallenge.runSimulation();
 
-      while(true)
-      {
-         robotChallenge.runSimulation(20.0);
-         robotChallenge.resetSimulation();
-      }
+    robotChallenge.runATrial(30, 20.0, 60.0);
    }
 
-   private static RobotChallenge01 createRobotChallenge()
+   private static RobotChallenge01 createRobotChallenge(String player)
    {
-      String player = System.getProperty("player", "Simple");
-
       double xMax = 20.0;
       double yMax = 20.0;
 

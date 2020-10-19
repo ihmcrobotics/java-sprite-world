@@ -15,7 +15,7 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
 {
    private final double xMax, yMax;
 
-   private double mousePressedX = 5.0, mousePressedY = 5.0;
+   private double mousePressedX = 0.0, mousePressedY = 0.0;
    private double velocity = 0.0;
    private double heading = 0.0;
    private double x = 0.0, y = 0.0;
@@ -115,7 +115,7 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public boolean getDropFlag()
    {
-      return ((x > 0.9*xMax) && (y > 0.9 * yMax));
+      return ((x > 0.81*xMax) && (y > 0.81 * yMax));
    }
 
    @Override
@@ -176,7 +176,9 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
    @Override
    public void reset()
-   {      
+   {    
+      x = 0.0;
+      y = 0.0;
    }
 
 }

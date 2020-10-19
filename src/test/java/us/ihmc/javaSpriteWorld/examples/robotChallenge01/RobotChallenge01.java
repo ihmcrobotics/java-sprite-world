@@ -14,9 +14,7 @@ import us.ihmc.javaSpriteWorld.SpriteWorld;
 import us.ihmc.javaSpriteWorld.SpriteWorldKeyListener;
 import us.ihmc.javaSpriteWorld.SpriteWorldMouseListener;
 import us.ihmc.javaSpriteWorld.SpriteWorldViewer;
-import us.ihmc.javaSpriteWorld.SpriteWorldViewerUsingJavaFX;
 import us.ihmc.javaSpriteWorld.SpriteWorldViewerUsingSwing;
-import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
 
 public class RobotChallenge01
 {
@@ -278,10 +276,10 @@ public class RobotChallenge01
       Point2D position = robot.getPosition();
       if ((flag.getId() == nextFlagToDeliver) && (position.getX() > 0.8 * xMax) && (position.getY() > 0.8 * yMax))
       {
-         System.out.println("Flag " + flag.getId() + " was delivered!!");
+//         System.out.println("Flag " + flag.getId() + " was delivered!!");
 
+         score = flag.getId();
          nextFlagToDeliver++;
-         score = nextFlagToDeliver;
 
          collisionGroup.removeSprite(flag.getSprite());
 
@@ -311,6 +309,7 @@ public class RobotChallenge01
    public void resetSimulation()
    {
       time = 0.0;
+      timeForNextUpdate = 0.0;
       score = 0.0;
       nextFlagToDeliver = 1;
       foodList.reset(random);
@@ -369,7 +368,10 @@ public class RobotChallenge01
             timeForNextUpdate = time + 10.0;
          }
             
-            viewer.update();
+         if (robot.getHealth() < 5.0)
+            break;
+         
+         viewer.update();
       }
    }
 
@@ -454,6 +456,11 @@ public class RobotChallenge01
       return robot;
    }
 
+   public double getScore()
+   {
+      return score;
+   }
+
    public static void main(String[] args)
    {
       Random random = new Random();
@@ -472,6 +479,30 @@ public class RobotChallenge01
       robotChallenge01.setRobotChallengeRules(rules);
 
       robotChallenge01.runSimulation();
+   }
+
+   public double[] runATrial(int numberOfRuns, double realTimeSpeedup, double simulationTime)
+   {
+      double totalScore = 0.0;
+      double topScore = 0;
+
+      for (int i=0; i<numberOfRuns; i++)
+      {
+         setRealtimeSpeedup(realTimeSpeedup);
+         runSimulation(simulationTime);
+         double score = getScore();
+         System.out.println("Round over. Score = " + score);
+         totalScore = totalScore + score;
+         if (score > topScore)
+            topScore = score;
+         resetSimulation();
+      }
+      double averageScore = totalScore / ((double) numberOfRuns);
+
+      System.out.println("averageScore = " + averageScore);
+      System.out.println("topScore = " + topScore);
+
+      return new double[] {averageScore, topScore};
    }
 
 }

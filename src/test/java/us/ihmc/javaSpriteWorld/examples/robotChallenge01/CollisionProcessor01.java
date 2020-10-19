@@ -102,7 +102,7 @@ public class CollisionProcessor01 implements SpriteCollisionListener
       Flag flag = flagList.findFlag(sprite);
       if (flag != null)
       {
-         System.out.println("Scootching flag " + flag.getId());
+//         System.out.println("Scootching flag " + flag.getId());
          double x = flag.getX();
          double y = flag.getY();
 
@@ -238,7 +238,7 @@ public class CollisionProcessor01 implements SpriteCollisionListener
       Flag droppedFlag = robot.dropFlag();
       if (droppedFlag != null)
       {
-         System.out.println("Robot dropping flag " + droppedFlag.getId());
+//         System.out.println("Robot dropping flag " + droppedFlag.getId());
 
          Vector2D headingVector = robot.getHeadingVector();
          headingVector.scale(-1.5);
@@ -247,7 +247,7 @@ public class CollisionProcessor01 implements SpriteCollisionListener
          position.add(headingVector);
 
          droppedFlag.setLocation(position);
-         flagList.addFlag(droppedFlag, spriteWorld, collisionGroup);
+         flagList.droppedFlag(droppedFlag, spriteWorld, collisionGroup);
       }
 
       if (robotChallengeRules != null)
