@@ -229,6 +229,7 @@ public class CollisionProcessor01 implements SpriteCollisionListener
    private void processRobotAndWallCollision(RobotChallengeRobot robot, Wall wall)
    {
       robot.hitWall();
+      robotChallengeRules.hitWall();
    }
 
    private void processRobotAndFlagCollision(RobotChallengeRobot robot, Flag flag)

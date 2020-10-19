@@ -48,7 +48,7 @@ public class RobotChallenge08
       if (player.equals("Simple"))
          rules.setTesting(true);
 
-      robotChallenge.setRootChallengeRules(rules);
+      robotChallenge.setRobotChallengeRules(rules);
       return robotChallenge;
    }
 

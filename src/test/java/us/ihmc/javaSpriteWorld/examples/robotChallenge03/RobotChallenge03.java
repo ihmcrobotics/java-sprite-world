@@ -31,7 +31,7 @@ public class RobotChallenge03 extends RobotChallenge02
       Robot03Behavior simpleBehavior = new SimpleRobot03Behavior();
       RobotChallengeRules rules = new RobotChallengeRules03(robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), simpleBehavior);
 
-      robotChallenge.setRootChallengeRules(rules);
+      robotChallenge.setRobotChallengeRules(rules);
       robotChallenge.runSimulation();
    }
 

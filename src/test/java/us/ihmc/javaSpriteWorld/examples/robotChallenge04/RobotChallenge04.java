@@ -26,7 +26,7 @@ public class RobotChallenge04
       Robot04Behavior simpleBehavior = new DuncanRobot04Behavior();
       RobotChallengeRules rules = new RobotChallengeRules04(robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);
 
-      robotChallenge.setRootChallengeRules(rules);
+      robotChallenge.setRobotChallengeRules(rules);
       robotChallenge.runSimulation();
    }
 

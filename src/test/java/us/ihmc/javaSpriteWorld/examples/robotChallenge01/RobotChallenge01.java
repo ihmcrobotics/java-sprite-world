@@ -353,12 +353,6 @@ public class RobotChallenge01
          robot.doDynamicsAndUpdateSprite(dt);
          collisionGroup.doCheckCollisions();
 
-         if (isOutOfBounds(robot.getPosition()))
-         {
-            robot.hitWall();
-            robotChallengeRules.hitWall();
-         }
-
          try
          {
             Thread.sleep((long) (dt * 1000.0 / realtimeSpeedup));
@@ -397,7 +391,7 @@ public class RobotChallenge01
       return false;
    }
    
-   public void setRootChallengeRules(RobotChallengeRules robotChallengeRules)
+   public void setRobotChallengeRules(RobotChallengeRules robotChallengeRules)
    {
       this.robotChallengeRules = robotChallengeRules;
       this.collisionProcessor.setRobotChallengeRules(robotChallengeRules);
@@ -475,7 +469,7 @@ public class RobotChallenge01
       ExperimentalBehavior01 behavior01 = new ExperimentalBehavior01();
 
       RobotChallengeRules rules = new RobotChallengeRules01(robot, robotChallenge01.getFoodList(), behavior01);
-      robotChallenge01.setRootChallengeRules(rules);
+      robotChallenge01.setRobotChallengeRules(rules);
 
       robotChallenge01.runSimulation();
    }

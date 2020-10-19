@@ -9,33 +9,44 @@ import us.ihmc.javaSpriteWorld.examples.stephen.StephenRobotBehavior;
 
 public class RobotChallenge05 
 {
-   public static final String PLAYER = System.getProperty("player", "Simple");
-
    public static void main(String[] args)
    {
-      Random random = new Random();
+      String player = System.getProperty("player", "Simple");
+      
       double xMax = 10.0;
       double yMax = 10.0;
-      
-      Robot02 robot = new Robot02(xMax, yMax);
 
+      Random random = new Random();
+
+      Robot05Behavior simpleBehavior = createBehavior(player, xMax, yMax);
+      Robot02 robot = new Robot02(xMax, yMax);
+      RobotChallenge01 robotChallenge = createRobotChallenge(xMax, yMax, random, robot);
+
+      RobotChallengeRules rules = new RobotChallengeRules05(robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);      
+      robotChallenge.setRobotChallengeRules(rules);
+      robotChallenge.runSimulation();
+   }
+
+   private static RobotChallenge01 createRobotChallenge(double xMax, double yMax, Random random, Robot02 robot)
+   {
       RobotChallenge01 robotChallenge = new RobotChallenge01("RobotChallenge05", robot, random, xMax, yMax);
       robotChallenge.createSomeFood(10);
       double maximumPredatorSpeed = 1.5;
       robotChallenge.createSomePredators(3, maximumPredatorSpeed);
       robotChallenge.createSomeFlags(5);
+      return robotChallenge;
+   }
 
+   private static Robot05Behavior createBehavior(String player, double xMax, double yMax)
+   {
       Robot05Behavior simpleBehavior;
-      if (PLAYER.equals("Duncan"))
+      if (player.equals("Duncan"))
          simpleBehavior = new DuncanRobot05Behavior();
-      else if (PLAYER.equals("Stephen"))
+      else if (player.equals("Stephen"))
          simpleBehavior = new StephenRobotBehavior();
       else
          simpleBehavior = new SimpleRobot05Behavior(xMax, yMax);
-      RobotChallengeRules rules = new RobotChallengeRules05(robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);
-
-      robotChallenge.setRootChallengeRules(rules);
-      robotChallenge.runSimulation();
+      return simpleBehavior;
    }
 
 }
