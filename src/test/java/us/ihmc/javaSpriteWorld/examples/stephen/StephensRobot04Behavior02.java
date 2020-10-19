@@ -324,4 +324,16 @@ public class StephensRobot04Behavior02 implements Robot04Behavior
    public void senseHitWall()
    {      
    }
+
+   @Override
+   public void senseScoreHealthTime(double score, double health, double time)
+   {
+
+   }
+
+   @Override
+   public void reset()
+   {
+
+   }
 }
