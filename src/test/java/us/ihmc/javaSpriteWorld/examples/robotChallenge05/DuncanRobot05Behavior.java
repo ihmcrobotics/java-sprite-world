@@ -119,15 +119,15 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       GraphArrayWindow predatorGraphs = scs.createNewGraphWindow("Predators");
       for (int i = 0; i < NUMBER_OF_PREDATORS; i++)
       {
-         predatorGraphs.setupGraph(yoPredators.get(i).getYoX().getName(), filteredYoPredators.get(i).getYoX().getName());
-         predatorGraphs.setupGraph(yoPredators.get(i).getYoY().getName(), filteredYoPredators.get(i).getYoY().getName());
+         predatorGraphs.setupGraph(new String[] {yoPredators.get(i).getYoX().getName(), filteredYoPredators.get(i).getYoX().getName()});
+         predatorGraphs.setupGraph(new String[] {yoPredators.get(i).getYoY().getName(), filteredYoPredators.get(i).getYoY().getName()});
       }
       predatorGraphs.getGraphArrayPanel().addColumn();
       GraphArrayWindow foodGraphs = scs.createNewGraphWindow("Food");
       for (int i = 0; i < NUMBER_OF_FOOD; i++)
       {
-         foodGraphs.setupGraph(yoNoisyFood.get(i).getYoX().getName(), yoFilteredFood.get(i).getYoX().getName());
-         foodGraphs.setupGraph(yoNoisyFood.get(i).getYoY().getName(), yoFilteredFood.get(i).getYoY().getName());
+         foodGraphs.setupGraph(new String[] {yoNoisyFood.get(i).getYoX().getName(), yoFilteredFood.get(i).getYoX().getName()});
+         foodGraphs.setupGraph(new String[] {yoNoisyFood.get(i).getYoY().getName(), yoFilteredFood.get(i).getYoY().getName()});
       }
       foodGraphs.getGraphArrayPanel().addColumn();
       GraphArrayWindow sensorGraphs = scs.createNewGraphWindow("Sensors");
@@ -137,12 +137,12 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       {
          hitErrorsX[i] = hitErrors.get(i).getYoX().getName();
          hitErrorsY[i] = hitErrors.get(i).getYoY().getName();
-         sensorGraphs.setupGraph(noisyHits.get(i).getYoX().getName(),
+         sensorGraphs.setupGraph(new String[] {noisyHits.get(i).getYoX().getName(),
                                  estimatedHits.get(i).getYoX().getName(),
-                                 actualHits.get(i).getYoX().getName());
-         sensorGraphs.setupGraph(noisyHits.get(i).getYoY().getName(),
+                                 actualHits.get(i).getYoX().getName()});
+         sensorGraphs.setupGraph(new String[] {noisyHits.get(i).getYoY().getName(),
                                  estimatedHits.get(i).getYoY().getName(),
-                                 actualHits.get(i).getYoY().getName());
+                                 actualHits.get(i).getYoY().getName()});
       }
       sensorGraphs.setupGraph(hitErrorsX);
       sensorGraphs.setupGraph(hitErrorsY);
