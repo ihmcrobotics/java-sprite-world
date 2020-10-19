@@ -178,4 +178,16 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    {
       flagManager.senseDeliveredFlag(flagId);
    }
+
+   @Override
+   public void senseScoreHealthTime(double score, double health, double elapsedTime)
+   {
+
+   }
+
+   @Override
+   public void reset()
+   {
+
+   }
 }
