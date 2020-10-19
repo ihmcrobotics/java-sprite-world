@@ -34,5 +34,9 @@ public interface Robot03Behavior
 
    public abstract double[] getAccelerationAndTurnRate();
 
+   public abstract void senseScoreHealthTime(double score, double health, double time);
+
+   public abstract void reset();
+
 
 }

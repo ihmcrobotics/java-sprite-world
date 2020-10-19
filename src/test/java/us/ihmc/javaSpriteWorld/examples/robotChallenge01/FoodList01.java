@@ -34,6 +34,19 @@ public class FoodList01
       createSomeFood(random, xMax, yMax, spriteWorld, collisionGroup);
    }
    
+   public void reset(Random random)
+   {
+      for (Food01 food : foodInPlay)
+      {
+         food.teleportToRandomLocation(random);
+      }
+      
+      for (Food01 food : recycledFood)
+      {
+         food.teleportToRandomLocation(random);
+      }
+   }
+   
    public void createSomeFood(Random random, double xMax, double yMax, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
    {
       Food01 food;

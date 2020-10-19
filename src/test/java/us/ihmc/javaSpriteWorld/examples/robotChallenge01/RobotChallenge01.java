@@ -16,10 +16,12 @@ import us.ihmc.javaSpriteWorld.SpriteWorldMouseListener;
 import us.ihmc.javaSpriteWorld.SpriteWorldViewer;
 import us.ihmc.javaSpriteWorld.SpriteWorldViewerUsingJavaFX;
 import us.ihmc.javaSpriteWorld.SpriteWorldViewerUsingSwing;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
 
 public class RobotChallenge01
 {
    public static final double dt = 0.01;
+   private double realtimeSpeedup = 1.0;
 
    private final double xMax, yMax;
    private final Random random;
@@ -48,6 +50,10 @@ public class RobotChallenge01
 
    private boolean keyWasPressed;
    private String keyPressed;
+   
+   private double time = 0.0;
+   private double timeForNextUpdate = 0.0;
+   private double score = 0.0;
 
    public RobotChallenge01(String name, RobotChallengeRobot robot, Random random, double xMax, double yMax)
    {
@@ -71,7 +77,7 @@ public class RobotChallenge01
       spriteWorld.setLeftBorderX(0.0);
       spriteWorld.setBottomBorderY(0.0);
       spriteWorld.setRightBorderX(xMax);
-      spriteWorld.setTopBorderY(yMax);
+      spriteWorld.setTopBorderY(yMax * 1.2);
 
       stage = new SpriteStage(name + " Stage");
       //      StageBackdrop backgammonBoardBackdrop = SampleStageBackdrops.getBackgammonBoard();
@@ -170,6 +176,16 @@ public class RobotChallenge01
       addOutsideWalls();
    }
 
+   public double getRealtimeSpeedup()
+   {
+      return realtimeSpeedup;
+   }
+
+   public void setRealtimeSpeedup(double realtimeSpeedup)
+   {
+      this.realtimeSpeedup = realtimeSpeedup;
+   }
+
    private void addOutsideWalls()
    {
       addWall(0.0, 0.0, xMax, 0.0);
@@ -254,9 +270,7 @@ public class RobotChallenge01
 
    private void createAFlag(int id)
    {
-      double x = randomDoubleBetween(xMax * 0.1, xMax * 0.9);
-      double y = randomDoubleBetween(yMax * 0.3, yMax * 0.9);
-      flagList.createAFlag(id, x, y, spriteWorld, collisionGroup);
+      flagList.createAFlag(id, random, xMax, yMax, spriteWorld, collisionGroup);
    }
 
    public void robotDroppedFlag(Flag flag)
@@ -267,6 +281,8 @@ public class RobotChallenge01
          System.out.println("Flag " + flag.getId() + " was delivered!!");
 
          nextFlagToDeliver++;
+         score = nextFlagToDeliver;
+
          collisionGroup.removeSprite(flag.getSprite());
 
          flag.setLocation(xMax * 0.98, yMax * 0.98);
@@ -292,14 +308,29 @@ public class RobotChallenge01
       }
    }
 
-   private double randomDoubleBetween(double min, double max)
+   public void resetSimulation()
    {
-      return min + random.nextDouble() * (max - min);
+      time = 0.0;
+      score = 0.0;
+      nextFlagToDeliver = 1;
+      foodList.reset(random);
+      predatorList.reset(random);
+      flagList.reset(random, xMax, yMax, spriteWorld, collisionGroup);
+      robot.teleportHome();
+      robotChallengeRules.reset();
    }
 
+   
    public void runSimulation()
    {
-      while (true)
+      runSimulation(time + 1000.0);
+   }
+
+   public void runSimulation(double finishTime)
+   {
+      time = 0.0;
+
+      while (time < finishTime)
       {
 //         System.out.println("robotPosition = " + robot.getPosition());
          if (mousePressed)
@@ -315,29 +346,36 @@ public class RobotChallenge01
          }
 
          robotChallengeRules.executeRules();
+         robotChallengeRules.reportScoreHealthTime(score, robot.getHealth(), time);
 
          foodList.doDynamicsAndUpdateSprites(dt);
          predatorList.doDynamicsAndUpdateSprites(robot.getPosition(), robot.getVelocityVector(), dt);
          robot.doDynamicsAndUpdateSprite(dt);
          collisionGroup.doCheckCollisions();
 
-         
          if (isOutOfBounds(robot.getPosition()))
          {
             robot.hitWall();
             robotChallengeRules.hitWall();
          }
-         
-         
+
          try
          {
-            Thread.sleep((long) (dt * 1000));
+            Thread.sleep((long) (dt * 1000.0 / realtimeSpeedup));
          }
          catch (InterruptedException e)
          {
          }
+         
+         time = time + dt;
 
-         viewer.update();
+         if (time > timeForNextUpdate)
+         {
+            System.out.println("Score = " + score + ", health = " + robot.getHealth() + ", time = " + time);
+            timeForNextUpdate = time + 10.0;
+         }
+            
+            viewer.update();
       }
    }
 
@@ -416,7 +454,11 @@ public class RobotChallenge01
 
       return closestIntersection;
    }
-   
+
+   public RobotChallengeRobot getRobot()
+   {
+      return robot;
+   }
 
    public static void main(String[] args)
    {

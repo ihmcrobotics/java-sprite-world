@@ -6,6 +6,7 @@ import us.ihmc.javaSpriteWorld.Sprite;
 
 public interface RobotChallengeRobot
 {
+   public abstract double getHealth();
 
    public abstract void eatFood(Food01 food);
 

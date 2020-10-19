@@ -2,6 +2,7 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge01;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -13,6 +14,7 @@ import us.ihmc.javaSpriteWorld.SpriteWorld;
 
 public class FlagList
 {
+   private final ArrayList<Flag> capturedFlags = new ArrayList<Flag>();
    private final ArrayList<Flag> flagsInPlay = new ArrayList<Flag>();
    private final ArrayList<Flag> deliveredFlags = new ArrayList<Flag>();
 
@@ -22,19 +24,25 @@ public class FlagList
    {
    }
 
-   public void createAFlag(int id, double x, double y, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
+   public void createAFlag(int id, Random random, double xMax, double yMax, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
    {
-      Flag flag = new Flag(id, x, y);
+      double x = randomDoubleBetween(random, xMax * 0.1, xMax * 0.9);
+      double y = randomDoubleBetween(random, yMax * 0.3, yMax * 0.9);
+
+      Flag flag = new Flag(id);
+      flag.setLocation(x, y);
       addFlag(flag, spriteWorld, collisionGroup);
+   }
+
+   private double randomDoubleBetween(Random random, double min, double max)
+   {
+      return min + random.nextDouble() * (max - min);
    }
 
    public void addFlag(Flag flag, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
    {
-      if (!spriteWorld.getSprites().contains(flag.getSprite()))
-      {
-         spriteWorld.addSprite(flag.getSprite());
-         collisionGroup.addSprite(flag.getSprite());
-      }
+      spriteWorld.addSprite(flag.getSprite());
+      collisionGroup.addSprite(flag.getSprite());
 
       if (!flagsInPlay.contains(flag))
       {
@@ -49,6 +57,25 @@ public class FlagList
       }
    }
 
+   public void reset(Random random, double xMax, double yMax, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
+   {
+      flagsInPlay.addAll(deliveredFlags);
+      flagsInPlay.addAll(capturedFlags);
+
+      deliveredFlags.clear();
+      capturedFlags.clear();
+
+      for (Flag flag : flagsInPlay)
+      {
+         double x = randomDoubleBetween(random, xMax * 0.1, xMax * 0.9);
+         double y = randomDoubleBetween(random, yMax * 0.3, yMax * 0.9);
+
+         flag.setLocation(x, y);
+         
+         addFlag(flag, spriteWorld, collisionGroup);
+      }
+   }
+   
    public void removeFlag(Flag flag, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
    {
       collisionGroup.removeSprite(flag.getSprite());
@@ -57,6 +84,17 @@ public class FlagList
       flag.getSprite().hide();
 
       map.remove(flag.getSprite(), flag);
+   }
+   
+   public void capturedFlag(Flag flag, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
+   {
+      collisionGroup.removeSprite(flag.getSprite());
+      spriteWorld.removeSprite(flag.getSprite());
+      flagsInPlay.remove(flag);
+      flag.getSprite().hide();
+
+      map.remove(flag.getSprite(), flag);
+      capturedFlags.add(flag);
    }
    
    public void deliveredFlag(Flag flag)

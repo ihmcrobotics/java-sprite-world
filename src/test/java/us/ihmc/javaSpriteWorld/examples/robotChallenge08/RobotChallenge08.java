@@ -17,37 +17,62 @@ import us.ihmc.javaSpriteWorld.examples.stephen.StephenRobotBehavior;
  */
 public class RobotChallenge08
 {
-   public static final String PLAYER = System.getProperty("player", "Simple");
-
    public static void main(String[] args)
    {
-      Random random = new Random();
+      RobotChallenge01 robotChallenge = createRobotChallenge();
+      robotChallenge.runSimulation();
+
+//      while(true)
+//      {
+//         robotChallenge.runSimulation(10.0);
+//         robotChallenge.resetSimulation();
+//      }
+   }
+
+   private static RobotChallenge01 createRobotChallenge()
+   {
+      String player = System.getProperty("player", "Simple");
+
       double xMax = 20.0;
       double yMax = 20.0;
-      
-      Robot02 robot = new Robot02(xMax, yMax);
 
+      Random random = new Random();
+      
+      Robot06Behavior robotBehavior = createBehavior(player, xMax, yMax);
+      Robot02 robot = new Robot02(xMax, yMax);
+      RobotChallenge01 robotChallenge = createRobotChallenge(xMax, yMax, robot, random);
+
+      RobotChallenge06NoiseParameters noiseParameters = new RobotChallenge06NoiseParameters();
+      RobotChallengeRules06 rules = new RobotChallengeRules06(random, noiseParameters, robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), robotBehavior);
+
+      if (player.equals("Simple"))
+         rules.setTesting(true);
+
+      robotChallenge.setRootChallengeRules(rules);
+      return robotChallenge;
+   }
+
+   private static RobotChallenge01 createRobotChallenge(double xMax, double yMax, Robot02 robot, Random random)
+   {
       RobotChallenge01 robotChallenge = new RobotChallenge01("RobotChallenge08", robot, random, xMax, yMax);
       robotChallenge.createSomeFood(30);
       double maximumPredatorSpeed = 1.5;
       robotChallenge.createSomePredators(3, maximumPredatorSpeed);
       robotChallenge.createSomeFlags(6);
       robotChallenge.createSomeRooms();
+      return robotChallenge;
+   }
 
-      Robot06Behavior simpleBehavior;
-      if (PLAYER.equals("Duncan"))
-         simpleBehavior = new DuncanRobot05Behavior();
-      else if (PLAYER.equals("Stephen"))
-         simpleBehavior = new StephenRobotBehavior();
+   private static Robot06Behavior createBehavior(String player, double xMax, double yMax)
+   {
+      Robot06Behavior robotBehavior;
+      if (player.equals("Duncan"))
+         robotBehavior = new DuncanRobot05Behavior();
+      else if (player.equals("Stephen"))
+         robotBehavior = new StephenRobotBehavior();
       else
-         simpleBehavior = new SimpleRobot05Behavior(xMax, yMax);
-      
-      RobotChallenge06NoiseParameters noiseParameters = new RobotChallenge06NoiseParameters();
-      RobotChallengeRules06 rules = new RobotChallengeRules06(random, noiseParameters, robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);
-//      rules.setTesting(true);
-
-      robotChallenge.setRootChallengeRules(rules);
-      robotChallenge.runSimulation();
+         robotBehavior = new SimpleRobot05Behavior(xMax, yMax);
+      return robotBehavior;
    }
 
 }

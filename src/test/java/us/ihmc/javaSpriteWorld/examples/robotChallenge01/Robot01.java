@@ -56,6 +56,7 @@ public class Robot01 implements RobotChallengeRobot
       return yDot;
    }
 
+   @Override
    public double getHealth()
    {
       return health;

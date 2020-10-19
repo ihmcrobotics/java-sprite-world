@@ -169,4 +169,14 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
    }
 
+   @Override
+   public void senseScoreHealthTime(double score, double health, double time)
+   {      
+   }
+
+   @Override
+   public void reset()
+   {      
+   }
+
 }

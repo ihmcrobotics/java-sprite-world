@@ -16,4 +16,8 @@ public interface RobotChallengeRules
 
    public abstract void senseKeyPressed(String keyPressed);
 
+   public abstract void reportScoreHealthTime(double score, double health, double time);
+
+   public abstract void reset();
+
 }

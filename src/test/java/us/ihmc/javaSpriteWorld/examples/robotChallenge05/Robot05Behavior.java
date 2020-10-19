@@ -42,5 +42,9 @@ public interface Robot05Behavior
 
    public abstract boolean getDropFlag();
 
+   public abstract void senseScoreHealthTime(double score, double health, double elapsedTime);
+
+   public abstract void reset();
+
 
 }

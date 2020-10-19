@@ -103,5 +103,15 @@ public class SimpleRobot03Behavior implements Robot03Behavior
    public void senseHitWall()
    {      
    }
+
+   @Override
+   public void senseScoreHealthTime(double score, double health, double time)
+   {      
+   }
+
+   @Override
+   public void reset()
+   {      
+   }
    
 }

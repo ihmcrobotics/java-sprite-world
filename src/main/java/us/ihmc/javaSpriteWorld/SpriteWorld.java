@@ -110,7 +110,10 @@ public class SpriteWorld
 
    public void addSprite(Sprite sprite)
    {
-      sprites.add(sprite);
+      if (!sprites.contains(sprite))
+      {
+         sprites.add(sprite);
+      }
    }
    
    public boolean removeSprite(Sprite sprite)

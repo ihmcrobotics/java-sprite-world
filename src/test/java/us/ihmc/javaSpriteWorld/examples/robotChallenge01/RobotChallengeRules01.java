@@ -11,38 +11,38 @@ public class RobotChallengeRules01 implements RobotChallengeRules
 {
    private final Robot01 robot;
    private final FoodList01 foodList;
-   private final Robot01Behavior robot01Behavior;
+   private final Robot01Behavior robotBehavior;
    
    public RobotChallengeRules01(Robot01 robot, FoodList01 foodList, Robot01Behavior robot01Behavior)
    {
       this.robot = robot;
       this.foodList = foodList;
-      this.robot01Behavior = robot01Behavior;
+      this.robotBehavior = robot01Behavior;
    }
 
    @Override
    public void senseKeyPressed(String keyPressed)
    {
-      robot01Behavior.senseKeyPressed(keyPressed);
+      robotBehavior.senseKeyPressed(keyPressed);
    }
 
    @Override
    public void senseMousePressed(double mousePressedX, double mousePressedY)
    {
-      robot01Behavior.senseMousePressed(mousePressedX, mousePressedY); 
+      robotBehavior.senseMousePressed(mousePressedX, mousePressedY); 
    }
    
    @Override
    public void executeRules()
    {
-      if (robot01Behavior != null)
+      if (robotBehavior != null)
       {
-         robot01Behavior.senseGlobalLocation(robot.getX(), robot.getY());
+         robotBehavior.senseGlobalLocation(robot.getX(), robot.getY());
 
          ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
-         robot01Behavior.senseFood(locationOfAllFood);
+         robotBehavior.senseFood(locationOfAllFood);
 
-         double[] xyVelocity = robot01Behavior.getXYVelocity();
+         double[] xyVelocity = robotBehavior.getXYVelocity();
 
          robot.setXDot(xyVelocity[0]);
          robot.setYDot(xyVelocity[1]);
@@ -52,26 +52,37 @@ public class RobotChallengeRules01 implements RobotChallengeRules
    @Override
    public void droppedFlag(int id)
    {
-      robot01Behavior.senseDroppedFlag(id);
+      robotBehavior.senseDroppedFlag(id);
    }
 
    @Override
    public void capturedFlag(int id)
    {
-      robot01Behavior.sensePickedUpFlag(id);
+      robotBehavior.sensePickedUpFlag(id);
    }
 
    @Override
    public void deliveredFlag(int flagId)
    {
-      robot01Behavior.senseDeliveredFlag(flagId); 
+      robotBehavior.senseDeliveredFlag(flagId); 
    }
 
    @Override
    public void hitWall()
    {
-      robot01Behavior.senseHitWall();
+      robotBehavior.senseHitWall();
    }
 
-   
+   @Override
+   public void reportScoreHealthTime(double score, double health, double time)
+   {
+      robotBehavior.senseScoreHealthTime(score, health, time);
+   }
+
+   @Override
+   public void reset()
+   {
+      robotBehavior.reset();
+   }
+
 }

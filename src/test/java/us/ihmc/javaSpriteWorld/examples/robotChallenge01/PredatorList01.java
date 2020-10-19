@@ -45,6 +45,19 @@ public class PredatorList01
       map.put(predator.getSprite(), predator);
    }
 
+   public void reset(Random random)
+   {
+      for (Predator01 predator : predatorsInPlay)
+      {
+         predator.teleportToRandomLocation(random);
+      }
+
+      for (Predator01 predator : recycledPredators)
+      {
+         predator.teleportToRandomLocation(random);
+      } 
+   }
+   
    public void removePredator(Predator01 predator)
    {
       predatorsInPlay.remove(predator);

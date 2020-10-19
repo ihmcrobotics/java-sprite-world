@@ -108,4 +108,16 @@ public class RobotChallengeRules04 implements RobotChallengeRules
    {
       robotBehavior.senseHitWall();      
    }
+
+   @Override
+   public void reportScoreHealthTime(double score, double health, double time)
+   {
+      robotBehavior.senseScoreHealthTime(score, health, time);
+   }
+
+   @Override
+   public void reset()
+   {
+      robotBehavior.reset();
+   }
 }

@@ -150,6 +150,14 @@ public class ExperimentalBehavior01 implements Robot01Behavior
    {      
    }
 
+   @Override
+   public void senseScoreHealthTime(double score, double health, double time)
+   {      
+   }
 
+   @Override
+   public void reset()
+   {      
+   }
 
 }

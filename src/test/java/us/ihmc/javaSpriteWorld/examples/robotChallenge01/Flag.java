@@ -13,11 +13,9 @@ public class Flag
    private final Sprite sprite;
    private double x, y;
 
-   public Flag(int id, double x, double y)
+   public Flag(int id)
    {
       this.id = id;
-      this.x = x;
-      this.y = y;
 
       sprite = SampleSprites.createSixSidedRedPipsOnWhiteDie();
       sprite.setCostume((id - 1) % 6);

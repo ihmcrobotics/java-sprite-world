@@ -11,7 +11,10 @@ public class SpriteCollisionGroup
    
    public void addSprite(Sprite sprite)
    {
-      this.sprites.add(sprite);
+      if (!sprites.contains(sprite))
+      {
+         this.sprites.add(sprite);
+      }
    }
    
    public void removeSprite(Sprite sprite)

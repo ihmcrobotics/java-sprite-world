@@ -71,4 +71,14 @@ public class SimpleRobot02Behavior implements Robot02Behavior
    {      
    }
 
+   @Override
+   public void senseScoreHealthTime(double score, double health, double time)
+   {      
+   }
+
+   @Override
+   public void reset()
+   {      
+   }
+
 }
