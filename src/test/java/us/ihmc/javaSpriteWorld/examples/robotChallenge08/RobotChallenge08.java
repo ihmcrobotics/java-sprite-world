@@ -20,13 +20,13 @@ public class RobotChallenge08
    public static void main(String[] args)
    {
       RobotChallenge01 robotChallenge = createRobotChallenge();
-      robotChallenge.runSimulation();
+//      robotChallenge.runSimulation();
 
-//      while(true)
-//      {
-//         robotChallenge.runSimulation(10.0);
-//         robotChallenge.resetSimulation();
-//      }
+      while(true)
+      {
+         robotChallenge.runSimulation(20.0);
+         robotChallenge.resetSimulation();
+      }
    }
 
    private static RobotChallenge01 createRobotChallenge()

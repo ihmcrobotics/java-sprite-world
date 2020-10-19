@@ -30,4 +30,6 @@ public interface RobotChallengeRobot
 
    public abstract void hitWall();
 
+   public abstract void reset();
+
 }

@@ -38,9 +38,7 @@ public class Robot02 implements RobotChallengeRobot
       ConvexPolygon collisionPolygon = ConvexPolygon.createRectangle(new Point(-0.25, -0.5), new Vector(0.5, 1.0));
       sprite.addCollisionPolygon(collisionPolygon);
 
-      setHealth(100.0);
-
-      teleportHome();
+      reset();
    }
 
    public double getX()
@@ -246,4 +244,11 @@ public class Robot02 implements RobotChallengeRobot
       sprite.setRotationInRadians(heading);
    }
 
+   @Override
+   public void reset()
+   {
+      setHealth(100.0);
+      teleportHome();
+      flagHolding = null;
+   }
 }

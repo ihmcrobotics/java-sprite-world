@@ -73,17 +73,9 @@ public class FlagList
          flag.setLocation(x, y);
          
          addFlag(flag, spriteWorld, collisionGroup);
+         
+         System.out.println("Resetting flag " + flag.getId() + " to " + x + ", " + y);
       }
-   }
-   
-   public void removeFlag(Flag flag, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
-   {
-      collisionGroup.removeSprite(flag.getSprite());
-      spriteWorld.removeSprite(flag.getSprite());
-      flagsInPlay.remove(flag);
-      flag.getSprite().hide();
-
-      map.remove(flag.getSprite(), flag);
    }
    
    public void capturedFlag(Flag flag, SpriteWorld spriteWorld, SpriteCollisionGroup collisionGroup)
@@ -99,11 +91,7 @@ public class FlagList
    
    public void deliveredFlag(Flag flag)
    {
-      if (!flagsInPlay.contains(flag))
-      {
-         flagsInPlay.add(flag);
-      }
-      
+      capturedFlags.remove(flag);
       deliveredFlags.add(flag);
 
       map.remove(flag.getSprite(), flag);

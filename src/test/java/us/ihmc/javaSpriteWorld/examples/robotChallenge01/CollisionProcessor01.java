@@ -252,7 +252,7 @@ public class CollisionProcessor01 implements SpriteCollisionListener
       if (robotChallengeRules != null)
       {
          robot.capturedFlag(flag);
-         flagList.removeFlag(flag, spriteWorld, collisionGroup);
+         flagList.capturedFlag(flag, spriteWorld, collisionGroup);
          robotChallengeRules.capturedFlag(flag.getId());
       }
 

@@ -18,6 +18,8 @@ public class Robot01 implements RobotChallengeRobot
    private double xDot, yDot;
    private double maximumVelocity = 3.0;
 
+   private Flag flagHolding;
+
    public Robot01(double xMax, double yMax)
    {
       this.xMax = xMax;
@@ -31,9 +33,7 @@ public class Robot01 implements RobotChallengeRobot
       ConvexPolygon collisionPolygon = ConvexPolygon.createRectangle(new Point(-0.25, -0.5), new Vector(0.5, 1.0));
       sprite.addCollisionPolygon(collisionPolygon);
 
-      setHealth(100.0);
-
-      teleportHome();
+      reset();
    }
 
    public double getX()
@@ -166,12 +166,16 @@ public class Robot01 implements RobotChallengeRobot
    @Override
    public Flag dropFlag()
    {
-      return null;
+      Flag flagToDrop = flagHolding;
+
+      flagHolding = null;
+      return flagToDrop;
    }
 
    @Override
    public void capturedFlag(Flag flag)
-   {      
+   {
+      this.flagHolding = flag;
    }
 
    @Override
@@ -193,6 +197,13 @@ public class Robot01 implements RobotChallengeRobot
       
       xDot = 0.0;
       yDot = 0.0; 
+   }
+
+   @Override
+   public void reset()
+   {
+      setHealth(100.0);
+      teleportHome();
    }
 
 }

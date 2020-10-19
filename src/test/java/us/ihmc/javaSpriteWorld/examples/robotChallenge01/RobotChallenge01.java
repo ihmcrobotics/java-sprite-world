@@ -316,7 +316,7 @@ public class RobotChallenge01
       foodList.reset(random);
       predatorList.reset(random);
       flagList.reset(random, xMax, yMax, spriteWorld, collisionGroup);
-      robot.teleportHome();
+      robot.reset();
       robotChallengeRules.reset();
    }
 
