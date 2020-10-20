@@ -127,14 +127,14 @@ public class RobotChallengeRules06 extends RobotChallengeRules05
    private Vector2D addNoise(Vector2D vector, double vectorNoiseMagnitude)
    {
       double noisyX = addNoise(vector.getX(), vectorNoiseMagnitude);
-      double noisyY = addNoise(vector.getX(), vectorNoiseMagnitude);
+      double noisyY = addNoise(vector.getY(), vectorNoiseMagnitude);
       return new Vector2D(noisyX, noisyY);
    }
 
    private Point2D addNoise(Point2D point, double pointNoiseMagnitude)
    {
       double noisyX = addNoise(point.getX(), pointNoiseMagnitude);
-      double noisyY = addNoise(point.getX(), pointNoiseMagnitude);
+      double noisyY = addNoise(point.getY(), pointNoiseMagnitude);
       return new Point2D(noisyX, noisyY);
    }
 
