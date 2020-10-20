@@ -2,6 +2,7 @@ package us.ihmc.javaSpriteWorld.examples.stephen;
 
 import org.apache.commons.lang3.tuple.Pair;
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
+import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 
@@ -9,25 +10,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static us.ihmc.javaSpriteWorld.examples.stephen.BehaviorUtils.bodyFrameToWorldFrame;
+import static us.ihmc.javaSpriteWorld.examples.stephen.BehaviorUtils.filter;
 
 public class SLAMManager
 {
    private double xDebug = Double.NaN;
    private double yDebug = Double.NaN;
+   private double headingDebug = Double.NaN;
+   private final int debugPrintFrequency = 10;
+   private int debugPrintCounter = 0;
 
-   private static final double dt = 0.01;
+   public static final double dt = 0.01;
    private static final double initialX = 1.5;
    private static final double initialY = 1.5;
-   private static final double correctionMultiplier = 0.33;
+   private static final double correctionMultiplier = 0.3;
+   private static final double alphaVelocity = 0.25;
+   private static final double alphaHeading = 0.25;
 
-   private double velocity;
-   private double heading;
+   private double sensedVelocity;
+   private double sensedHeading;
+
+   private double filteredVelocity;
+   private double filteredHeading;
+
    private final Point2D xyPosition = new Point2D(initialX, initialY);
    private final Vector2D xyVelocity = new Vector2D();
    private final Vector2D xyHeading = new Vector2D();
    private final List<Point2D> wallPoints = new ArrayList<>();
 
    private ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame;
+   private final double[] actionFromLastTick = new double[2];
 
    public SLAMManager()
    {
@@ -37,13 +49,24 @@ public class SLAMManager
       wallPoints.add(new Point2D(10.0, 0.0));
    }
 
+   public void setActionFromLastTick(double[] actionFromLastTick)
+   {
+      for (int i = 0; i < 2; i++)
+      {
+         this.actionFromLastTick[i] = actionFromLastTick[i];
+      }
+   }
+
    public void update()
    {
-      xyHeading.setX(-Math.sin(heading));
-      xyHeading.setY(Math.cos(heading));
+      filteredHeading = filter(alphaHeading, sensedHeading, filteredHeading);
+      filteredVelocity = filter(alphaVelocity, sensedVelocity, filteredVelocity);
+
+      xyHeading.setX(-Math.sin(filteredHeading));
+      xyHeading.setY(Math.cos(filteredHeading));
 
       xyVelocity.set(xyHeading);
-      xyVelocity.scale(velocity);
+      xyVelocity.scale(filteredVelocity);
 
       xyPosition.addX(xyVelocity.getX() * dt);
       xyPosition.addY(xyVelocity.getY() * dt);
@@ -65,11 +88,11 @@ public class SLAMManager
          wallPointInBody.scale(sensorReading.getRight());
 
          Point2D wallPointInWorldEstimatedFrame = new Point2D();
-         bodyFrameToWorldFrame(wallPointInBody, wallPointInWorldEstimatedFrame, heading, xyPosition);
+         bodyFrameToWorldFrame(wallPointInBody, wallPointInWorldEstimatedFrame, filteredHeading, xyPosition);
 
          Vector2D sensorDirectionInBody = new Vector2D(sensorReading.getLeft());
          Vector2D sensorDirectionInWorld = new Vector2D();
-         bodyFrameToWorldFrame(sensorDirectionInBody, sensorDirectionInWorld, heading);
+         bodyFrameToWorldFrame(sensorDirectionInBody, sensorDirectionInWorld, filteredHeading);
 
          for (int j = 0; j < wallPoints.size(); j++)
          {
@@ -96,11 +119,14 @@ public class SLAMManager
          xyPosition.add(totalCorrectionVector);
       }
 
-      if (!Double.isNaN(xDebug))
+      if (!Double.isNaN(xDebug) && debugPrintCounter++ > debugPrintFrequency)
       {
+         debugPrintCounter = 0;
          double xError = Math.abs(xDebug - xyPosition.getX());
          double yError = Math.abs(yDebug - xyPosition.getY());
-         System.out.println("X Error = " + xError + "\t\t Y Error = " + yError);
+         double errorMagnitude = EuclidCoreTools.norm(xError, yError);
+         double angularError = Math.abs(EuclidCoreTools.angleDifferenceMinusPiToPi(headingDebug, filteredHeading));
+         System.out.println("Position error = " + errorMagnitude + "\t Heading error = " + angularError);
       }
    }
 
@@ -115,24 +141,29 @@ public class SLAMManager
       this.yDebug = y;
    }
 
-   public void setVelocity(double velocity)
+   public void senseNoiseFreeHeadingForTestingOnly(double headingDebug)
    {
-      this.velocity = velocity;
+      this.headingDebug = headingDebug;
    }
 
-   public void setHeading(double heading)
+   public void senseVelocity(double sensedVelocity)
    {
-      this.heading = heading;
+      this.sensedVelocity = sensedVelocity;
    }
 
-   public double getVelocity()
+   public void senseHeading(double sensedHeading)
    {
-      return velocity;
+      this.sensedHeading = sensedHeading;
+   }
+
+   public double getFilteredVelocity()
+   {
+      return filteredVelocity;
    }
 
    public double getHeading()
    {
-      return heading;
+      return filteredHeading;
    }
 
    public Point2D getXYPosition()

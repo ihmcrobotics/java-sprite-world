@@ -26,28 +26,29 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    private final double[] previousAction = new double[2];
    private final double[] filteredAction = new double[2];
 
-   // filter parameters
-   private final double alphaAction = 1.0;
-   private final double alphaVelocity = 1.0;
+   private final double alphaAction = 0.75;
+
+   private final int waitCountAfterHittingWall = 20;
+   private int waitCounter = 0;
 
    public StephenRobotBehavior()
    {
       enabledBehaviors.setFoodEnabled(true);
-      enabledBehaviors.setWallEnabled(false);
-      enabledBehaviors.setPredatorEnabled(false);
-      enabledBehaviors.setFlagEnabled(false);
+//      enabledBehaviors.setWallEnabled(true);
+//      enabledBehaviors.setPredatorEnabled(true);
+      enabledBehaviors.setFlagEnabled(true);
    }
 
    @Override
    public void senseVelocity(double velocity)
    {
-      slamManager.setVelocity(filter(alphaVelocity, velocity, slamManager.getVelocity()));
+      slamManager.senseVelocity(velocity);
    }
 
    @Override
    public void senseHeading(double heading)
    {
-      slamManager.setHeading(heading);
+      slamManager.senseHeading(heading);
    }
 
    @Override
@@ -134,6 +135,13 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
          previousAction[i] = totalAction[i];
       }
 
+      if (waitCounter > 0)
+      {
+         waitCounter--;
+         return new double[2];
+      }
+
+      slamManager.setActionFromLastTick(totalAction);
       return filteredAction;
    }
 
@@ -145,7 +153,7 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseNoiseFreeHeadingForTestingOnly(double heading)
    {
-
+      slamManager.senseNoiseFreeHeadingForTestingOnly(heading);
    }
 
 
@@ -164,7 +172,7 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseHitWall()
    {
-      // TODO reset SLAM
+      waitCounter = waitCountAfterHittingWall;
    }
 
    @Override
