@@ -1,8 +1,8 @@
 package us.ihmc.javaSpriteWorld.examples.stephen;
 
+import org.apache.commons.lang3.mutable.MutableDouble;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-import us.ihmc.euclid.tools.AxisAngleTools;
 import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
@@ -21,26 +21,33 @@ public class SteeringBasedAction
 
    private List<Pair<Point2D, Vector2D>> locationOfAllFoodInBodyFrame = new ArrayList<>();
    private List<Pair<Point2D, Vector2D>> locationOfAllPredators = new ArrayList<>();
+   private List<Pair<Vector2D, MutableDouble>> rangeSensorData = new ArrayList<>();
+
    private Pair<Point2D, Integer> filteredSensedFlag;
-   private ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame;
 
    // Higher weight rewards/penalties for objects in front of the robot
-   private static final double rewardScaleWhenBehindRobot = 0.4;
-   
-   private static final double alphaSensedFlag = 0.3;
-   private static final double alphaSensedFood = 0.3;
-   private static final double alphaSensedPredators = 0.1;
+   private static final double rewardScaleWhenBehindRobot = 0.7;
 
-   private final double wallAngularCostRange = Math.toRadians(40.0);
+   private static final double alphaSensedFlag = 0.33;
+   private static final double alphaSensedFood = 0.33;
+   private static final double alphaPredatorPosition = 0.33;
+   private static final double alphaPredatorVelocity = 0.2;
+   private static final double alphaRangeSensor = 0.5;
+
+   private final double wallAngularCostRange = Math.toRadians(60.0);
+   private final double wallAngularDeadband = Math.toRadians(40.0);
    private final double foodAngularCostRange = Math.toRadians(180.0);
    private final double predatorAngularCostRange = Math.toRadians(80.0);
    private final double goToFlagAngularCostRange = Math.toRadians(180.0);
    private final double avoidFlagAngularCostRange = Math.toRadians(130.0);
 
-   private final double foodWeight = 1.0;
-   private final double predatorWeight = 0.1;
+   private static final double foodWeightAtMaxHealth = 0.7;
+   private static final double foodWeightAtMinHealth = 1.6;
+
+   private double foodWeight = foodWeightAtMaxHealth;
+   private final double predatorWeight = 0.2;
    private final double wallWeight = 2.2;
-   private final double avoidFlagWeight = 3.0;
+   private final double avoidFlagWeight = 2.5;
    private final double flagWeight = 0.7;
    private final double exploreAreaWeight = 0.4;
 
@@ -50,7 +57,12 @@ public class SteeringBasedAction
    private final double baseAvoidFlag = 1.75;
 
    private double previousHeading = Double.NaN;
-   private static final double alphaHeading = 0.7;
+   private static final double alphaHeading = 0.3;
+
+   private double minSensedWallHeading = Double.NaN;
+   private double minSensedWallDistance = Double.NaN;
+   private double minSensedWallPenalty = Double.NaN;
+   private final double wallDistanceDeadband = 0.1;
 
    private final List<ObjectResponseDescription> responseDescriptions = new ArrayList<>();
 
@@ -68,7 +80,8 @@ public class SteeringBasedAction
       // wall
       if (enabledBehaviors.isWallEnabled())
       {
-         computeWallAction();
+         updateMinWallData();
+         responseDescriptions.add(this::computeWallPenaltyAtAngle);
       }
 
       // food
@@ -96,12 +109,16 @@ public class SteeringBasedAction
 
          if (flagManager.isInDeliverFlagMode())
          {
-            Point2D dropPointWorld = new Point2D(9.0, 9.0);
+            Point2D dropPointWorld = new Point2D(10.0, 10.0);
             Point2D dropPointBody = new Point2D();
             worldFrameToBodyFrame(dropPointWorld, dropPointBody, slamManager.getHeading(), slamManager.getXYPosition());
 
             computeGoToFlagReward(dropPointBody, flagWeight);
-            computeAvoidFlagPenalty(filteredSensedFlag.getLeft());
+
+            if (flagManager.getFlagIdToChase() != 5)
+            {
+               computeAvoidFlagPenalty(filteredSensedFlag.getLeft());
+            }
          }
          else
          {
@@ -169,28 +186,50 @@ public class SteeringBasedAction
       double angleToStopAndTurn = Math.toRadians(60.0);
       double deltaDesiredHeading = maxRewardHeading;
 
+      double kAcceleration = 3.0;
+      double kTurn = 4.0;
+      double acceleration;
+
       if (Math.abs(deltaDesiredHeading) < angleToStopAndTurn)
       {
          targetVelocity = EuclidCoreTools.interpolate(velocityWhenAligned, 0.0, Math.abs(deltaDesiredHeading / angleToStopAndTurn));
+
+         // don't break if roughly aligned
+         acceleration = Math.max(kAcceleration * (targetVelocity - slamManager.getFilteredVelocity()), 0.0);
       }
       else
       {
          targetVelocity = 0.0;
+
+         // break if necessary when not aligned
+         acceleration = kAcceleration * (targetVelocity - slamManager.getFilteredVelocity());
       }
 
-      double kAcceleration = 3.0;
-      double accelerationAction = kAcceleration * (targetVelocity - slamManager.getFilteredVelocity());
-
-      double kTurn = 4.0;
       double turningAction = kTurn * deltaDesiredHeading;
 
-      totalAction[0] = accelerationAction;
+      totalAction[0] = acceleration;
       totalAction[1] = turningAction;
    }
 
    public void senseWallRangeInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame)
    {
-      this.vectorsAndDistancesToWallInBodyFrame = vectorsAndDistancesToWallInBodyFrame;
+      if (rangeSensorData.isEmpty())
+      {
+         for (int i = 0; i < vectorsAndDistancesToWallInBodyFrame.size(); i++)
+         {
+            Pair<Vector2D, Double> rangeData = vectorsAndDistancesToWallInBodyFrame.get(i);
+            rangeSensorData.add(Pair.of(new Vector2D(rangeData.getLeft()), new MutableDouble(rangeData.getRight())));
+         }
+      }
+      else
+      {
+         for (int i = 0; i < vectorsAndDistancesToWallInBodyFrame.size(); i++)
+         {
+            double sensedRange = vectorsAndDistancesToWallInBodyFrame.get(i).getRight();
+            MutableDouble filteredRange = rangeSensorData.get(i).getRight();
+            filteredRange.setValue(filter(alphaRangeSensor, sensedRange, filteredRange.getValue()));
+         }
+      }
    }
 
    public void senseFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
@@ -234,10 +273,14 @@ public class SteeringBasedAction
             Pair<Point2D, Vector2D> newData = locationOfAllPredators.get(i);
 
             Point2D predatorPosition = dataToSet.getLeft();
+
             Vector2D predatorVelocity = dataToSet.getRight();
-            predatorPosition.addX(SLAMManager.dt * predatorVelocity.getX());
-            predatorPosition.addY(SLAMManager.dt * predatorVelocity.getY());
-            predatorPosition.interpolate(newData.getLeft(), alphaSensedPredators);
+            predatorVelocity.interpolate(newData.getRight(), alphaPredatorVelocity);
+
+            predatorPosition.addX(predatorVelocity.getX() * SLAMManager.dt * 0.5);
+            predatorPosition.addY(predatorVelocity.getY() * SLAMManager.dt * 0.5);
+
+            predatorPosition.interpolate(newData.getLeft(), alphaPredatorPosition);
             predatorVelocity.set(newData.getRight());
          }
       }
@@ -258,23 +301,9 @@ public class SteeringBasedAction
       }
    }
 
-   private void computeWallAction()
+   public void senseHealth(double health)
    {
-      int minWallIndex = 0;
-      double minWallDistance = Double.POSITIVE_INFINITY;
-      for (int i = 0; i < vectorsAndDistancesToWallInBodyFrame.size(); i++)
-      {
-         Pair<Vector2D, Double> vectorAndDistanceToWall = vectorsAndDistancesToWallInBodyFrame.get(i);
-         if (vectorAndDistanceToWall.getRight() < minWallDistance)
-         {
-            minWallDistance = vectorAndDistanceToWall.getRight();
-            minWallIndex = i;
-         }
-      }
-
-      double penalty = -wallWeight * Math.pow(baseWall, - minWallDistance);
-      Vector2D sensorVector = vectorsAndDistancesToWallInBodyFrame.get(minWallIndex).getLeft();
-      responseDescriptions.add(new ObjectResponseDescription(headingFromVector(sensorVector), wallAngularCostRange, penalty));
+      foodWeight = EuclidCoreTools.interpolate(foodWeightAtMaxHealth, foodWeightAtMinHealth, health / 100.0);
    }
 
    private void computeFoodReward(Tuple2DReadOnly foodInBodyFrame)
@@ -284,7 +313,7 @@ public class SteeringBasedAction
       double heading = distance < deadband ? 0.0 : headingFromVector(foodInBodyFrame);
 
       double reward = foodWeight * Math.pow(baseFood, - distance);
-      responseDescriptions.add(new ObjectResponseDescription(heading, foodAngularCostRange, reward));
+      responseDescriptions.add(new RampedAngularReward(heading, foodAngularCostRange, reward));
    }
 
    private void computePredatorPenalty(Tuple2DReadOnly predatorInBodyFrame)
@@ -292,7 +321,7 @@ public class SteeringBasedAction
       double distance = EuclidCoreTools.norm(predatorInBodyFrame.getX(), predatorInBodyFrame.getY());
       double reward = -predatorWeight * Math.pow(basePredator, - distance);
       double heading = headingFromVector(predatorInBodyFrame);
-      responseDescriptions.add(new ObjectResponseDescription(heading, predatorAngularCostRange, reward));
+      responseDescriptions.add(new RampedAngularReward(heading, predatorAngularCostRange, reward));
    }
 
    private void computeAvoidFlagPenalty(Tuple2DReadOnly flagInBodyFrame)
@@ -300,7 +329,7 @@ public class SteeringBasedAction
       double heading = headingFromVector(flagInBodyFrame);
       double distance = EuclidCoreTools.norm(flagInBodyFrame.getX(), flagInBodyFrame.getY());
       double cost = -avoidFlagWeight * Math.pow(baseAvoidFlag, - distance);
-      responseDescriptions.add(new ObjectResponseDescription(heading, avoidFlagAngularCostRange, cost));
+      responseDescriptions.add(new RampedAngularReward(heading, avoidFlagAngularCostRange, cost));
    }
 
    private void computeGoToFlagReward(Tuple2DReadOnly flagInBodyFrame, double reward)
@@ -308,27 +337,112 @@ public class SteeringBasedAction
       double deadband = 0.5;
       if (EuclidCoreTools.norm(flagInBodyFrame.getX(), flagInBodyFrame.getY()) < deadband)
       {
-         responseDescriptions.add(new ObjectResponseDescription(0.0, goToFlagAngularCostRange, reward));
+         responseDescriptions.add(new RampedAngularReward(0.0, goToFlagAngularCostRange, reward));
       }
       else
       {
-         responseDescriptions.add(new ObjectResponseDescription(headingFromVector(flagInBodyFrame), goToFlagAngularCostRange, reward));
+         responseDescriptions.add(new RampedAngularReward(headingFromVector(flagInBodyFrame), goToFlagAngularCostRange, reward));
       }
    }
 
-   private static class ObjectResponseDescription
+   private void updateMinWallData()
+   {
+      int minWallIndex = 0;
+      minSensedWallDistance = Double.POSITIVE_INFINITY;
+      for (int i = 0; i < rangeSensorData.size(); i++)
+      {
+         Pair<Vector2D, MutableDouble> vectorAndDistanceToWall = rangeSensorData.get(i);
+         if (vectorAndDistanceToWall.getRight().getValue() < minSensedWallDistance)
+         {
+            minSensedWallDistance = vectorAndDistanceToWall.getRight().getValue();
+            minWallIndex = i;
+         }
+      }
+
+      minSensedWallPenalty = -wallWeight * Math.pow(baseWall, - Math.max(minSensedWallDistance - wallDistanceDeadband, 0.0));
+      minSensedWallHeading = headingFromVector(rangeSensorData.get(minWallIndex).getLeft());
+   }
+
+   private double computeWallPenaltyAtAngle(double headingInBodyFrame)
+   {
+      double penaltyFromNearestSensors = computeWallPenaltyFromNearestSensors(headingInBodyFrame);
+
+      double penaltyFromMinWallDistance = Double.POSITIVE_INFINITY;
+      double angularDifference = Math.abs(EuclidCoreTools.angleDifferenceMinusPiToPi(headingInBodyFrame, minSensedWallHeading));
+      angularDifference = Math.max(0.0, angularDifference - wallAngularDeadband);
+      if (angularDifference < wallAngularCostRange)
+      {
+         double multiplier = (1.0 - angularDifference / wallAngularCostRange);
+         penaltyFromMinWallDistance = minSensedWallPenalty * multiplier;
+      }
+
+      double wallPenaltyAtAngle = Math.min(penaltyFromNearestSensors, penaltyFromMinWallDistance);
+      return wallPenaltyAtAngle;
+   }
+
+   private double computeWallPenaltyFromNearestSensors(double headingInBodyFrame)
+   {
+      double maxAngleFromPerpendicular = Math.toRadians(30.0);
+      if (Math.abs(headingInBodyFrame) > maxAngleFromPerpendicular + 0.5 * Math.PI)
+      {
+         return 0.0;
+      }
+
+      Pair<Integer, Integer> nearestSensorIndices = getNearestSensorIndices(headingInBodyFrame);
+
+      int i1 = nearestSensorIndices.getLeft();
+      int i2 = nearestSensorIndices.getLeft();
+
+      double dAng1 = Math.abs(EuclidCoreTools.angleDifferenceMinusPiToPi(headingInBodyFrame, headingFromVector(rangeSensorData.get(i1).getLeft())));
+      double dAng2 = Math.abs(EuclidCoreTools.angleDifferenceMinusPiToPi(headingInBodyFrame, headingFromVector(rangeSensorData.get(i2).getLeft())));
+
+      double dist1 = rangeSensorData.get(i1).getRight().getValue();
+      double dist2 = rangeSensorData.get(i2).getRight().getValue();
+
+      double dist = (dist1 * dAng2 + dist2 * dAng1) / (dAng1 + dAng2);
+      return - wallWeight * Math.pow(baseWall, - Math.max(dist - wallDistanceDeadband, 0.0));
+   }
+
+   private Pair<Integer, Integer> getNearestSensorIndices(double heading)
+   {
+      double angle1Min = Double.POSITIVE_INFINITY;
+      int index1Min = -1;
+      int index2Min = -1;
+
+      for (int i = 0; i < rangeSensorData.size(); i++)
+      {
+         double rangeHeading = headingFromVector(rangeSensorData.get(i).getLeft());
+         double angleDiff = Math.abs(EuclidCoreTools.angleDifferenceMinusPiToPi(rangeHeading, heading));
+         if (angleDiff < angle1Min)
+         {
+            index2Min = index1Min;
+            index1Min = i;
+            angle1Min = angleDiff;
+         }
+      }
+
+      return Pair.of(index1Min, index2Min);
+   }
+
+   private interface ObjectResponseDescription
+   {
+      double getRewardAtAngle(double headingInBodyFrame);
+   }
+
+   private static class RampedAngularReward implements ObjectResponseDescription
    {
       private final double headingOfObjectInBodyFrame;
       private final double angularRange;
       private final double rewardWhenFacingObject;
 
-      public ObjectResponseDescription(double headingOfObjectInBodyFrame, double angularRange, double rewardWhenFacingObject)
+      public RampedAngularReward(double headingOfObjectInBodyFrame, double angularRange, double rewardWhenFacingObject)
       {
          this.headingOfObjectInBodyFrame = headingOfObjectInBodyFrame;
          this.angularRange = angularRange;
          this.rewardWhenFacingObject = rewardWhenFacingObject;
       }
 
+      @Override
       public double getRewardAtAngle(double headingInBodyFrame)
       {
          double angularDifference = Math.abs(EuclidCoreTools.angleDifferenceMinusPiToPi(headingInBodyFrame, headingOfObjectInBodyFrame));
@@ -344,4 +458,12 @@ public class SteeringBasedAction
       }
    }
 
+   public void reset()
+   {
+      locationOfAllFoodInBodyFrame.clear();
+      locationOfAllPredators.clear();
+      filteredSensedFlag = null;
+      previousHeading = Double.NaN;
+      foodWeight = foodWeightAtMaxHealth;
+   }
 }
