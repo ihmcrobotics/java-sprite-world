@@ -26,7 +26,7 @@ public class SteeringBasedAction
 
    // Higher weight rewards/penalties for objects in front of the robot
    private static final double rewardScaleWhenBehindRobot = 0.4;
-   
+
    private static final double alphaSensedFlag = 0.3;
    private static final double alphaSensedFood = 0.3;
    private static final double alphaSensedPredators = 0.1;
@@ -344,4 +344,11 @@ public class SteeringBasedAction
       }
    }
 
+   public void reset()
+   {
+      locationOfAllFoodInBodyFrame.clear();
+      locationOfAllPredators.clear();
+      filteredSensedFlag = null;
+      previousHeading = Double.NaN;
+   }
 }

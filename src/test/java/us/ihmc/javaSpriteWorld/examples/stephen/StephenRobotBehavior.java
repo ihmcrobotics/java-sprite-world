@@ -8,6 +8,7 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge05.Robot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static us.ihmc.javaSpriteWorld.examples.stephen.BehaviorUtils.filter;
 
@@ -34,8 +35,8 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    public StephenRobotBehavior()
    {
       enabledBehaviors.setFoodEnabled(true);
-//      enabledBehaviors.setWallEnabled(true);
-//      enabledBehaviors.setPredatorEnabled(true);
+      enabledBehaviors.setWallEnabled(true);
+      enabledBehaviors.setPredatorEnabled(true);
       enabledBehaviors.setFlagEnabled(true);
    }
 
@@ -196,7 +197,14 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void reset()
    {
+      slamManager.reset();
+      flagManager.update();
 
+      Arrays.fill(previousAction, 0.0);
+      waitCounter = 0;
+
+      radialVectorAction.reset();
+      steeringBasedAction.reset();
    }
 
    @Override

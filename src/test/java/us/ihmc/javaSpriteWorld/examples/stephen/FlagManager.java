@@ -166,4 +166,14 @@ public class FlagManager
          throw new RuntimeException("Shouldn't get here...");
       }
    }
+
+   public void reset()
+   {
+      counter = 0;
+      flagIdToChase = 1;
+      for (int i = 0; i < flagLocations.length; i++)
+      {
+         flagLocations[i].setToNaN();
+      }
+   }
 }

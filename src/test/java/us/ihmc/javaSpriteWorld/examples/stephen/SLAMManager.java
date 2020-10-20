@@ -180,4 +180,14 @@ public class SLAMManager
    {
       return xyHeading;
    }
+
+   public void reset()
+   {
+      filteredHeading = 0.0;
+      filteredVelocity = 0.0;
+      sensedHeading = 0.0;
+      sensedVelocity = 0.0;
+
+      xyPosition.set(initialX, initialY);
+   }
 }

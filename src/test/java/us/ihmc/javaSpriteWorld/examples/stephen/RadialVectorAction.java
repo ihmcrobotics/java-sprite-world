@@ -287,4 +287,8 @@ public class RadialVectorAction
       this.positionInBodyFrameAndIdOfClosestFlag = positionInBodyFrameAndIdOfClosestFlag;
    }
 
+   public void reset()
+   {
+
+   }
 }
