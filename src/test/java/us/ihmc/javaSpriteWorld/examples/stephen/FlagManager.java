@@ -83,10 +83,7 @@ public class FlagManager
    private void takeANoteOfFlagLocation()
    {
       int flagZeroIndexId = positionInBodyFrameAndIdOfClosestFlag.getRight() - 1;
-      if (flagLocations[flagZeroIndexId].containsNaN())
-      {
-         bodyFrameToWorldFrame(positionInBodyFrameAndIdOfClosestFlag.getLeft(), flagLocations[flagZeroIndexId], slamManager.getHeading(), slamManager.getXYPosition());
-      }
+      bodyFrameToWorldFrame(positionInBodyFrameAndIdOfClosestFlag.getLeft(), flagLocations[flagZeroIndexId], slamManager.getHeading(), slamManager.getXYPosition());
    }
 
    public boolean isInDeliverFlagMode()

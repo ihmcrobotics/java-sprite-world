@@ -15,6 +15,11 @@ public class BehaviorUtils
       return alpha * value + (1.0 - alpha) * previous;
    }
 
+   public static Point2D filter(double alpha, Point2D newValue, Point2D previousValue)
+   {
+      return new Point2D(filter(alpha, newValue.getX(), previousValue.getX()), filter(alpha, newValue.getY(), previousValue.getY()));
+   }
+
    public static double headingFromVector(Tuple2DReadOnly vector)
    {
       return headingFromVector(vector.getX(), vector.getY());

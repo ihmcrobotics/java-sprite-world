@@ -2,6 +2,7 @@ package us.ihmc.javaSpriteWorld.examples.stephen;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import us.ihmc.euclid.tools.AxisAngleTools;
 import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
@@ -10,8 +11,7 @@ import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
 import java.util.ArrayList;
 import java.util.List;
 
-import static us.ihmc.javaSpriteWorld.examples.stephen.BehaviorUtils.headingFromVector;
-import static us.ihmc.javaSpriteWorld.examples.stephen.BehaviorUtils.worldFrameToBodyFrame;
+import static us.ihmc.javaSpriteWorld.examples.stephen.BehaviorUtils.*;
 
 public class SteeringBasedAction
 {
@@ -19,32 +19,38 @@ public class SteeringBasedAction
    private final SLAMManager slamManager;
    private final FlagManager flagManager;
 
-   private ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFoodInBodyFrame;
-   private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators;
-   private Pair<Point2D, Integer> positionInBodyFrameAndIdOfClosestFlag;
+   private List<Pair<Point2D, Vector2D>> locationOfAllFoodInBodyFrame = new ArrayList<>();
+   private List<Pair<Point2D, Vector2D>> locationOfAllPredators = new ArrayList<>();
+   private Pair<Point2D, Integer> filteredSensedFlag;
    private ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame;
 
-   private final double wallAngularCostRange = Math.toRadians(75.0);
+   // Higher weight rewards/penalties for objects in front of the robot
+   private static final double rewardScaleWhenBehindRobot = 0.4;
+   
+   private static final double alphaSensedFlag = 0.3;
+   private static final double alphaSensedFood = 0.3;
+   private static final double alphaSensedPredators = 0.1;
+
+   private final double wallAngularCostRange = Math.toRadians(40.0);
    private final double foodAngularCostRange = Math.toRadians(180.0);
    private final double predatorAngularCostRange = Math.toRadians(80.0);
    private final double goToFlagAngularCostRange = Math.toRadians(180.0);
-   private final double avoidFlagAngularCostRange = Math.toRadians(45.0);
+   private final double avoidFlagAngularCostRange = Math.toRadians(130.0);
 
-   private final double maxForceWall = 2.5;
-   private final double maxForceFood = 1.0;
-   private final double maxForcePredator = 1.2;
-   private final double maxForceAvoidFlagWhileDelivering = 3.0;
-   private final double flagAttractionForceMagnitude = 0.5;
-   private final double exploreAreaForceMagnitude = 0.4;
+   private final double foodWeight = 1.0;
+   private final double predatorWeight = 0.1;
+   private final double wallWeight = 2.2;
+   private final double avoidFlagWeight = 3.0;
+   private final double flagWeight = 0.7;
+   private final double exploreAreaWeight = 0.4;
 
-   private final double minAngleToPenalizeFood = Math.toRadians(60.0);
-   private final double extraFoodDistanceIfBehind = 1.0;
-   private final double proximityNearWallToIgnoreFood = 0.8;
+   private final double baseWall = 2.4;
+   private double baseFood = 2.0;
+   private final double basePredator = 1.75;
+   private final double baseAvoidFlag = 1.75;
 
-   private final double baseWall = 2.65;
-   private double baseFood = 2.2;
-   private final double basePredator = 2.0;
-   private final double baseFlag = 2.5;
+   private double previousHeading = Double.NaN;
+   private static final double alphaHeading = 0.7;
 
    private final List<ObjectResponseDescription> responseDescriptions = new ArrayList<>();
 
@@ -70,7 +76,7 @@ public class SteeringBasedAction
       {
          for (int i = 0; i < locationOfAllFoodInBodyFrame.size(); i++)
          {
-            computeFoodAction(locationOfAllFoodInBodyFrame.get(i).getMiddle());
+            computeFoodReward(locationOfAllFoodInBodyFrame.get(i).getLeft());
          }
       }
 
@@ -79,32 +85,47 @@ public class SteeringBasedAction
       {
          for (int i = 0; i < locationOfAllPredators.size(); i++)
          {
-            computePredatorForce(locationOfAllPredators.get(i).getLeft());
+            computePredatorPenalty(locationOfAllPredators.get(i).getLeft());
          }
       }
 
       // chase flag
       if (enabledBehaviors.isFlagEnabled())
       {
+         flagManager.update();
+
          if (flagManager.isInDeliverFlagMode())
          {
-            Vector2D dropPointWorld = new Vector2D(9.0, 9.0);
-            Vector2D dropPointBody = new Vector2D();
-            worldFrameToBodyFrame(dropPointWorld, dropPointBody, slamManager.getHeading());
+            Point2D dropPointWorld = new Point2D(9.0, 9.0);
+            Point2D dropPointBody = new Point2D();
+            worldFrameToBodyFrame(dropPointWorld, dropPointBody, slamManager.getHeading(), slamManager.getXYPosition());
 
-            computeGoToFlagForce(dropPointBody);
-            computeAvoidFlagForce(positionInBodyFrameAndIdOfClosestFlag.getLeft());
+            computeGoToFlagReward(dropPointBody, flagWeight);
+            computeAvoidFlagPenalty(filteredSensedFlag.getLeft());
          }
          else
          {
-            boolean detectedFlagShouldBeRetrieved = positionInBodyFrameAndIdOfClosestFlag.getRight() == flagManager.getFlagIdToChase();
+            boolean detectedFlagShouldBeRetrieved = filteredSensedFlag.getRight() == flagManager.getFlagIdToChase();
             if (detectedFlagShouldBeRetrieved)
             {
-               computeGoToFlagForce(positionInBodyFrameAndIdOfClosestFlag.getLeft());
+               computeGoToFlagReward(filteredSensedFlag.getLeft(), flagWeight);
             }
             else
             {
-               // TODO
+               if (flagManager.hasDetectedNextFlag())
+               {
+                  Point2D nextFlagLocationInWorld = flagManager.getNextFlagLocation();
+                  Point2D nextFlagLocationInBodyFrame = new Point2D();
+                  worldFrameToBodyFrame(nextFlagLocationInWorld, nextFlagLocationInBodyFrame, slamManager.getHeading(), slamManager.getXYPosition());
+                  computeGoToFlagReward(nextFlagLocationInBodyFrame, flagWeight);
+               }
+               else
+               {
+//                  Point2D areaToExploreInWorldFrame = flagManager.getAreaToExplore();
+//                  Point2D areaToExploreInBodyFrame = new Point2D();
+//                  worldFrameToBodyFrame(areaToExploreInWorldFrame, areaToExploreInBodyFrame, slamManager.getHeading(), slamManager.getXYPosition());
+//                  computeGoToFlagReward(areaToExploreInWorldFrame, exploreAreaReward);
+               }
             }
          }
       }
@@ -130,6 +151,19 @@ public class SteeringBasedAction
          angle += 0.01;
       }
 
+      double filteredHeading = 0.0;
+      if (Double.isNaN(previousHeading))
+      {
+         filteredHeading = maxRewardHeading;
+      }
+      else
+      {
+         double angularDifference = EuclidCoreTools.angleDifferenceMinusPiToPi(maxRewardHeading, previousHeading);
+         filteredHeading = EuclidCoreTools.trimAngleMinusPiToPi(previousHeading + alphaHeading * angularDifference);
+      }
+
+      previousHeading = filteredHeading;
+
       double velocityWhenAligned = 3.0;
       double targetVelocity;
       double angleToStopAndTurn = Math.toRadians(60.0);
@@ -137,7 +171,7 @@ public class SteeringBasedAction
 
       if (Math.abs(deltaDesiredHeading) < angleToStopAndTurn)
       {
-         targetVelocity = velocityWhenAligned - (velocityWhenAligned / angleToStopAndTurn) * Math.abs(deltaDesiredHeading);
+         targetVelocity = EuclidCoreTools.interpolate(velocityWhenAligned, 0.0, Math.abs(deltaDesiredHeading / angleToStopAndTurn));
       }
       else
       {
@@ -145,7 +179,7 @@ public class SteeringBasedAction
       }
 
       double kAcceleration = 3.0;
-      double accelerationAction = kAcceleration * (targetVelocity - slamManager.getVelocity());
+      double accelerationAction = kAcceleration * (targetVelocity - slamManager.getFilteredVelocity());
 
       double kTurn = 4.0;
       double turningAction = kTurn * deltaDesiredHeading;
@@ -161,59 +195,125 @@ public class SteeringBasedAction
 
    public void senseFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
-      this.locationOfAllFoodInBodyFrame = locationOfAllFood;
+      if (locationOfAllFoodInBodyFrame.isEmpty())
+      {
+         for (int i = 0; i < locationOfAllFood.size(); i++)
+         {
+            Triple<Integer, Point2D, Vector2D> foodData = locationOfAllFood.get(i);
+            locationOfAllFoodInBodyFrame.add(Pair.of(new Point2D(foodData.getMiddle()), new Vector2D(foodData.getRight())));
+         }
+      }
+      else
+      {
+         for (int i = 0; i < locationOfAllFoodInBodyFrame.size(); i++)
+         {
+            Point2D positionToSetFiltered = locationOfAllFoodInBodyFrame.get(i).getLeft();
+            Triple<Integer, Point2D, Vector2D> newData = locationOfAllFood.get(i);
+
+            positionToSetFiltered.setX(filter(alphaSensedFood, newData.getMiddle().getX(), positionToSetFiltered.getX()));
+            positionToSetFiltered.setY(filter(alphaSensedFood, newData.getMiddle().getY(), positionToSetFiltered.getY()));
+         }
+      }
    }
 
    public void sensePredatorsInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators)
    {
-      this.locationOfAllPredators = locationOfAllPredators;
+      if (this.locationOfAllPredators.isEmpty())
+      {
+         for (int i = 0; i < locationOfAllPredators.size(); i++)
+         {
+            Pair<Point2D, Vector2D> predatorData = locationOfAllPredators.get(i);
+            this.locationOfAllPredators.add(Pair.of(new Point2D(predatorData.getLeft()), new Vector2D(predatorData.getRight())));
+         }
+      }
+      else
+      {
+         for (int i = 0; i < this.locationOfAllPredators.size(); i++)
+         {
+            Pair<Point2D, Vector2D> dataToSet = this.locationOfAllPredators.get(i);
+            Pair<Point2D, Vector2D> newData = locationOfAllPredators.get(i);
+
+            Point2D predatorPosition = dataToSet.getLeft();
+            Vector2D predatorVelocity = dataToSet.getRight();
+            predatorPosition.addX(SLAMManager.dt * predatorVelocity.getX());
+            predatorPosition.addY(SLAMManager.dt * predatorVelocity.getY());
+            predatorPosition.interpolate(newData.getLeft(), alphaSensedPredators);
+            predatorVelocity.set(newData.getRight());
+         }
+      }
    }
 
    public void senseClosestFlagInBodyFrame(Pair<Point2D, Integer> positionInBodyFrameAndIdOfClosestFlag)
    {
-      this.positionInBodyFrameAndIdOfClosestFlag = positionInBodyFrameAndIdOfClosestFlag;
+      if (this.filteredSensedFlag == null || this.filteredSensedFlag.getRight() != positionInBodyFrameAndIdOfClosestFlag.getRight())
+      {
+         this.filteredSensedFlag = Pair.of(new Point2D(positionInBodyFrameAndIdOfClosestFlag.getLeft()), positionInBodyFrameAndIdOfClosestFlag.getRight());
+      }
+      else
+      {
+         Point2D previousPosition = this.filteredSensedFlag.getLeft();
+         Point2D newPosition = positionInBodyFrameAndIdOfClosestFlag.getLeft();
+         Point2D filteredPosition = filter(alphaSensedFlag, newPosition, previousPosition);
+         this.filteredSensedFlag = Pair.of(filteredPosition, positionInBodyFrameAndIdOfClosestFlag.getRight());
+      }
    }
 
    private void computeWallAction()
    {
-//      double cost = -maxForceWall * Math.pow(baseWall, -wallDistance);
-//      responseDescriptions.add(new ObjectResponseDescription(0.0, wallAngularCostRange, cost));
-   }
-
-   private void computeFoodAction(Tuple2DReadOnly foodInBodyFrame)
-   {
-      double distance = EuclidCoreTools.norm(foodInBodyFrame.getX(), foodInBodyFrame.getY());
-      double angleFromStraightAhead = headingFromVector(foodInBodyFrame);
-      if (Math.abs(angleFromStraightAhead) > minAngleToPenalizeFood)
+      int minWallIndex = 0;
+      double minWallDistance = Double.POSITIVE_INFINITY;
+      for (int i = 0; i < vectorsAndDistancesToWallInBodyFrame.size(); i++)
       {
-         double angleFromStraightBehind = EuclidCoreTools.angleDifferenceMinusPiToPi(angleFromStraightAhead, Math.PI);
-         distance += extraFoodDistanceIfBehind * (1.0 - Math.abs(angleFromStraightBehind) / (Math.PI - minAngleToPenalizeFood));
+         Pair<Vector2D, Double> vectorAndDistanceToWall = vectorsAndDistancesToWallInBodyFrame.get(i);
+         if (vectorAndDistanceToWall.getRight() < minWallDistance)
+         {
+            minWallDistance = vectorAndDistanceToWall.getRight();
+            minWallIndex = i;
+         }
       }
 
-      double reward = maxForceFood * Math.pow(baseFood, - distance);
-      double heading = headingFromVector(foodInBodyFrame);
+      double penalty = -wallWeight * Math.pow(baseWall, - minWallDistance);
+      Vector2D sensorVector = vectorsAndDistancesToWallInBodyFrame.get(minWallIndex).getLeft();
+      responseDescriptions.add(new ObjectResponseDescription(headingFromVector(sensorVector), wallAngularCostRange, penalty));
+   }
+
+   private void computeFoodReward(Tuple2DReadOnly foodInBodyFrame)
+   {
+      double deadband = 0.15;
+      double distance = EuclidCoreTools.norm(foodInBodyFrame.getX(), foodInBodyFrame.getY());
+      double heading = distance < deadband ? 0.0 : headingFromVector(foodInBodyFrame);
+
+      double reward = foodWeight * Math.pow(baseFood, - distance);
       responseDescriptions.add(new ObjectResponseDescription(heading, foodAngularCostRange, reward));
    }
 
-   private void computePredatorForce(Tuple2DReadOnly predatorInBodyFrame)
+   private void computePredatorPenalty(Tuple2DReadOnly predatorInBodyFrame)
    {
       double distance = EuclidCoreTools.norm(predatorInBodyFrame.getX(), predatorInBodyFrame.getY());
-      double reward = - maxForcePredator * Math.pow(basePredator, - distance);
+      double reward = -predatorWeight * Math.pow(basePredator, - distance);
       double heading = headingFromVector(predatorInBodyFrame);
       responseDescriptions.add(new ObjectResponseDescription(heading, predatorAngularCostRange, reward));
    }
 
-   private void computeAvoidFlagForce(Tuple2DReadOnly flagInBodyFrame)
+   private void computeAvoidFlagPenalty(Tuple2DReadOnly flagInBodyFrame)
    {
       double heading = headingFromVector(flagInBodyFrame);
       double distance = EuclidCoreTools.norm(flagInBodyFrame.getX(), flagInBodyFrame.getY());
-      double cost = - maxForceAvoidFlagWhileDelivering * Math.pow(baseFlag, - distance);
+      double cost = -avoidFlagWeight * Math.pow(baseAvoidFlag, - distance);
       responseDescriptions.add(new ObjectResponseDescription(heading, avoidFlagAngularCostRange, cost));
    }
 
-   private void computeGoToFlagForce(Tuple2DReadOnly flagInBodyFrame)
+   private void computeGoToFlagReward(Tuple2DReadOnly flagInBodyFrame, double reward)
    {
-      responseDescriptions.add(new ObjectResponseDescription(headingFromVector(flagInBodyFrame), goToFlagAngularCostRange, flagAttractionForceMagnitude));
+      double deadband = 0.5;
+      if (EuclidCoreTools.norm(flagInBodyFrame.getX(), flagInBodyFrame.getY()) < deadband)
+      {
+         responseDescriptions.add(new ObjectResponseDescription(0.0, goToFlagAngularCostRange, reward));
+      }
+      else
+      {
+         responseDescriptions.add(new ObjectResponseDescription(headingFromVector(flagInBodyFrame), goToFlagAngularCostRange, reward));
+      }
    }
 
    private static class ObjectResponseDescription
@@ -238,7 +338,8 @@ public class SteeringBasedAction
          }
          else
          {
-            return rewardWhenFacingObject * (1.0 - angularDifference / angularRange);
+            double multiplier = EuclidCoreTools.interpolate(1.0, rewardScaleWhenBehindRobot, Math.abs(headingOfObjectInBodyFrame) / Math.PI);
+            return multiplier * rewardWhenFacingObject * (1.0 - angularDifference / angularRange);
          }
       }
    }
