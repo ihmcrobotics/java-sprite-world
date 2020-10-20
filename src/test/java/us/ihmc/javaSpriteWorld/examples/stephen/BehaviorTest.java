@@ -19,7 +19,7 @@ public class BehaviorTest
       for (int i = 0; i < 100; i++)
       {
          SLAMManager slamManager = behavior.getSlamManager();
-         slamManager.setHeading(random.nextDouble() * Math.PI);
+         slamManager.senseHeading(random.nextDouble() * Math.PI);
          slamManager.getXYPosition().setX(random.nextDouble() * 5.0);
          slamManager.getXYPosition().setY(random.nextDouble() * 5.0);
 

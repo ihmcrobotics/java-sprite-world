@@ -135,7 +135,7 @@ public class RadialVectorAction
       }
 
       double kAcceleration = 1.5;
-      double accelerationAction = kAcceleration * (targetVelocity - slamManager.getVelocity());
+      double accelerationAction = kAcceleration * (targetVelocity - slamManager.getFilteredVelocity());
 
       double kTurn = 2.0;
       double turningAction = kTurn * deltaDesiredHeading;
