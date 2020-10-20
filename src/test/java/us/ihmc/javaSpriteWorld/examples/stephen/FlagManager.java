@@ -118,7 +118,7 @@ public class FlagManager
 
    public boolean getDropFlag()
    {
-      return inDeliverFlagMode && (slamManager.getXYPosition().getX() > 8.15 && slamManager.getXYPosition().getY() > 8.15);
+      return inDeliverFlagMode && (slamManager.getXYPosition().getX() > 8.5 && slamManager.getXYPosition().getY() > 8.5);
    }
 
    public void sensePickedUpFlag(int id)
@@ -164,6 +164,16 @@ public class FlagManager
       else
       {
          throw new RuntimeException("Shouldn't get here...");
+      }
+   }
+
+   public void reset()
+   {
+      counter = 0;
+      flagIdToChase = 1;
+      for (int i = 0; i < flagLocations.length; i++)
+      {
+         flagLocations[i].setToNaN();
       }
    }
 }

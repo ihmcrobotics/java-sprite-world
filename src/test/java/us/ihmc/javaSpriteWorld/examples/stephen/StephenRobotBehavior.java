@@ -8,6 +8,7 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge05.Robot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static us.ihmc.javaSpriteWorld.examples.stephen.BehaviorUtils.filter;
 
@@ -26,16 +27,16 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    private final double[] previousAction = new double[2];
    private final double[] filteredAction = new double[2];
 
-   private final double alphaAction = 0.75;
+   private final double alphaAction = 1.0;
 
-   private final int waitCountAfterHittingWall = 20;
+   private final int waitCountAfterHittingWall = 50;
    private int waitCounter = 0;
 
    public StephenRobotBehavior()
    {
       enabledBehaviors.setFoodEnabled(true);
-//      enabledBehaviors.setWallEnabled(true);
-//      enabledBehaviors.setPredatorEnabled(true);
+      enabledBehaviors.setWallEnabled(true);
+      enabledBehaviors.setPredatorEnabled(true);
       enabledBehaviors.setFlagEnabled(true);
    }
 
@@ -190,13 +191,20 @@ public class StephenRobotBehavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseScoreHealthTime(double score, double health, double elapsedTime)
    {
-
+      steeringBasedAction.senseHealth(health);
    }
 
    @Override
    public void reset()
    {
+      slamManager.reset();
+      flagManager.update();
 
+      Arrays.fill(previousAction, 0.0);
+      waitCounter = 0;
+
+      radialVectorAction.reset();
+      steeringBasedAction.reset();
    }
 
    @Override

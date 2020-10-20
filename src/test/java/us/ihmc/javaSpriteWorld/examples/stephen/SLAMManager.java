@@ -17,7 +17,7 @@ public class SLAMManager
    private double xDebug = Double.NaN;
    private double yDebug = Double.NaN;
    private double headingDebug = Double.NaN;
-   private final int debugPrintFrequency = 10;
+   private final int debugPrintFrequency = 50;
    private int debugPrintCounter = 0;
 
    public static final double dt = 0.01;
@@ -106,7 +106,11 @@ public class SLAMManager
 
                Vector2D correctionVector = new Vector2D(expectedIntersectionPoint);
                correctionVector.sub(wallPointInWorldEstimatedFrame);
-               totalCorrectionVector.add(correctionVector);
+
+               if (correctionVector.length() < 1.5)
+               {
+                  totalCorrectionVector.add(correctionVector);
+               }
 
                break;
             }
@@ -179,5 +183,15 @@ public class SLAMManager
    public Vector2D getXYHeading()
    {
       return xyHeading;
+   }
+
+   public void reset()
+   {
+      filteredHeading = 0.0;
+      filteredVelocity = 0.0;
+      sensedHeading = 0.0;
+      sensedVelocity = 0.0;
+
+      xyPosition.set(initialX, initialY);
    }
 }
