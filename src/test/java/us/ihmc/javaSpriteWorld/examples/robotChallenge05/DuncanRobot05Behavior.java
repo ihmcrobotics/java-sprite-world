@@ -24,6 +24,7 @@ import us.ihmc.simulationconstructionset.gui.GraphArrayWindow;
 import us.ihmc.yoVariables.euclid.YoPoint2D;
 import us.ihmc.yoVariables.euclid.YoVector2D;
 import us.ihmc.yoVariables.registry.YoRegistry;
+import us.ihmc.yoVariables.variable.YoBoolean;
 import us.ihmc.yoVariables.variable.YoDouble;
 import us.ihmc.yoVariables.variable.YoInteger;
 
@@ -102,9 +103,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final YoVector2D slamCorrection = new YoVector2D("SlamCorrection", yoRegistry);
    private final AlphaFilteredTuple2D slamCorrectionFilter = new AlphaFilteredTuple2D(slamCorrection, 20.0);
    private final YoVector2D boundaryRepulsion = new YoVector2D("BoundaryRepulsion", yoRegistry);
-   private final ClampAlphaFilteredTuple2D boundaryFilter = new ClampAlphaFilteredTuple2D(boundaryRepulsion, 20.0, 2.0);
+   private final ClampAlphaFilteredTuple2D boundaryFilter = new ClampAlphaFilteredTuple2D(boundaryRepulsion, 20.0, 4.0);
    private final YoVector2D predatorRepulsion = new YoVector2D("PredatorRepulsion", yoRegistry);
-   private final ClampAlphaFilteredTuple2D predatorFilter = new ClampAlphaFilteredTuple2D(predatorRepulsion, 20.0, 2.0);
+   private final ClampAlphaFilteredTuple2D predatorFilter = new ClampAlphaFilteredTuple2D(predatorRepulsion, 20.0, 4.0);
    private final YoVector2D foodAttraction = new YoVector2D("FoodAttraction", yoRegistry);
    private final ClampAlphaFilteredTuple2D foodFilter = new ClampAlphaFilteredTuple2D(foodAttraction, 20.0, 2.0);
    private final YoVector2D flagField = new YoVector2D("FlagField", yoRegistry);
@@ -120,6 +121,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final YoInteger carriedFlag = new YoInteger("CarriedFlag", yoRegistry);
    private final YoInteger goalFlag = new YoInteger("GoalFlag", yoRegistry);
    private final YoInteger goal = new YoInteger("Goal", yoRegistry);
+   private final YoInteger wanderMode = new YoInteger("WanderMode", yoRegistry);
+   private final YoBoolean wandering = new YoBoolean("Wandering", yoRegistry);
    private final YoDouble distanceToGoal = new YoDouble("DistanceToGoal", yoRegistry);
    private final YoDouble health = new YoDouble("Health", yoRegistry);
    private final YoDouble score = new YoDouble("Score", yoRegistry);
@@ -187,6 +190,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       scs.setupGraph(turnRate.getName());
       scs.setupGraph(new String[] {yoClosestFlag.getName(), goal.getName(), goalFlag.getName(), carriedFlag.getName()});
       scs.setupGraph(distanceToGoal.getName());
+      scs.setupGraph(new String[] {wanderMode.getName(), wandering.getName()});
       scs.setupGraph(health.getName());
       scs.setupGraph(score.getName());
       scs.setupGraph(time.getName());
@@ -407,8 +411,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       me.add(slamCorrection);
 
       boundaryRepulsion.setToZero();
-      double boundaryStrength = 2.0;
-      double boundaryGraduation = 1.5;
+      double boundaryStrength = 0.7;
+      double boundaryGraduation = 2.5;
       Point2D closestLeft = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, left.getPoint(), left.getDirection());
       Point2D closestRight = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, right.getPoint(), right.getDirection());
       Point2D closestBottom = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, bottom.getPoint(), bottom.getDirection());
@@ -421,7 +425,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       predatorRepulsion.setToZero();
       for (Pair<Point2DBasics, Vector2D> predator : predators)
       {
-         predatorRepulsion.add(fieldVector(bodyToWorld(predator.getLeft()), me, distance -> 2.0 / Math.pow(distance, 1.8)));
+         predatorRepulsion.add(fieldVector(bodyToWorld(predator.getLeft()), me, distance -> 1.0 / Math.pow(distance, 3.0)));
       }
 //      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
 
@@ -452,6 +456,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
             flagField.add(fieldVector(bodyToWorld(closestFlag.getLeft()), me, distance -> 0.5 / Math.pow(distance, 1.5)));
          }
       }
+      wandering.set(false);
       if (carriedFlag.getValue() == goalFlag.getValue()) // attract to goal; no flags nearby
       {
          flagField.add(fieldVector(me, new Point2D(9.0, 9.0), distance ->
@@ -460,9 +465,30 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
             return 15.0 / Math.pow(distance, 0.5);
          }));
       }
-      else if (closestFlag == null) // looking for a flag i.e. wander
+      else if (closestFlag != null && closestFlag.getRight() != goalFlag.getValue()) // looking for a flag i.e. wander
       {
-         attractionVector.add(meToCenter); // TODO: Change from center
+         wandering.set(true);
+         int second = (int) Math.floor(time.getValue()) / 5;
+         wanderMode.set(second % 4);
+         Function<Double, Double> magnitude = distance -> 7.0 * Math.pow(distance, 1.5);
+         switch (wanderMode.getValue())
+         {
+            case 0:
+               fieldVector(me, new Point2D(5.0, 5.0), magnitude);
+               break;
+            case 1:
+               fieldVector(me, new Point2D(9.0, 9.0), magnitude);
+               break;
+            case 2:
+               fieldVector(me, new Point2D(9.0, 1.0), magnitude);
+               break;
+            case 3:
+               fieldVector(me, new Point2D(1.0, 1.0), magnitude);
+               break;
+            default:
+               fieldVector(me, new Point2D(1.0, 9.0), magnitude);
+               break;
+         }
       }
       if (carriedFlag.getValue() == goalFlag.getValue())
       {
