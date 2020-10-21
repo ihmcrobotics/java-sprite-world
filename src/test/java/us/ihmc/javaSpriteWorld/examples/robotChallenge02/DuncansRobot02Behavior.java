@@ -163,6 +163,12 @@ public class DuncansRobot02Behavior implements Robot02Behavior
    }
 
    @Override
+   public void exit()
+   {
+
+   }
+
+   @Override
    public void senseDroppedFlag(int id)
    {
       // TODO Auto-generated method stub
