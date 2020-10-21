@@ -146,6 +146,11 @@ public class ExperimentalBehavior01 implements Robot01Behavior
    }
 
    @Override
+   public void senseCarryingFlag(int flagId)
+   {      
+   }
+
+   @Override
    public void senseHitWall()
    {      
    }
@@ -159,5 +164,6 @@ public class ExperimentalBehavior01 implements Robot01Behavior
    public void reset()
    {      
    }
+
 
 }

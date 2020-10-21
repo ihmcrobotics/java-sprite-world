@@ -27,9 +27,11 @@ public interface Robot01Behavior
    
    public abstract void senseDeliveredFlag(int flagId);
 
+   public abstract void senseCarryingFlag(int flagId);
+
    public abstract void senseHitWall();
 
-   double[] getXYVelocity();
+   public abstract double[] getXYVelocity();
 
    public abstract void senseScoreHealthTime(double score, double health, double time);
 

@@ -24,7 +24,10 @@ public class RobotChallenge08
     RobotChallenge01 robotChallenge = createRobotChallenge(player);
 //    robotChallenge.runSimulation();
 
-    robotChallenge.runATrial(30, 20.0, 60.0);
+    int numberOfRuns = 30;
+    double realTimeSpeedup = 20.0;
+    double simulationTime = 60.0;
+    robotChallenge.runATrial(numberOfRuns, realTimeSpeedup, simulationTime);
    }
 
    private static RobotChallenge01 createRobotChallenge(String player)

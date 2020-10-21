@@ -101,6 +101,11 @@ public class SimpleRobot04Behavior implements Robot04Behavior
    }
 
    @Override
+   public void senseCarryingFlag(int flagId)
+   {      
+   }
+
+   @Override
    public void senseFood(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {      
    }

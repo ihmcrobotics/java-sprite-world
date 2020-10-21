@@ -142,6 +142,11 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
    }
 
    @Override
+   public void senseCarryingFlag(int flagId)
+   {      
+   }
+
+   @Override
    public void senseWallRangeInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame)
    {
 //      System.out.println();

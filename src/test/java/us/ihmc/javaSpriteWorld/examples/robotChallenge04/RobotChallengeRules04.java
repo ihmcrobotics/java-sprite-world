@@ -65,6 +65,16 @@ public class RobotChallengeRules04 implements RobotChallengeRules
          ArrayList<Pair<Point2D, Integer>> locationAndIdsOfAllFlags = flagList.getLocationAndIdsOfAllFlags();
          robotBehavior.senseFlags(locationAndIdsOfAllFlags);
 
+         Flag flagHolding = robot.getFlagHolding();
+         if (flagHolding == null)
+         {
+            robotBehavior.senseCarryingFlag(-1);
+         }
+         else
+         {
+            robotBehavior.senseCarryingFlag(flagHolding.getId());
+         }
+
          double[] accelerationAndTurnRate = robotBehavior.getAccelerationAndTurnRate();
 
          robot.setAcceleration(accelerationAndTurnRate[0]);

@@ -32,6 +32,8 @@ public interface Robot04Behavior
 
    public abstract void senseDeliveredFlag(int flagId);
 
+   public abstract void senseCarryingFlag(int id);
+
    public abstract void senseHitWall();
 
    public abstract double[] getAccelerationAndTurnRate();

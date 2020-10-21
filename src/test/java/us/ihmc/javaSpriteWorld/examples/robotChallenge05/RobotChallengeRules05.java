@@ -91,6 +91,16 @@ public class RobotChallengeRules05 implements RobotChallengeRules
             robotBehavior.senseClosestFlagInBodyFrame(vectorToInBodyFrameAndIdOfClosestFlag);
          }
 
+         Flag flagHolding = robot.getFlagHolding();
+         if (flagHolding == null)
+         {
+            robotBehavior.senseCarryingFlag(-1);
+         }
+         else
+         {
+            robotBehavior.senseCarryingFlag(flagHolding.getId());
+         }
+
          double[] accelerationAndTurnRate = robotBehavior.getAccelerationAndTurnRate();
 
          robot.setAcceleration(accelerationAndTurnRate[0]);

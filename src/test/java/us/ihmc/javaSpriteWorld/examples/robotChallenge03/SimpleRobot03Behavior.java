@@ -100,6 +100,11 @@ public class SimpleRobot03Behavior implements Robot03Behavior
    }
 
    @Override
+   public void senseCarryingFlag(int flagId)
+   {      
+   }
+
+   @Override
    public void senseHitWall()
    {      
    }

@@ -117,6 +117,11 @@ public class Robot02 implements RobotChallengeRobot
       return sprite;
    }
 
+   public Flag getFlagHolding()
+   {
+      return flagHolding;
+   }
+
    public void doDynamicsAndUpdateSprite(double dt)
    {
       velocity += acceleration * dt;

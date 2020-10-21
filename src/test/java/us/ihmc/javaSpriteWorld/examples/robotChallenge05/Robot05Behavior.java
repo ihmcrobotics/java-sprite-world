@@ -36,6 +36,8 @@ public interface Robot05Behavior
 
    public abstract void senseDeliveredFlag(int flagId);
 
+   public abstract void senseCarryingFlag(int flagId);
+
    public abstract void senseHitWall();
 
    public abstract double[] getAccelerationAndTurnRate();
@@ -45,6 +47,4 @@ public interface Robot05Behavior
    public abstract void senseScoreHealthTime(double score, double health, double elapsedTime);
 
    public abstract void reset();
-
-
 }

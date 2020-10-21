@@ -7,6 +7,7 @@ import org.apache.commons.lang3.tuple.Triple;
 
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge01.Flag;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.FoodList01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.PredatorList01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallengeRules;
@@ -48,13 +49,22 @@ public class RobotChallengeRules03 implements RobotChallengeRules
          robotBehavior.senseGlobalLocation(robot.getX(), robot.getY());
          robotBehavior.senseHeading(robot.getHeading());
          robotBehavior.senseVelocity(robot.getVelocity());
-         
 
          ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood = foodList.getLocationAndVelocityOfAllFood();
          robotBehavior.senseFood(locationOfAllFood);
          
          ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators = predatorList.getLocationAndVelocityOfAllPredators();
          robotBehavior.sensePredators(locationOfAllPredators);
+
+         Flag flagHolding = robot.getFlagHolding();
+         if (flagHolding == null)
+         {
+            robotBehavior.senseCarryingFlag(-1);
+         }
+         else
+         {
+            robotBehavior.senseCarryingFlag(flagHolding.getId());
+         }
 
          double[] accelerationAndTurnRate = robotBehavior.getAccelerationAndTurnRate();
 

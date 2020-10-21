@@ -13,6 +13,8 @@ public interface RobotChallengeRobot
    public abstract void getHitByPredator(Predator01 predator);
 
    public abstract Sprite getSprite();
+   
+   public abstract Flag getFlagHolding();
 
    public abstract void doDynamicsAndUpdateSprite(double dt);
 

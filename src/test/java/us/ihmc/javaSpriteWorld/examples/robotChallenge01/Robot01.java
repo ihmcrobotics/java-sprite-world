@@ -92,6 +92,11 @@ public class Robot01 implements RobotChallengeRobot
       return sprite;
    }
 
+   public Flag getFlagHolding()
+   {
+      return flagHolding;
+   }
+
    public void doDynamicsAndUpdateSprite(double dt)
    {
       Vector2D velocity = new Vector2D(xDot, yDot);
