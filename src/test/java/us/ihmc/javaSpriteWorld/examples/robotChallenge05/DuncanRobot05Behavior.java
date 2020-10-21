@@ -103,19 +103,21 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final YoVector2D slamCorrection = new YoVector2D("SlamCorrection", yoRegistry);
    private final AlphaFilteredTuple2D slamCorrectionFilter = new AlphaFilteredTuple2D(slamCorrection, 20.0);
    private final YoVector2D boundaryRepulsion = new YoVector2D("BoundaryRepulsion", yoRegistry);
-   private final ClampAlphaFilteredTuple2D boundaryFilter = new ClampAlphaFilteredTuple2D(boundaryRepulsion, 20.0, 4.0);
+   private final ClampAlphaFilteredTuple2D boundaryFilter = new ClampAlphaFilteredTuple2D(boundaryRepulsion, 20.0, 8.0);
    private final YoVector2D predatorRepulsion = new YoVector2D("PredatorRepulsion", yoRegistry);
    private final ClampAlphaFilteredTuple2D predatorFilter = new ClampAlphaFilteredTuple2D(predatorRepulsion, 20.0, 4.0);
    private final YoVector2D foodAttraction = new YoVector2D("FoodAttraction", yoRegistry);
    private final ClampAlphaFilteredTuple2D foodFilter = new ClampAlphaFilteredTuple2D(foodAttraction, 20.0, 2.0);
    private final YoVector2D flagField = new YoVector2D("FlagField", yoRegistry);
    private final ClampAlphaFilteredTuple2D flagFilter = new ClampAlphaFilteredTuple2D(flagField, 20.0, 2.0);
+   private final YoVector2D wanderField = new YoVector2D("WanderField", yoRegistry);
    private final YoVector2D attractionVector = new YoVector2D("Attraction", yoRegistry);
    private final AlphaFilteredTuple2D attractionFilter = new AlphaFilteredTuple2D(attractionVector, 20.0);
    private final YoDouble boundaryRepulsionMagnitude = new YoDouble("BoundaryRepulsionMagnitude", yoRegistry);
    private final YoDouble predatorRepulsionMagnitude = new YoDouble("PredatorRepulsionMagnitude", yoRegistry);
    private final YoDouble foodAttractionMagnitude = new YoDouble("FoodAttractionMagnitude", yoRegistry);
    private final YoDouble flagFieldMagnitude = new YoDouble("FlagFieldMagnitude", yoRegistry);
+   private final YoDouble wanderFieldMagnitude = new YoDouble("WanderFieldMagnitude", yoRegistry);
    private final YoDouble attractionMagnitude = new YoDouble("AttractionMagnitude", yoRegistry);
    private final YoInteger yoClosestFlag = new YoInteger("ClosestFlag", yoRegistry);
    private final YoInteger carriedFlag = new YoInteger("CarriedFlag", yoRegistry);
@@ -166,10 +168,10 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       sensorGraphs.getGraphArrayPanel().addColumn();
       scs.setupGraph(noisyVelocity.getName(), velocity.getName());
       scs.setupGraph(noisyHeading.getName(), headingAngle.getName(), groundTruthHeading.getName());
-      scs.setupGraph(headingVector.getYoX().getName());
-      scs.setupGraph(headingVector.getYoY().getName());
-      scs.setupGraph(slamCorrection.getYoX().getName());
-      scs.setupGraph(slamCorrection.getYoY().getName());
+//      scs.setupGraph(headingVector.getYoX().getName());
+//      scs.setupGraph(headingVector.getYoY().getName());
+//      scs.setupGraph(slamCorrection.getYoX().getName());
+//      scs.setupGraph(slamCorrection.getYoY().getName());
 //      scs.setupGraph(boundaryRepulsion.getYoX().getName());
 //      scs.setupGraph(boundaryRepulsion.getYoY().getName());
 //      scs.setupGraph(predatorRepulsion.getYoX().getName());
@@ -178,12 +180,13 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 //      scs.setupGraph(foodAttraction.getYoY().getName());
 //      scs.setupGraph(flagField.getYoX().getName());
 //      scs.setupGraph(flagField.getYoY().getName());
-      scs.setupGraph(attractionVector.getYoX().getName());
-      scs.setupGraph(attractionVector.getYoY().getName());
+//      scs.setupGraph(attractionVector.getYoX().getName());
+//      scs.setupGraph(attractionVector.getYoY().getName());
       scs.setupGraph(boundaryRepulsionMagnitude.getName(),
                      predatorRepulsionMagnitude.getName(),
                      foodAttractionMagnitude.getName(),
                      flagFieldMagnitude.getName(),
+                     wanderFieldMagnitude.getName(),
                      attractionMagnitude.getName());
       scs.setupGraph(me.getYoX().getName(), me.getYoY().getName(), groundTruthPosition.getYoX().getName(), groundTruthPosition.getYoY().getName());
       scs.setupGraph(acceleration.getName());
@@ -404,7 +407,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       me.add(slamCorrection);
 
       boundaryRepulsion.setToZero();
-      double boundaryStrength = 0.7;
+      double boundaryStrength = 3.0;
       double boundaryGraduation = 2.5;
       Point2D closestLeft = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, left.getPoint(), left.getDirection());
       Point2D closestRight = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, right.getPoint(), right.getDirection());
@@ -418,7 +421,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       predatorRepulsion.setToZero();
       for (Pair<Point2DBasics, Vector2D> predator : predators)
       {
-         predatorRepulsion.add(fieldVector(bodyToWorld(predator.getLeft()), me, distance -> 1.0 / Math.pow(distance, 3.0)));
+         predatorRepulsion.add(fieldVector(bodyToWorld(predator.getLeft()), me, distance -> 7.0 / Math.pow(distance, 3.0)));
       }
 //      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
 
@@ -446,10 +449,11 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          }
          else // repulse from out-of-order flag
          {
-            flagField.add(fieldVector(bodyToWorld(closestFlag.getLeft()), me, distance -> 0.5 / Math.pow(distance, 1.5)));
+            flagField.add(fieldVector(bodyToWorld(closestFlag.getLeft()), me, distance -> 2.0 / Math.pow(distance, 1.5)));
          }
       }
       wandering.set(false);
+      wanderField.setToZero();
       if (carriedFlag.getValue() == goalFlag.getValue()) // attract to goal; no flags nearby
       {
          flagField.add(fieldVector(me, new Point2D(9.0, 9.0), distance ->
@@ -458,28 +462,30 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
             return 15.0 / Math.pow(distance, 0.5);
          }));
       }
-      else if (closestFlag != null && closestFlag.getRight() != goalFlag.getValue()) // looking for a flag i.e. wander
+      else if (closestFlag != null
+               && closestFlag.getRight() != goalFlag.getValue()
+               && predatorRepulsion.length() < 2.0) // looking for a flag i.e. wander
       {
          wandering.set(true);
-         int second = (int) Math.floor(time.getValue()) / 5;
-         wanderMode.set(second % 4);
-         Function<Double, Double> magnitude = distance -> 7.0 * Math.pow(distance, 1.5);
+         int second = (int) Math.floor(time.getValue()) / 7;
+         wanderMode.set(second % 5);
+         Function<Double, Double> magnitude = distance -> 1.0 * Math.pow(distance, 1.0);
          switch (wanderMode.getValue())
          {
             case 0:
-               fieldVector(me, new Point2D(5.0, 5.0), magnitude);
+               wanderField.add(fieldVector(me, new Point2D(5.0, 5.0), magnitude));
                break;
             case 1:
-               fieldVector(me, new Point2D(9.0, 9.0), magnitude);
+               wanderField.add(fieldVector(me, new Point2D(9.0, 9.0), magnitude));
                break;
             case 2:
-               fieldVector(me, new Point2D(9.0, 1.0), magnitude);
+               wanderField.add(fieldVector(me, new Point2D(9.0, 1.0), magnitude));
                break;
             case 3:
-               fieldVector(me, new Point2D(1.0, 1.0), magnitude);
+               wanderField.add(fieldVector(me, new Point2D(1.0, 1.0), magnitude));
                break;
             default:
-               fieldVector(me, new Point2D(1.0, 9.0), magnitude);
+               wanderField.add(fieldVector(me, new Point2D(1.0, 9.0), magnitude));
                break;
          }
       }
@@ -499,6 +505,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       foodFilter.filter();
 //      attractionVector.add(meToMouse);
 //      attractionVector.add(meToCenter);
+      attractionVector.add(wanderField);
       attractionVector.add(boundaryRepulsion);
       attractionVector.add(predatorRepulsion);
       attractionVector.add(foodAttraction);
@@ -509,6 +516,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       predatorRepulsionMagnitude.set(predatorRepulsion.length());
       foodAttractionMagnitude.set(foodAttraction.length());
       flagFieldMagnitude.set(flagField.length());
+      wanderFieldMagnitude.set(wanderField.length());
       attractionMagnitude.set(attractionVector.length());
 
       double desiredSpeed = attractionVector.length();
