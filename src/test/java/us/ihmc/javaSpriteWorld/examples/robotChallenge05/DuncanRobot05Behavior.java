@@ -6,15 +6,14 @@ import java.util.function.Function;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
+import us.ihmc.commons.MathTools;
 import us.ihmc.commons.thread.ThreadTools;
 import us.ihmc.euclid.geometry.Line2D;
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
-import us.ihmc.euclid.tuple2D.interfaces.Point2DReadOnly;
-import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
-import us.ihmc.euclid.tuple2D.interfaces.Vector2DReadOnly;
+import us.ihmc.euclid.tuple2D.interfaces.*;
 import us.ihmc.jMonkeyEngineToolkit.NullGraphics3DAdapter;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 import us.ihmc.log.LogTools;
@@ -38,13 +37,11 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private ArrayList<Pair<Vector2D, Double>> sensors;
    private ArrayList<Pair<Vector2D, Double>> noisySensors;
    private ArrayList<Triple<Integer, Point2D, Vector2D>> foods;
-   private ArrayList<Pair<Point2D, Vector2D>> predators;
+   private ArrayList<Pair<Point2DBasics, Vector2D>> predators;
    private Pair<Point2D, Integer> closestFlag;
 
    private AlphaFilter velocityFilter = new AlphaFilter(25.0);
    private AlphaFilter headingFilter = new AlphaFilter(15.0);
-   private AlphaFilter slamCorrectionFilterX = new AlphaFilter(20.0);
-   private AlphaFilter slamCorrectionFilterY = new AlphaFilter(20.0);
 
    SimulationConstructionSet scs = new SimulationConstructionSet(new Robot("Robot"),
                                                                  new NullGraphics3DAdapter(),
@@ -79,16 +76,15 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    }
    private static final int NUMBER_OF_PREDATORS = 3;
    private final List<YoPoint2D> yoPredators = new ArrayList<>();
-   private final List<AlphaFilter> predatorPositionFiltersX = new ArrayList<>();
-   private final List<AlphaFilter> predatorPositionFiltersY = new ArrayList<>();
+   private final List<AlphaFilteredTuple2D> predatorPositionFilters = new ArrayList<>();
    private final List<YoPoint2D> filteredYoPredators = new ArrayList<>();
    {
       for (int i = 0; i < NUMBER_OF_PREDATORS; i++)
       {
          yoPredators.add(new YoPoint2D("Predator" + i, yoRegistry));
-         filteredYoPredators.add(new YoPoint2D("FilteredPredator" + i, yoRegistry));
-         predatorPositionFiltersX.add(new AlphaFilter(10.0));
-         predatorPositionFiltersY.add(new AlphaFilter(10.0));
+         YoPoint2D filtered = new YoPoint2D("FilteredPredator" + i, yoRegistry);
+         filteredYoPredators.add(filtered);
+         predatorPositionFilters.add(new AlphaFilteredTuple2D(filtered, 10.0));
       }
    }
    public static final int NUMBER_OF_FOOD = 10;
@@ -103,13 +99,22 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       }
    }
    private final YoVector2D slamCorrection = new YoVector2D("SlamCorrection", yoRegistry);
+   private final AlphaFilteredTuple2D slamCorrectionFilter = new AlphaFilteredTuple2D(slamCorrection, 20.0);
    private final YoVector2D boundaryRepulsion = new YoVector2D("BoundaryRepulsion", yoRegistry);
+   private final ClampAlphaFilteredTuple2D boundaryFilter = new ClampAlphaFilteredTuple2D(boundaryRepulsion, 20.0, 2.0);
    private final YoVector2D predatorRepulsion = new YoVector2D("PredatorRepulsion", yoRegistry);
+   private final ClampAlphaFilteredTuple2D predatorFilter = new ClampAlphaFilteredTuple2D(predatorRepulsion, 20.0, 2.0);
    private final YoVector2D foodAttraction = new YoVector2D("FoodAttraction", yoRegistry);
+   private final ClampAlphaFilteredTuple2D foodFilter = new ClampAlphaFilteredTuple2D(foodAttraction, 20.0, 2.0);
    private final YoVector2D flagField = new YoVector2D("FlagField", yoRegistry);
+   private final ClampAlphaFilteredTuple2D flagFilter = new ClampAlphaFilteredTuple2D(flagField, 20.0, 2.0);
    private final YoVector2D attractionVector = new YoVector2D("Attraction", yoRegistry);
-   private final AlphaFilter attractionFilterX = new AlphaFilter(20.0);
-   private final AlphaFilter attractionFilterY = new AlphaFilter(20.0);
+   private final AlphaFilteredTuple2D attractionFilter = new AlphaFilteredTuple2D(attractionVector, 20.0);
+   private final YoDouble boundaryRepulsionMagnitude = new YoDouble("BoundaryRepulsionMagnitude", yoRegistry);
+   private final YoDouble predatorRepulsionMagnitude = new YoDouble("PredatorRepulsionMagnitude", yoRegistry);
+   private final YoDouble foodAttractionMagnitude = new YoDouble("FoodAttractionMagnitude", yoRegistry);
+   private final YoDouble flagFieldMagnitude = new YoDouble("FlagFieldMagnitude", yoRegistry);
+   private final YoDouble attractionMagnitude = new YoDouble("AttractionMagnitude", yoRegistry);
 
    public DuncanRobot05Behavior()
    {
@@ -163,6 +168,11 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       scs.setupGraph(flagField.getYoY().getName());
       scs.setupGraph(attractionVector.getYoX().getName());
       scs.setupGraph(attractionVector.getYoY().getName());
+      scs.setupGraph(boundaryRepulsionMagnitude.getName(),
+                     predatorRepulsionMagnitude.getName(),
+                     foodAttractionMagnitude.getName(),
+                     flagFieldMagnitude.getName(),
+                     attractionMagnitude.getName());
       scs.setupGraph(me.getYoX().getName(), me.getYoY().getName(), groundTruthPosition.getYoX().getName(), groundTruthPosition.getYoY().getName());
       scs.setupGraph(acceleration.getName());
       scs.setupGraph(turnRate.getName());
@@ -236,11 +246,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       {
          Pair<Point2D, Vector2D> predator = rawPredators.get(i);
          yoPredators.get(i).set(predator.getLeft());
-         Point2D filteredLocation = new Point2D();
-         filteredLocation.setX(predatorPositionFiltersX.get(i).filter(predator.getLeft().getX()));
-         filteredLocation.setY(predatorPositionFiltersY.get(i).filter(predator.getLeft().getY()));
-         filteredYoPredators.get(i).set(filteredLocation);
-         predators.add(Pair.of(filteredLocation, predator.getRight()));
+         filteredYoPredators.get(i).set(predator.getLeft());
+         predatorPositionFilters.get(i).filter();
+         predators.add(Pair.of(filteredYoPredators.get(i), predator.getRight()));
       }
    }
 
@@ -374,7 +382,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          slamCorrection.add(hitErrors.get(i));
       }
       slamCorrection.scale(0.01 * 1.0 / NUMBER_OF_SENSORS);
-      slamCorrection.set(slamCorrectionFilterX.filter(slamCorrection.getX()), slamCorrectionFilterY.filter(slamCorrection.getY()));
+      slamCorrectionFilter.filter();
       me.add(slamCorrection);
 
       boundaryRepulsion.setToZero();
@@ -389,7 +397,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       boundaryRepulsion.add(fieldVector(closestTop, me, distance -> boundaryStrength / Math.pow(distance, fieldGraduation)));
 
       predatorRepulsion.setToZero();
-      for (Pair<Point2D, Vector2D> predator : predators)
+      for (Pair<Point2DBasics, Vector2D> predator : predators)
       {
          predatorRepulsion.add(fieldVector(bodyToWorld(predator.getLeft()), me, distance -> 6.0 / Math.pow(distance, fieldGraduation)));
       }
@@ -422,16 +430,26 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          {
             flagField.add(fieldVector(me, new Point2D(9.0, 9.0), distance -> 15.0 / Math.pow(distance, 0.5)));
          }
+         flagFilter.filter();
          attractionVector.add(flagField);
       }
 
+      boundaryFilter.filter();
+      predatorFilter.filter();
+      foodFilter.filter();
 //      attractionVector.add(meToMouse);
 //      attractionVector.add(meToCenter);
       attractionVector.add(boundaryRepulsion);
       attractionVector.add(predatorRepulsion);
       attractionVector.add(foodAttraction);
 
-      attractionVector.set(attractionFilterX.filter(attractionVector.getX()), attractionFilterY.filter(attractionVector.getY()));
+      attractionFilter.filter();
+
+      boundaryRepulsionMagnitude.set(boundaryRepulsion.length());
+      predatorRepulsionMagnitude.set(predatorRepulsion.length());
+      foodAttractionMagnitude.set(foodAttraction.length());
+      flagFieldMagnitude.set(flagField.length());
+      attractionMagnitude.set(attractionVector.length());
 
       double desiredSpeed = attractionVector.length();
 
@@ -486,6 +504,42 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       vector.normalize();
       vector.scale(magnitude.apply(distance));
       return vector;
+   }
+
+   static class ClampAlphaFilteredTuple2D extends AlphaFilteredTuple2D
+   {
+      private double clamp;
+
+      public ClampAlphaFilteredTuple2D(Tuple2DBasics tuple, double alpha, double clamp)
+      {
+         super(tuple, alpha);
+         this.clamp = clamp;
+      }
+
+      @Override
+      public void filter()
+      {
+         tuple.set(xFilter.filter(MathTools.clamp(tuple.getX(), clamp)), yFilter.filter(MathTools.clamp(tuple.getY(), clamp)));
+      }
+   }
+
+   static class AlphaFilteredTuple2D
+   {
+      protected final Tuple2DBasics tuple;
+      protected final AlphaFilter xFilter;
+      protected final AlphaFilter yFilter;
+
+      public AlphaFilteredTuple2D(Tuple2DBasics tuple, double alpha)
+      {
+         this.tuple = tuple;
+         this.xFilter = new AlphaFilter(alpha);
+         this.yFilter = new AlphaFilter(alpha);
+      }
+
+      public void filter()
+      {
+         tuple.set(xFilter.filter(tuple.getX()), yFilter.filter(tuple.getY()));
+      }
    }
 
    static class AlphaFilter
