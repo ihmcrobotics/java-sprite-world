@@ -47,4 +47,6 @@ public interface Robot05Behavior
    public abstract void senseScoreHealthTime(double score, double health, double elapsedTime);
 
    public abstract void reset();
+
+   public abstract void exit();
 }

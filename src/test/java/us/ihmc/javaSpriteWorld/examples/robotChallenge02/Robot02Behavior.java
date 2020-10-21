@@ -37,4 +37,6 @@ public interface Robot02Behavior
 
    public abstract void reset();
 
+   public abstract void exit();
+
 }

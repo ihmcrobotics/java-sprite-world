@@ -34,7 +34,6 @@ public class RobotChallenge08
    {
       double xMax = 20.0;
       double yMax = 20.0;
-
       Random random = new Random();
       
       Robot06Behavior robotBehavior = createBehavior(player, xMax, yMax);

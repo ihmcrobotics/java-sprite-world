@@ -108,4 +108,10 @@ public class RobotChallengeRules03 implements RobotChallengeRules
    {
       robotBehavior.reset();
    }
+
+   @Override
+   public void exit()
+   {
+      robotBehavior.exit();
+   }
 }

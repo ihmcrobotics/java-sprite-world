@@ -499,6 +499,7 @@ public class RobotChallenge01
             topScore = score;
          resetSimulation();
       }
+
       double averageScore = totalScore / ((double) numberOfRuns);
 
       System.out.println("averageScore = " + averageScore);
@@ -510,7 +511,7 @@ public class RobotChallenge01
    public void exit()
    {
       viewer.exit();
-      
+      robotChallengeRules.exit();
    }
 
 }

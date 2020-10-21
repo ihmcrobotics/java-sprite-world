@@ -44,5 +44,7 @@ public interface Robot04Behavior
 
    public abstract void reset();
 
+   public abstract void exit();
+
 
 }

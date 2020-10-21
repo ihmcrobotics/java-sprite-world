@@ -234,4 +234,10 @@ public class RobotChallengeRules05 implements RobotChallengeRules
    {
       robotBehavior.reset();
    }
+
+   @Override
+   public void exit()
+   {
+      robotBehavior.exit();
+   }
 }

@@ -95,4 +95,10 @@ public class RobotChallengeRules01 implements RobotChallengeRules
       robotBehavior.reset();
    }
 
+   @Override
+   public void exit()
+   {
+      robotBehavior.exit();
+   }
+
 }

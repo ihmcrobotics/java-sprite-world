@@ -20,4 +20,6 @@ public interface RobotChallengeRules
 
    public abstract void reset();
 
+   public abstract void exit();
+
 }
