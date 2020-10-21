@@ -184,6 +184,12 @@ public class DuncansRobot02Behavior implements Robot02Behavior
    }
 
    @Override
+   public void senseCarryingFlag(int flagId)
+   {
+
+   }
+
+   @Override
    public void senseHitWall()
    {
       // TODO Auto-generated method stub

@@ -273,40 +273,33 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseDroppedFlag(int flagId)
    {
-      if (carriedFlag.getValue() == flagId)
-      {
-         carriedFlag.set(-1);
-         LogTools.info("Dropped flag: {} Going for: {}", flagId, goalFlag.getValue());
-      }
+      LogTools.info("Dropped flag: {} Going for: {}", flagId, goalFlag.getValue());
    }
 
    @Override
    public void sensePickedUpFlag(int id)
    {
-      if (carriedFlag.getValue() != id)
-      {
-         carriedFlag.set(id);
-         LogTools.info("Picked up: {} Going for: {}", carriedFlag.getValue(), goalFlag.getValue());
-      }
+      LogTools.info("Picked up: {} Going for: {}", id, goalFlag.getValue());
+   }
+   @Override
+   public void senseCarryingFlag(int flagId)
+   {
+      carriedFlag.set(flagId);
    }
 
    @Override
    public void senseDeliveredFlag(int flagId)
    {
-      if (carriedFlag.getValue() == flagId)
+      LogTools.info("Goal! Flag: {}", flagId);
+      if (goalFlag.getValue() < 5)
       {
-         carriedFlag.set(-1);
-         LogTools.info("Goal! Flag: {}", goalFlag.getValue());
-         if (goalFlag.getValue() < 5)
-         {
-            goalFlag.add(1);
-         }
-         else
-         {
-            goalFlag.set(1);
-         }
-         LogTools.info("Next flag: {}", goalFlag.getValue());
+         goalFlag.add(1);
       }
+      else
+      {
+         goalFlag.set(1);
+      }
+      LogTools.info("Next flag: {}", goalFlag.getValue());
    }
 
    @Override

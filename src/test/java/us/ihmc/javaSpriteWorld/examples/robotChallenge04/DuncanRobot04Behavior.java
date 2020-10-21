@@ -317,6 +317,12 @@ public class DuncanRobot04Behavior implements Robot04Behavior
    }
 
    @Override
+   public void senseCarryingFlag(int id)
+   {
+
+   }
+
+   @Override
    public void senseHitWall()
    {
       // TODO Auto-generated method stub
