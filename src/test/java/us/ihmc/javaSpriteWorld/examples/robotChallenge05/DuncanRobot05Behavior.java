@@ -123,6 +123,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final YoDouble distanceToGoal = new YoDouble("DistanceToGoal", yoRegistry);
    private final YoDouble health = new YoDouble("Health", yoRegistry);
    private final YoDouble score = new YoDouble("Score", yoRegistry);
+   private final YoDouble time = new YoDouble("Time", yoRegistry);
 
    public DuncanRobot05Behavior()
    {
@@ -188,6 +189,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       scs.setupGraph(distanceToGoal.getName());
       scs.setupGraph(health.getName());
       scs.setupGraph(score.getName());
+      scs.setupGraph(time.getName());
       scs.getGUI().getGraphArrayPanel().addColumn();
       scs.skipLoadingDefaultConfiguration();
       scs.hideViewport();
@@ -267,37 +269,50 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseDroppedFlag(int flagId)
    {
-      carriedFlag.set(-1);
-      LogTools.info("Dropped flag: {} Going for: {}", flagId, goalFlag.getValue());
+      if (carriedFlag.getValue() == flagId)
+      {
+         carriedFlag.set(-1);
+         LogTools.info("Dropped flag: {} Going for: {}", flagId, goalFlag.getValue());
+      }
    }
 
    @Override
    public void sensePickedUpFlag(int id)
    {
-      carriedFlag.set(id);
-      LogTools.info("Picked up: {} Going for: {}", carriedFlag.getValue(), goalFlag.getValue());
+      if (carriedFlag.getValue() != id)
+      {
+         carriedFlag.set(id);
+         LogTools.info("Picked up: {} Going for: {}", carriedFlag.getValue(), goalFlag.getValue());
+      }
    }
 
    @Override
    public void senseDeliveredFlag(int flagId)
    {
-      carriedFlag.set(-1);
-      LogTools.info("Goal! Flag: {}", goalFlag.getValue());
-      if (goalFlag.getValue() < 5)
+      if (carriedFlag.getValue() == flagId)
       {
-         goalFlag.add(1);
+         carriedFlag.set(-1);
+         LogTools.info("Goal! Flag: {}", goalFlag.getValue());
+         if (goalFlag.getValue() < 5)
+         {
+            goalFlag.add(1);
+         }
+         else
+         {
+            goalFlag.set(1);
+         }
+         LogTools.info("Next flag: {}", goalFlag.getValue());
       }
-      else
-      {
-         goalFlag.set(1);
-      }
-      LogTools.info("Next flag: {}", goalFlag.getValue());
    }
 
    @Override
    public void senseClosestFlagInBodyFrame(Pair<Point2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag)
    {
-      this.closestFlag = vectorToInBodyFrameAndIdOfClosestFlag;
+      closestFlag = vectorToInBodyFrameAndIdOfClosestFlag;
+      if (closestFlag != null && closestFlag.getRight() == carriedFlag.getValue()) // means we missed a drop somehow
+      {
+         carriedFlag.set(-1);
+      }
       yoClosestFlag.set(closestFlag.getRight());
    }
 
@@ -336,7 +351,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
       Vector2D meToMouse = fieldVector(me, mouse, distance -> 10.0 * Math.pow(distance, 1.5));
       Point2D center = new Point2D(5.0, 5.0);
-      Vector2D meToCenter = fieldVector(me, center, distance -> 2.0 * Math.pow(distance, 1.5));
+      Vector2D meToCenter = fieldVector(me, center, distance -> 7.0 * Math.pow(distance, 1.5));
 
       Line2D left = new Line2D(0.0, 0.0, 0.0, 1.0);
       Line2D right = new Line2D(10.0, 0.0, 0.0, 1.0);
@@ -393,19 +408,20 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
       boundaryRepulsion.setToZero();
       double boundaryStrength = 2.0;
+      double boundaryGraduation = 1.5;
       Point2D closestLeft = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, left.getPoint(), left.getDirection());
       Point2D closestRight = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, right.getPoint(), right.getDirection());
       Point2D closestBottom = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, bottom.getPoint(), bottom.getDirection());
       Point2D closestTop = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, top.getPoint(), top.getDirection());
-      boundaryRepulsion.add(fieldVector(closestLeft, me, distance -> boundaryStrength / Math.pow(distance, fieldGraduation)));
-      boundaryRepulsion.add(fieldVector(closestRight, me, distance -> boundaryStrength / Math.pow(distance, fieldGraduation)));
-      boundaryRepulsion.add(fieldVector(closestBottom, me, distance -> boundaryStrength / Math.pow(distance, fieldGraduation)));
-      boundaryRepulsion.add(fieldVector(closestTop, me, distance -> boundaryStrength / Math.pow(distance, fieldGraduation)));
+      boundaryRepulsion.add(fieldVector(closestLeft, me, distance -> boundaryStrength / Math.pow(distance, boundaryGraduation)));
+      boundaryRepulsion.add(fieldVector(closestRight, me, distance -> boundaryStrength / Math.pow(distance, boundaryGraduation)));
+      boundaryRepulsion.add(fieldVector(closestBottom, me, distance -> boundaryStrength / Math.pow(distance, boundaryGraduation)));
+      boundaryRepulsion.add(fieldVector(closestTop, me, distance -> boundaryStrength / Math.pow(distance, boundaryGraduation)));
 
       predatorRepulsion.setToZero();
       for (Pair<Point2DBasics, Vector2D> predator : predators)
       {
-         predatorRepulsion.add(fieldVector(bodyToWorld(predator.getLeft()), me, distance -> 3.0 / Math.pow(distance, fieldGraduation)));
+         predatorRepulsion.add(fieldVector(bodyToWorld(predator.getLeft()), me, distance -> 2.0 / Math.pow(distance, 1.8)));
       }
 //      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
 
@@ -427,22 +443,26 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
                flagField.add(fieldVector(me, bodyToWorld(closestFlag.getLeft()), distance ->
                {
                   distanceToGoal.set(distance);
-                  return 6.0 / Math.pow(distance, fieldGraduation);
+                  return 12.0 / Math.pow(distance, fieldGraduation);
                }));
             }
          }
          else // repulse from out-of-order flag
          {
-            flagField.add(fieldVector(bodyToWorld(closestFlag.getLeft()), me, distance -> 3.0 / Math.pow(distance, 2.0)));
+            flagField.add(fieldVector(bodyToWorld(closestFlag.getLeft()), me, distance -> 0.5 / Math.pow(distance, 1.5)));
          }
       }
-      else if (carriedFlag.getValue() == goalFlag.getValue()) // attract to goal; no flags nearby
+      if (carriedFlag.getValue() == goalFlag.getValue()) // attract to goal; no flags nearby
       {
          flagField.add(fieldVector(me, new Point2D(9.0, 9.0), distance ->
          {
             distanceToGoal.set(distance);
             return 15.0 / Math.pow(distance, 0.5);
          }));
+      }
+      else if (closestFlag == null) // looking for a flag i.e. wander
+      {
+         attractionVector.add(meToCenter); // TODO: Change from center
       }
       if (carriedFlag.getValue() == goalFlag.getValue())
       {
@@ -607,6 +627,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    {
       this.score.set(score);
       this.health.set(health);
+      this.time.set(elapsedTime);
    }
 
    @Override
