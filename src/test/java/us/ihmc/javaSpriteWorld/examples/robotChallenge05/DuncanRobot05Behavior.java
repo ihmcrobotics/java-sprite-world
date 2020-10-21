@@ -25,6 +25,7 @@ import us.ihmc.yoVariables.euclid.YoPoint2D;
 import us.ihmc.yoVariables.euclid.YoVector2D;
 import us.ihmc.yoVariables.registry.YoRegistry;
 import us.ihmc.yoVariables.variable.YoDouble;
+import us.ihmc.yoVariables.variable.YoInteger;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -115,6 +116,13 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final YoDouble foodAttractionMagnitude = new YoDouble("FoodAttractionMagnitude", yoRegistry);
    private final YoDouble flagFieldMagnitude = new YoDouble("FlagFieldMagnitude", yoRegistry);
    private final YoDouble attractionMagnitude = new YoDouble("AttractionMagnitude", yoRegistry);
+   private final YoInteger yoClosestFlag = new YoInteger("ClosestFlag", yoRegistry);
+   private final YoInteger carriedFlag = new YoInteger("CarriedFlag", yoRegistry);
+   private final YoInteger goalFlag = new YoInteger("GoalFlag", yoRegistry);
+   private final YoInteger goal = new YoInteger("Goal", yoRegistry);
+   private final YoDouble distanceToGoal = new YoDouble("DistanceToGoal", yoRegistry);
+   private final YoDouble health = new YoDouble("Health", yoRegistry);
+   private final YoDouble score = new YoDouble("Score", yoRegistry);
 
    public DuncanRobot05Behavior()
    {
@@ -158,14 +166,14 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       scs.setupGraph(headingVector.getYoY().getName());
       scs.setupGraph(slamCorrection.getYoX().getName());
       scs.setupGraph(slamCorrection.getYoY().getName());
-      scs.setupGraph(boundaryRepulsion.getYoX().getName());
-      scs.setupGraph(boundaryRepulsion.getYoY().getName());
-      scs.setupGraph(predatorRepulsion.getYoX().getName());
-      scs.setupGraph(predatorRepulsion.getYoY().getName());
-      scs.setupGraph(foodAttraction.getYoX().getName());
-      scs.setupGraph(foodAttraction.getYoY().getName());
-      scs.setupGraph(flagField.getYoX().getName());
-      scs.setupGraph(flagField.getYoY().getName());
+//      scs.setupGraph(boundaryRepulsion.getYoX().getName());
+//      scs.setupGraph(boundaryRepulsion.getYoY().getName());
+//      scs.setupGraph(predatorRepulsion.getYoX().getName());
+//      scs.setupGraph(predatorRepulsion.getYoY().getName());
+//      scs.setupGraph(foodAttraction.getYoX().getName());
+//      scs.setupGraph(foodAttraction.getYoY().getName());
+//      scs.setupGraph(flagField.getYoX().getName());
+//      scs.setupGraph(flagField.getYoY().getName());
       scs.setupGraph(attractionVector.getYoX().getName());
       scs.setupGraph(attractionVector.getYoY().getName());
       scs.setupGraph(boundaryRepulsionMagnitude.getName(),
@@ -176,6 +184,10 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       scs.setupGraph(me.getYoX().getName(), me.getYoY().getName(), groundTruthPosition.getYoX().getName(), groundTruthPosition.getYoY().getName());
       scs.setupGraph(acceleration.getName());
       scs.setupGraph(turnRate.getName());
+      scs.setupGraph(new String[] {yoClosestFlag.getName(), goal.getName(), goalFlag.getName(), carriedFlag.getName()});
+      scs.setupGraph(distanceToGoal.getName());
+      scs.setupGraph(health.getName());
+      scs.setupGraph(score.getName());
       scs.getGUI().getGraphArrayPanel().addColumn();
       scs.skipLoadingDefaultConfiguration();
       scs.hideViewport();
@@ -255,43 +267,38 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseDroppedFlag(int flagId)
    {
-      if (carrying != flagId)
-      {
-         carrying = -1;
-         LogTools.info("Dropped flag: {} Going for: {}", flagId, currentFlagId);
-      }
+      carriedFlag.set(-1);
+      LogTools.info("Dropped flag: {} Going for: {}", flagId, goalFlag.getValue());
    }
 
    @Override
    public void sensePickedUpFlag(int id)
    {
-      carrying = id;
-      LogTools.info("Picked up: {} Going for: {}", carrying, currentFlagId);
+      carriedFlag.set(id);
+      LogTools.info("Picked up: {} Going for: {}", carriedFlag.getValue(), goalFlag.getValue());
    }
 
    @Override
    public void senseDeliveredFlag(int flagId)
    {
-      if (carrying == flagId)
+      carriedFlag.set(-1);
+      LogTools.info("Goal! Flag: {}", goalFlag.getValue());
+      if (goalFlag.getValue() < 5)
       {
-         carrying = -1;
-         LogTools.info("Goal! Flag: {}", currentFlagId);
-         if (currentFlagId < 5)
-         {
-            currentFlagId++;
-         }
-         else
-         {
-            currentFlagId = 1;
-         }
-         LogTools.info("Next flag: {}", currentFlagId);
+         goalFlag.add(1);
       }
+      else
+      {
+         goalFlag.set(1);
+      }
+      LogTools.info("Next flag: {}", goalFlag.getValue());
    }
 
    @Override
    public void senseClosestFlagInBodyFrame(Pair<Point2D, Integer> vectorToInBodyFrameAndIdOfClosestFlag)
    {
       this.closestFlag = vectorToInBodyFrameAndIdOfClosestFlag;
+      yoClosestFlag.set(closestFlag.getRight());
    }
 
    @Override
@@ -305,10 +312,9 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    {
       initializedValues = true;
       me.set(1.5, 1.5);
+      goalFlag.set(1);
+      carriedFlag.set(-1);
    }
-
-   int currentFlagId = 1;
-   int carrying = -1;
 
    @Override
    public double[] getAccelerationAndTurnRate()
@@ -399,7 +405,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       predatorRepulsion.setToZero();
       for (Pair<Point2DBasics, Vector2D> predator : predators)
       {
-         predatorRepulsion.add(fieldVector(bodyToWorld(predator.getLeft()), me, distance -> 6.0 / Math.pow(distance, fieldGraduation)));
+         predatorRepulsion.add(fieldVector(bodyToWorld(predator.getLeft()), me, distance -> 3.0 / Math.pow(distance, fieldGraduation)));
       }
 //      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
 
@@ -414,25 +420,40 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       flagField.setToZero();
       if (closestFlag != null)
       {
-         if (closestFlag != null && closestFlag.getRight() == currentFlagId)
+         if (closestFlag.getRight() == goalFlag.getValue())
          {
-            if (carrying != currentFlagId) // toward flag to pick up
+            if (carriedFlag.getValue() != goalFlag.getValue()) // attract toward next flag to pick up
             {
-               flagField.add(fieldVector(me, bodyToWorld(closestFlag.getLeft()), distance -> 6.0 / Math.pow(distance, fieldGraduation)));
+               flagField.add(fieldVector(me, bodyToWorld(closestFlag.getLeft()), distance ->
+               {
+                  distanceToGoal.set(distance);
+                  return 6.0 / Math.pow(distance, fieldGraduation);
+               }));
             }
          }
-         else
+         else // repulse from out-of-order flag
          {
             flagField.add(fieldVector(bodyToWorld(closestFlag.getLeft()), me, distance -> 3.0 / Math.pow(distance, 2.0)));
          }
-
-         if (carrying == currentFlagId) // set to goal
-         {
-            flagField.add(fieldVector(me, new Point2D(9.0, 9.0), distance -> 15.0 / Math.pow(distance, 0.5)));
-         }
-         flagFilter.filter();
-         attractionVector.add(flagField);
       }
+      else if (carriedFlag.getValue() == goalFlag.getValue()) // attract to goal; no flags nearby
+      {
+         flagField.add(fieldVector(me, new Point2D(9.0, 9.0), distance ->
+         {
+            distanceToGoal.set(distance);
+            return 15.0 / Math.pow(distance, 0.5);
+         }));
+      }
+      if (carriedFlag.getValue() == goalFlag.getValue())
+      {
+         goal.set(10);
+      }
+      else
+      {
+         goal.set(goalFlag.getValue());
+      }
+      flagFilter.filter();
+      attractionVector.add(flagField);
 
       boundaryFilter.filter();
       predatorFilter.filter();
@@ -584,7 +605,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void senseScoreHealthTime(double score, double health, double elapsedTime)
    {
-
+      this.score.set(score);
+      this.health.set(health);
    }
 
    @Override
