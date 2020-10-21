@@ -118,5 +118,10 @@ public class SimpleRobot03Behavior implements Robot03Behavior
    public void reset()
    {      
    }
+
+   @Override
+   public void exit()
+   {
+   }
    
 }

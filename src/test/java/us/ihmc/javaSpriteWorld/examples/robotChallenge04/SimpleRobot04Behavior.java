@@ -130,4 +130,8 @@ public class SimpleRobot04Behavior implements Robot04Behavior
    {      
    }
 
+   @Override
+   public void exit()
+   {
+   }
 }

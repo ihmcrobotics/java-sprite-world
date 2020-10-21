@@ -165,5 +165,9 @@ public class ExperimentalBehavior01 implements Robot01Behavior
    {      
    }
 
+   @Override
+   public void exit()
+   {
+   }
 
 }

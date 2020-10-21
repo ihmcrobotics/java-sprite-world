@@ -186,4 +186,9 @@ public class SimpleRobot05Behavior implements Robot05Behavior, Robot06Behavior
       y = 0.0;
    }
 
+   @Override
+   public void exit()
+   {
+   }
+
 }
