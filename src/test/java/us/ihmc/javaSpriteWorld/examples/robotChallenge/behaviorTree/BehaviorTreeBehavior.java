@@ -20,7 +20,10 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    {
       behaviorTree = new SequenceNode();
 
-      AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, actuators);
+      int challengeNumber = 5;
+      RobotBehaviorEnvironment environment = new RobotBehaviorEnvironment(challengeNumber);
+
+      AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, actuators, environment);
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, actuators);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
 

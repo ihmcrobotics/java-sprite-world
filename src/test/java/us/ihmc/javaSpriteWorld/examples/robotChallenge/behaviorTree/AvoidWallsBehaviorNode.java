@@ -7,11 +7,13 @@ public class AvoidWallsBehaviorNode implements BehaviorTreeAction
 {
    private final RobotBehaviorSensors sensors;
    private final RobotBehaviorActuators actuators;
+   private RobotBehaviorEnvironment environment;
 
-   public AvoidWallsBehaviorNode(RobotBehaviorSensors sensors, RobotBehaviorActuators actuators)
+   public AvoidWallsBehaviorNode(RobotBehaviorSensors sensors, RobotBehaviorActuators actuators, RobotBehaviorEnvironment environment)
    {
       this.sensors = sensors;
       this.actuators = actuators;
+      this.environment = environment;
    }
 
    @Override
