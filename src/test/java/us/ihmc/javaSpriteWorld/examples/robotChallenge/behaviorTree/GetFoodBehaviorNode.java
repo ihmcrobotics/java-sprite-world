@@ -14,6 +14,11 @@ public class GetFoodBehaviorNode implements BehaviorTreeAction
 {
    private final RobotBehaviorSensors sensors;
    private final RobotBehaviorActuators actuators;
+   private double accelerationGain = 1.0;
+   private double turnRateGain = 5.0;
+   private double turnRateDamping = -0.5;
+   private double attractionStrength = 0.5;
+   private double attractionGraduation = 1.5;
 
    private final double minimumHealthToBeNotHungry = 90.0;
    private double minimumHealthToNotBeDesparateForFarAwayFood = 50.0;
@@ -53,9 +58,9 @@ public class GetFoodBehaviorNode implements BehaviorTreeAction
       double finalClosestDistance = closestDistance;
       Vector2D attraction = RobotBehaviorTools.fieldVector(sensors.getGlobalPosition(),
                                                            bodyToWorld(sensors, closestFood.getMiddle()), 
-                                                           distance -> 0.5 / Math.pow(finalClosestDistance, 1.5));
+                                                           distance -> attractionStrength / Math.pow(finalClosestDistance, attractionGraduation));
 
-      lastVelocity = doAttractionVectorControl(sensors, actuators, attraction, lastVelocity, dt);
+      lastVelocity = doAttractionVectorControl(sensors, actuators, attraction, lastVelocity, dt, accelerationGain, turnRateGain, turnRateDamping);
 
       return BehaviorTreeNodeStatus.RUNNING;
    }
@@ -68,5 +73,30 @@ public class GetFoodBehaviorNode implements BehaviorTreeAction
    private boolean notHungry()
    {
       return sensors.getHealth() > minimumHealthToBeNotHungry;
+   }
+   
+   public void setAttractionStrength(double attractionStrength)
+   {
+      this.attractionStrength = attractionStrength;
+   }
+
+   public void setAttractionGraduation(double attractionGraduation)
+   {
+      this.attractionGraduation = attractionGraduation;
+   }
+
+   public void setAccelerationGain(double accelerationGain)
+   {
+      this.accelerationGain = accelerationGain;
+   }
+
+   public void setTurnRateGain(double turnRateGain)
+   {
+      this.turnRateGain = turnRateGain;
+   }
+
+   public void setTurnRateDamping(double turnRateDamping)
+   {
+      this.turnRateDamping = turnRateDamping;
    }
 }

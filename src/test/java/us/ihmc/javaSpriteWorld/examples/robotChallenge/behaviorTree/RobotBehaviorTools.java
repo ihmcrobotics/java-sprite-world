@@ -1,7 +1,5 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
@@ -47,9 +45,12 @@ public class RobotBehaviorTools
                                                   RobotBehaviorActuators actuators,
                                                   Vector2D attraction,
                                                   double lastVelocity,
-                                                  double dt)
+                                                  double dt,
+                                                  double accelerationGain,
+                                                  double turnRateGain,
+                                                  double turnRateDamping)
    {
-      Vector2D headingVector = new Vector2D(0.0, 1.0);
+      Vector2D headingVector = new Vector2D(0.0, accelerationGain);
       RigidBodyTransform transform = new RigidBodyTransform();
       transform.getRotation().appendYawRotation(sensors.getHeading());
       transform.transform(headingVector);
@@ -61,10 +62,10 @@ public class RobotBehaviorTools
                                                                                     attraction.getY());
 
       double velocity = sensors.getVelocity();
-      actuators.setAcceleration(1.0 * (desiredSpeed - velocity));
+      actuators.setAcceleration(accelerationGain * (desiredSpeed - velocity));
 
       double angularVelocity = (velocity - lastVelocity) / dt;
-      double turnRate = (5.0 * angleToAttraction) + (-0.5 * angularVelocity);
+      double turnRate = (turnRateGain * angleToAttraction) + (turnRateDamping * angularVelocity);
       actuators.setTurnRate(turnRate);
 
       return velocity;
