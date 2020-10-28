@@ -202,7 +202,10 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       scs.hideViewport();
       scs.changeBufferSize(4096);
       JToggleButton pauseButton = new JToggleButton("Pause");
-      pauseButton.addActionListener(e -> paused = pauseButton.isSelected());
+      pauseButton.addActionListener(e -> {
+         paused = pauseButton.isSelected();
+         scs.setScrollGraphsEnabled(paused);
+      });
       scs.addButton(pauseButton);
 
       scs.startOnAThread();
