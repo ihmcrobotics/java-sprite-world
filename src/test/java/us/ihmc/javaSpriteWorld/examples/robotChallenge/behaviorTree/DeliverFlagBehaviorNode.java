@@ -227,4 +227,16 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
       return inDeliverFlagMode && (sensors.getGlobalPosition().getX() > 8.05 && sensors.getGlobalPosition().getY() > 8.05);
    }
 
+   public void reset()
+   {
+      inDeliverFlagMode = false;
+      flagIdToChase = 1;
+
+      for (int i = 0; i < flagLocations.length; i++)
+      {
+         flagLocations[i].setToNaN();
+      }
+
+      counter = 0;
+   }
 }

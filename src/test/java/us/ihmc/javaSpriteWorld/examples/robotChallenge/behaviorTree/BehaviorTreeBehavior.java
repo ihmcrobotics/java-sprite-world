@@ -16,6 +16,8 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    private final RobotBehaviorActuators actuators = new RobotBehaviorActuators();
    private final RobotBehaviorSensors sensors = new RobotBehaviorSensors();
 
+   private final DeliverFlagBehaviorNode deliverFlag;
+
    public BehaviorTreeBehavior()
    {
       behaviorTree = new SequenceNode();
@@ -27,12 +29,12 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, actuators);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
       GoForwardBehaviorNode goForward = new GoForwardBehaviorNode(sensors, actuators);
-      DeliverFlagBehaviorNode deliverFlag = new DeliverFlagBehaviorNode(sensors, actuators);
+      deliverFlag = new DeliverFlagBehaviorNode(sensors, actuators);
 
       behaviorTree.addChild(avoidWalls);
       behaviorTree.addChild(avoidPredators);
       behaviorTree.addChild(getFood);
-//      behaviorTree.addChild(goForward);
+      behaviorTree.addChild(goForward);
       behaviorTree.addChild(deliverFlag);
    }
 
@@ -149,8 +151,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public void reset()
    {
-      // TODO Auto-generated method stub
-      
+      deliverFlag.reset();
    }
 
    @Override
