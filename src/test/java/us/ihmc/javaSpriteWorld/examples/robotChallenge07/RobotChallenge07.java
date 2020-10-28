@@ -4,7 +4,6 @@ import java.util.Random;
 
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallenge01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
-import us.ihmc.javaSpriteWorld.examples.robotChallenge05.DuncanRobot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.SimpleRobot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.stephen.StephenRobotBehavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
@@ -36,7 +35,7 @@ public class RobotChallenge07
 
       Robot06Behavior simpleBehavior;
       if (PLAYER.equals("Duncan"))
-         simpleBehavior = new DuncanRobot05Behavior();
+         simpleBehavior = new DuncanRobot07Behavior();
       else if (PLAYER.equals("Stephen"))
          simpleBehavior = new StephenRobotBehavior();
       else
