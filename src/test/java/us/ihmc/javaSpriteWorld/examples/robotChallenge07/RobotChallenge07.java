@@ -2,6 +2,7 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge07;
 
 import java.util.Random;
 
+import us.ihmc.javaSpriteWorld.examples.duncan.DuncanRobot07Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallenge01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.SimpleRobot05Behavior;

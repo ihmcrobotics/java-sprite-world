@@ -1,7 +1,7 @@
-package us.ihmc.javaSpriteWorld.examples.robotChallenge08;
+package us.ihmc.javaSpriteWorld.examples.duncan;
 
 import us.ihmc.euclid.geometry.LineSegment2D;
-import us.ihmc.javaSpriteWorld.examples.robotChallenge05.DuncanRobot05Behavior;
+import us.ihmc.javaSpriteWorld.examples.duncan.DuncanRobot05Behavior;
 
 import java.util.ArrayList;
 import java.util.List;

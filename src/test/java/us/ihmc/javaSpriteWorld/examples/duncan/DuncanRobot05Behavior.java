@@ -1,4 +1,4 @@
-package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
+package us.ihmc.javaSpriteWorld.examples.duncan;
 
 import java.util.*;
 import java.util.function.Function;
@@ -16,6 +16,7 @@ import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.*;
 import us.ihmc.jMonkeyEngineToolkit.NullGraphics3DAdapter;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge05.Robot05Behavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 import us.ihmc.log.LogTools;
 import us.ihmc.simulationconstructionset.Robot;

@@ -1,4 +1,4 @@
-package us.ihmc.javaSpriteWorld.examples.robotChallenge04;
+package us.ihmc.javaSpriteWorld.examples.duncan;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -9,6 +9,7 @@ import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge04.Robot04Behavior;
 import us.ihmc.log.LogTools;
 
 import java.util.ArrayList;
