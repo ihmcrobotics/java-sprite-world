@@ -6,7 +6,6 @@ import java.util.function.Function;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
-import us.ihmc.commons.MathTools;
 import us.ihmc.commons.thread.ThreadTools;
 import us.ihmc.euclid.geometry.Line2D;
 import us.ihmc.euclid.geometry.LineSegment2D;
@@ -614,23 +613,6 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       vector.normalize();
       vector.scale(magnitude.apply(distance));
       return vector;
-   }
-
-   static class ClampAlphaFilteredTuple2D extends AlphaFilteredTuple2D
-   {
-      private double clamp;
-
-      public ClampAlphaFilteredTuple2D(Tuple2DBasics tuple, double alpha, double clamp)
-      {
-         super(tuple, alpha);
-         this.clamp = clamp;
-      }
-
-      @Override
-      public void filter()
-      {
-         tuple.set(xFilter.filter(MathTools.clamp(tuple.getX(), clamp)), yFilter.filter(MathTools.clamp(tuple.getY(), clamp)));
-      }
    }
 
    @Override
