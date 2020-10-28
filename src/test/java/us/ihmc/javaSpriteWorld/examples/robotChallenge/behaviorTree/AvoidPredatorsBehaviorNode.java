@@ -22,7 +22,10 @@ public class AvoidPredatorsBehaviorNode  implements BehaviorTreeAction
 
    private final List<ObjectResponseDescription> responseDescriptions = new ArrayList<>();
    private final double basePredator = 1.75;
-   private final double predatorAngularCostRange = Math.toRadians(80.0);
+   private final double predatorAngularCostRange = Math.toRadians(120.0);
+
+   private final double predWeight = 1.0;
+   private final double currentHeadingWeight = 0.1;
 
    public AvoidPredatorsBehaviorNode(RobotBehaviorSensors sensors, RobotBehaviorActuators actuators)
    {
@@ -40,7 +43,7 @@ public class AvoidPredatorsBehaviorNode  implements BehaviorTreeAction
       {
          Point2D predatorInBodyFrame = sensors.getLocationOfAllPredators().get(i).getLeft();
          double distance = EuclidCoreTools.norm(predatorInBodyFrame.getX(), predatorInBodyFrame.getY());
-         double reward = - Math.pow(basePredator, - distance);
+         double reward = - predWeight * Math.pow(basePredator, - distance);
          double heading = headingFromVector(predatorInBodyFrame);
 
          if (distance < closestPredatorDistance)
@@ -50,6 +53,8 @@ public class AvoidPredatorsBehaviorNode  implements BehaviorTreeAction
 
          responseDescriptions.add(new RampedAngularReward(heading, predatorAngularCostRange, reward));
       }
+
+      responseDescriptions.add(new RampedAngularReward(0.0, Math.PI, currentHeadingWeight));
 
       if (closestPredatorDistance > PREDATOR_PROXIMITY_TO_ACTIVATE)
       {
