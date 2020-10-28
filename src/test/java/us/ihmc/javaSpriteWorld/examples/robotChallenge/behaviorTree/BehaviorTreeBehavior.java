@@ -15,24 +15,14 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge05.Robot05Behavior;
 public class BehaviorTreeBehavior implements Robot05Behavior
 {
    private final SequenceNode behaviorTree;
-   private double turnRate, acceleration;
-   private ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood = new ArrayList<Triple<Integer,Point2D,Vector2D>>();
+   private final RobotBehaviorActuators actuators = new RobotBehaviorActuators();
+   private final RobotBehaviorSensors sensors = new RobotBehaviorSensors();
    
    public BehaviorTreeBehavior()
    {
       behaviorTree = new SequenceNode();
       
-      BehaviorTreeAction getFood = new BehaviorTreeAction()
-      {
-         
-         @Override
-         public BehaviorTreeNodeStatus tick()
-         {
-            
-            return BehaviorTreeNodeStatus.RUNNING;
-         }
-      };
-      
+      GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
       behaviorTree.addChild(getFood);
    }
 
@@ -88,9 +78,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public void senseFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
-      this.locationOfAllFood.clear();
-      this.locationOfAllFood.addAll(locationOfAllFood);
-      
+      sensors.setLocationOfAllFood(locationOfAllFood);
    }
 
    @Override
@@ -146,8 +134,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    public double[] getAccelerationAndTurnRate()
    {
       behaviorTree.tick();
-      
-      return new double[] {acceleration, turnRate};
+      return new double[] {actuators.getAcceleration(), actuators.getTurnRate()};
    }
 
    @Override
