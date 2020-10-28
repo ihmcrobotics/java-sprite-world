@@ -17,12 +17,15 @@ public class GetFoodBehaviorNode implements BehaviorTreeAction
    private double accelerationGain = 1.0;
    private double turnRateGain = 5.0;
    private double turnRateDamping = -0.5;
-   private double attractionStrength = 0.5;
+   private double attractionStrength = 10.0;
    private double attractionGraduation = 1.5;
 
+   private double getFoodAttractionVectorConstantLength = 10.0;
+
+   
    private final double minimumHealthToBeNotHungry = 90.0;
-   private double minimumHealthToNotBeDesparateForFarAwayFood = 50.0;
-   private double minimumDistanceForFoodToBeConsideredClose = 10.0;
+   private double minimumHealthToNotBeDesparateForFarAwayFood = 60.0;
+   private double distanceForFoodToBeConsideredFar = 3.0;
 
    private double dt = 0.01;
    private double lastVelocity = 0.0; // PD controller
@@ -38,12 +41,12 @@ public class GetFoodBehaviorNode implements BehaviorTreeAction
    {
       if (notHungry()) return BehaviorTreeNodeStatus.SUCCESS;
       
-      
       Triple<Integer, Point2D, Vector2D> closestFood = null;
       double closestDistance = Double.POSITIVE_INFINITY;
       for (Triple<Integer, Point2D, Vector2D> food : sensors.getLocationOfAllFoodInBodyFrame())
       {
-         double distance = sensors.getGlobalPosition().distance(food.getMiddle());
+         Point2D foodLocation = bodyToWorld(sensors, food.getMiddle());
+         double distance = sensors.getGlobalPosition().distance(foodLocation);
          if (distance < closestDistance)
          {
             closestDistance = distance;
@@ -54,11 +57,13 @@ public class GetFoodBehaviorNode implements BehaviorTreeAction
       if (notHungryEnoughToChaseDownClosestFood(closestDistance))
          return BehaviorTreeNodeStatus.SUCCESS;
 
-
       double finalClosestDistance = closestDistance;
       Vector2D attraction = RobotBehaviorTools.fieldVector(sensors.getGlobalPosition(),
                                                            bodyToWorld(sensors, closestFood.getMiddle()), 
                                                            distance -> attractionStrength / Math.pow(finalClosestDistance, attractionGraduation));
+      
+      attraction.normalize();
+      attraction.scale(getFoodAttractionVectorConstantLength);
 
       lastVelocity = doAttractionVectorControl(sensors, actuators, attraction, lastVelocity, dt, accelerationGain, turnRateGain, turnRateDamping);
 
@@ -67,7 +72,7 @@ public class GetFoodBehaviorNode implements BehaviorTreeAction
 
    private boolean notHungryEnoughToChaseDownClosestFood(double closestDistance)
    {
-      return (sensors.getHealth() > minimumHealthToNotBeDesparateForFarAwayFood) && (closestDistance > minimumDistanceForFoodToBeConsideredClose);
+      return (sensors.getHealth() > minimumHealthToNotBeDesparateForFarAwayFood) && (closestDistance > distanceForFoodToBeConsideredFar);
    }
 
    private boolean notHungry()
