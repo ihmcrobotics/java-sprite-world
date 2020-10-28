@@ -27,8 +27,6 @@ public class RobotBehaviorSensors
       return locationOfAllFoodInBodyFrame;
    }
 
-   public void setLocationOfAllFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
-
    public ArrayList<Pair<Point2D, Vector2D>> getLocationOfAllPredators()
    {
       return locationOfAllPredators;
