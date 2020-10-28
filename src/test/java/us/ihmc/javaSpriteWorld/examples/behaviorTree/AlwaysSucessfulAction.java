@@ -1,6 +1,6 @@
 package us.ihmc.javaSpriteWorld.examples.behaviorTree;
 
-import static us.ihmc.humanoidBehaviors.tools.behaviorTree.BehaviorTreeNodeStatus.SUCCESS;
+import static us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeNodeStatus.*;
 
 /**
  * Experimental action. Not sure about this one.

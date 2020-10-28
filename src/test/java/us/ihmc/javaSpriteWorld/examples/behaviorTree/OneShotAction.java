@@ -1,6 +1,6 @@
 package us.ihmc.javaSpriteWorld.examples.behaviorTree;
 
-import static us.ihmc.humanoidBehaviors.tools.behaviorTree.BehaviorTreeNodeStatus.*;
+import static us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeNodeStatus.*;
 
 /**
  * Run action only first tick, return RUNNING.
