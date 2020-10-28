@@ -633,52 +633,6 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       }
    }
 
-   static class AlphaFilteredTuple2D
-   {
-      protected final Tuple2DBasics tuple;
-      protected final AlphaFilter xFilter;
-      protected final AlphaFilter yFilter;
-
-      public AlphaFilteredTuple2D(Tuple2DBasics tuple, double alpha)
-      {
-         this.tuple = tuple;
-         this.xFilter = new AlphaFilter(alpha);
-         this.yFilter = new AlphaFilter(alpha);
-      }
-
-      public void filter()
-      {
-         tuple.set(xFilter.filter(tuple.getX()), yFilter.filter(tuple.getY()));
-      }
-   }
-
-   static class AlphaFilter
-   {
-      private final double alpha;
-      private double last = Double.NaN;
-
-      public AlphaFilter(double alpha)
-      {
-         this.alpha = alpha;
-      }
-
-      public double filter(double value)
-      {
-         double filtered;
-         if (Double.isNaN(last)) // feed forward to initial value
-         {
-            last = value;
-            filtered = value;
-         }
-         else
-         {
-            filtered = last + (value - last) / alpha;
-            last = filtered;
-         }
-         return filtered;
-      }
-   }
-
    @Override
    public void senseKeyPressed(String keyPressed)
    {
