@@ -195,6 +195,15 @@ public class DuncansRobotBehavior extends FunctionalRobotBehaviorAdapter
                               this.mousePressedPosition = mousePressedPosition;
                            });
       setGetAccelerationAndTurnRate(this::doControl);
+      setGetDropFlag(() -> ((me.getX() > environment.getMapSizeX() * 0.8) && (me.getY() > environment.getMapSizeY() * 0.8)));
+      setSenseScoreHealthTime(scoreHealthTime ->
+                              {
+                                 this.score.set(scoreHealthTime.getLeft());
+                                 this.health.set(scoreHealthTime.getMiddle());
+                                 this.time.set(scoreHealthTime.getRight());
+                              });
+      setSenseGlobalPositionForTestingOnlyConsumer(this.groundTruthPosition::set);
+      setSenseNoiseFreeHeadingForTestingOnly(this.groundTruthHeading::set);
    }
 
    private void setupYoVariables()
@@ -542,5 +551,7 @@ public class DuncansRobotBehavior extends FunctionalRobotBehaviorAdapter
       scs.startOnAThread();
       while (!scs.hasSimulationThreadStarted())
          ThreadTools.sleep(200);
+
+      setExit(scs::closeAndDispose);
    }
 }
