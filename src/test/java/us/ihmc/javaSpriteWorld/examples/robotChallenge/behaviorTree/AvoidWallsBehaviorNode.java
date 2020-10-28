@@ -21,7 +21,7 @@ public class AvoidWallsBehaviorNode implements BehaviorTreeAction
    private double lastVelocity = 0.0;
    private double boundaryStrength = 3.0;
    private double boundaryGraduation = 2.5;
-   private double wallDistanceActivationThreshold = 0.2;
+   private double wallDistanceActivationThreshold = 1.0;
 
    public AvoidWallsBehaviorNode(RobotBehaviorSensors sensors, RobotBehaviorActuators actuators, RobotBehaviorEnvironment environment)
    {
