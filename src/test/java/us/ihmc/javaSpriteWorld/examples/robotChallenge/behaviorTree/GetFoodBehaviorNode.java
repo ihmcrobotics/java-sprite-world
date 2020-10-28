@@ -39,7 +39,7 @@ public class GetFoodBehaviorNode implements BehaviorTreeAction
 
       Triple<Integer, Point2D, Vector2D> closestFood = null;
       double closestDistance = Double.POSITIVE_INFINITY;
-      for (Triple<Integer, Point2D, Vector2D> food : sensors.getLocationOfAllFood())
+      for (Triple<Integer, Point2D, Vector2D> food : sensors.getLocationOfAllFoodInBodyFrame())
       {
          double distance = sensors.getGlobalPosition().distance(food.getMiddle());
          if (distance < closestDistance)

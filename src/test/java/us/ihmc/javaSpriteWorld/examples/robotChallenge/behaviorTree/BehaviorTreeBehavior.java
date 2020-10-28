@@ -27,8 +27,6 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       behaviorTree.addChild(getFood);
    }
 
- 
-
    @Override
    public void senseGlobalPositionForTestingOnly(double x, double y)
    {
@@ -38,15 +36,13 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public void senseNoiseFreeHeadingForTestingOnly(double heading)
    {
-      // TODO Auto-generated method stub
-      
+      sensors.setHeading(heading);      
    }
 
    @Override
    public void senseVelocity(double velocity)
    {
-      // TODO Auto-generated method stub
-      
+      sensors.setVelocity(velocity);
    }
 
    @Override
@@ -57,16 +53,12 @@ public class BehaviorTreeBehavior implements Robot05Behavior
 
    @Override
    public void senseMousePressed(double mousePressedX, double mousePressedY)
-   {
-      // TODO Auto-generated method stub
-      
+   {      
    }
 
    @Override
    public void senseKeyPressed(String keyPressed)
-   {
-      // TODO Auto-generated method stub
-      
+   {      
    }
 
    @Override
@@ -79,7 +71,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public void senseFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
-      sensors.setLocationOfAllFood(locationOfAllFood);
+      sensors.setLocationOfAllFoodInBodyFrame(locationOfAllFood);
    }
 
    @Override
