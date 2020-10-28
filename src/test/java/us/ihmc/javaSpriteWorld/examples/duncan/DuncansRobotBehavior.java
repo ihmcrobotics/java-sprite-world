@@ -46,7 +46,7 @@ public class DuncansRobotBehavior extends FunctionalRobotBehaviorAdapter
 
    private AlphaFilter velocityFilter = new AlphaFilter(25.0);
    private AlphaFilter headingFilter = new AlphaFilter(15.0);
-   double lastVelocity = 0.0; // PD controller
+   private double lastVelocity = 0.0; // PD controller
 
    private final boolean runSCS;
    private int numberOfFlags;
