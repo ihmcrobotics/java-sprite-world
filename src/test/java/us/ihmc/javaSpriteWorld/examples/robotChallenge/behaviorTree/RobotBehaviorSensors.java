@@ -15,6 +15,10 @@ public class RobotBehaviorSensors
    private double velocity;
    private double globalX, globalY;
    
+   private double score;
+   private double health;
+   private double elapsedTime;
+   
    public ArrayList<Triple<Integer, Point2D, Vector2D>> getLocationOfAllFoodInBodyFrame()
    {
       return locationOfAllFoodInBodyFrame;
@@ -58,6 +62,34 @@ public class RobotBehaviorSensors
       this.velocity = velocity;
    }
 
-   
-   
+   public double getScore()
+   {
+      return score;
+   }
+
+   public void setScore(double score)
+   {
+      this.score = score;
+   }
+
+   public double getHealth()
+   {
+      return health;
+   }
+
+   public void setHealth(double health)
+   {
+      this.health = health;
+   }
+
+   public double getElapsedTime()
+   {
+      return elapsedTime;
+   }
+
+   public void setElapsedTime(double elapsedTime)
+   {
+      this.elapsedTime = elapsedTime;
+   }
+ 
 }

@@ -139,8 +139,9 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public void senseScoreHealthTime(double score, double health, double elapsedTime)
    {
-      
-      
+      sensors.setScore(score);
+      sensors.setHealth(health);
+      sensors.setElapsedTime(elapsedTime);
    }
 
    @Override
