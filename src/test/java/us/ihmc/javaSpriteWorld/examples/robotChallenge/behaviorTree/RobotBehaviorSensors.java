@@ -2,6 +2,7 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
 import us.ihmc.euclid.tuple2D.Point2D;
@@ -11,6 +12,8 @@ import us.ihmc.euclid.tuple2D.interfaces.Point2DReadOnly;
 public class RobotBehaviorSensors
 {
    private ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFoodInBodyFrame = new ArrayList<Triple<Integer,Point2D,Vector2D>>();
+   private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators = new ArrayList<>();
+
    private double heading;
    private double velocity;
    private double globalX, globalY;
@@ -25,9 +28,22 @@ public class RobotBehaviorSensors
    }
 
    public void setLocationOfAllFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
+
+   public ArrayList<Pair<Point2D, Vector2D>> getLocationOfAllPredators()
+   {
+      return locationOfAllPredators;
+   }
+
+   public void setLocationOfAllFood(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
       this.locationOfAllFoodInBodyFrame.clear();
       this.locationOfAllFoodInBodyFrame.addAll(locationOfAllFood);
+   }
+
+   public void setLocationOfAllPredators(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators)
+   {
+      this.locationOfAllPredators.clear();
+      this.locationOfAllPredators.addAll(locationOfAllPredators);
    }
 
    public void setHeading(double heading)

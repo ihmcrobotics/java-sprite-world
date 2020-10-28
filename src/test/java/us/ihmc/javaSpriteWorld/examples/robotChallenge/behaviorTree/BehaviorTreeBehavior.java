@@ -79,8 +79,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public void sensePredatorsInBodyFrame(ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators)
    {
-      // TODO Auto-generated method stub
-      
+      sensors.setLocationOfAllPredators(locationOfAllPredators);
    }
 
    @Override
