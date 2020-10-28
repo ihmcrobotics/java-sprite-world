@@ -48,11 +48,11 @@ public class AvoidWallsBehaviorNode implements BehaviorTreeAction
          }
       }
 
-//      if (closestWallDistance < wallDistanceActivationThreshold)
-//      {
-//         lastVelocity = doAttractionVectorControl(sensors, actuators, boundaryRepulsion, lastVelocity, dt);
-//         return BehaviorTreeNodeStatus.RUNNING;
-//      }
+      if (closestWallDistance < wallDistanceActivationThreshold)
+      {
+         lastVelocity = doAttractionVectorControl(sensors, actuators, boundaryRepulsion, lastVelocity, dt);
+         return BehaviorTreeNodeStatus.RUNNING;
+      }
 
       return BehaviorTreeNodeStatus.SUCCESS;
    }

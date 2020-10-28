@@ -18,7 +18,7 @@ public class RobotBehaviorSensors
    
    private double heading;
    private double velocity;
-   private double globalX, globalY;
+   private double globalX = 1.5, globalY = 1.5;
    
    private double score;
    private double health;
