@@ -19,8 +19,7 @@ public class RobotChallenge08
 {
    public static void main(String[] args)
    {
-      String player = System.getProperty("player", "Stephen");
-//    String player = System.getProperty("player", "Simple");
+    String player = System.getProperty("player", "Simple");
     RobotChallenge01 robotChallenge = createRobotChallenge(player);
 //    robotChallenge.runSimulation();
 
