@@ -25,9 +25,6 @@ public class SteeringBasedAction
 
    private Pair<Point2D, Integer> filteredSensedFlag;
 
-   // Higher weight rewards/penalties for objects in front of the robot
-   private static final double rewardScaleWhenBehindRobot = 0.7;
-
    private static final double alphaSensedFlag = 0.33;
    private static final double alphaSensedFood = 0.33;
    private static final double alphaPredatorPosition = 0.33;
@@ -147,6 +144,65 @@ public class SteeringBasedAction
          }
       }
 
+      double maxRewardHeading = getMaxRewardHeading(responseDescriptions);
+
+      double filteredHeading = 0.0;
+      if (Double.isNaN(previousHeading))
+      {
+         filteredHeading = maxRewardHeading;
+      }
+      else
+      {
+         double angularDifference = EuclidCoreTools.angleDifferenceMinusPiToPi(maxRewardHeading, previousHeading);
+         filteredHeading = EuclidCoreTools.trimAngleMinusPiToPi(previousHeading + alphaHeading * angularDifference);
+      }
+
+      previousHeading = filteredHeading;
+
+      double velocityWhenAligned = 3.0;
+      double kAcceleration = 3.0;
+      double kTurn = 4.0;
+      double velocity = slamManager.getFilteredVelocity();
+
+      computeActionGivenHeading(totalAction, maxRewardHeading, velocityWhenAligned, kAcceleration, kTurn, velocity);
+   }
+
+   public static void computeActionGivenHeading(double[] totalAction,
+                                                double maxRewardHeading,
+                                                double velocityWhenAligned,
+                                                double kAcceleration,
+                                                double kTurn,
+                                                double velocity)
+   {
+      double targetVelocity;
+      double angleToStopAndTurn = Math.toRadians(60.0);
+      double deltaDesiredHeading = maxRewardHeading;
+
+      double acceleration;
+
+      if (Math.abs(deltaDesiredHeading) < angleToStopAndTurn)
+      {
+         targetVelocity = EuclidCoreTools.interpolate(velocityWhenAligned, 0.0, Math.abs(deltaDesiredHeading / angleToStopAndTurn));
+
+         // don't break if roughly aligned
+         acceleration = Math.max(kAcceleration * (targetVelocity - velocity), 0.0);
+      }
+      else
+      {
+         targetVelocity = 0.0;
+
+         // break if necessary when not aligned
+         acceleration = kAcceleration * (targetVelocity - velocity);
+      }
+
+      double turningAction = kTurn * deltaDesiredHeading;
+
+      totalAction[0] = acceleration;
+      totalAction[1] = turningAction;
+   }
+
+   public static double getMaxRewardHeading(List<ObjectResponseDescription> responseDescriptions)
+   {
       double angle = -Math.PI;
       double maxReward = Double.NEGATIVE_INFINITY;
       double maxRewardHeading = Double.NaN;
@@ -167,48 +223,7 @@ public class SteeringBasedAction
 
          angle += 0.01;
       }
-
-      double filteredHeading = 0.0;
-      if (Double.isNaN(previousHeading))
-      {
-         filteredHeading = maxRewardHeading;
-      }
-      else
-      {
-         double angularDifference = EuclidCoreTools.angleDifferenceMinusPiToPi(maxRewardHeading, previousHeading);
-         filteredHeading = EuclidCoreTools.trimAngleMinusPiToPi(previousHeading + alphaHeading * angularDifference);
-      }
-
-      previousHeading = filteredHeading;
-
-      double velocityWhenAligned = 3.0;
-      double targetVelocity;
-      double angleToStopAndTurn = Math.toRadians(60.0);
-      double deltaDesiredHeading = maxRewardHeading;
-
-      double kAcceleration = 3.0;
-      double kTurn = 4.0;
-      double acceleration;
-
-      if (Math.abs(deltaDesiredHeading) < angleToStopAndTurn)
-      {
-         targetVelocity = EuclidCoreTools.interpolate(velocityWhenAligned, 0.0, Math.abs(deltaDesiredHeading / angleToStopAndTurn));
-
-         // don't break if roughly aligned
-         acceleration = Math.max(kAcceleration * (targetVelocity - slamManager.getFilteredVelocity()), 0.0);
-      }
-      else
-      {
-         targetVelocity = 0.0;
-
-         // break if necessary when not aligned
-         acceleration = kAcceleration * (targetVelocity - slamManager.getFilteredVelocity());
-      }
-
-      double turningAction = kTurn * deltaDesiredHeading;
-
-      totalAction[0] = acceleration;
-      totalAction[1] = turningAction;
+      return maxRewardHeading;
    }
 
    public void senseWallRangeInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame)
@@ -422,40 +437,6 @@ public class SteeringBasedAction
       }
 
       return Pair.of(index1Min, index2Min);
-   }
-
-   private interface ObjectResponseDescription
-   {
-      double getRewardAtAngle(double headingInBodyFrame);
-   }
-
-   private static class RampedAngularReward implements ObjectResponseDescription
-   {
-      private final double headingOfObjectInBodyFrame;
-      private final double angularRange;
-      private final double rewardWhenFacingObject;
-
-      public RampedAngularReward(double headingOfObjectInBodyFrame, double angularRange, double rewardWhenFacingObject)
-      {
-         this.headingOfObjectInBodyFrame = headingOfObjectInBodyFrame;
-         this.angularRange = angularRange;
-         this.rewardWhenFacingObject = rewardWhenFacingObject;
-      }
-
-      @Override
-      public double getRewardAtAngle(double headingInBodyFrame)
-      {
-         double angularDifference = Math.abs(EuclidCoreTools.angleDifferenceMinusPiToPi(headingInBodyFrame, headingOfObjectInBodyFrame));
-         if (angularDifference > angularRange)
-         {
-            return 0.0;
-         }
-         else
-         {
-            double multiplier = EuclidCoreTools.interpolate(1.0, rewardScaleWhenBehindRobot, Math.abs(headingOfObjectInBodyFrame) / Math.PI);
-            return multiplier * rewardWhenFacingObject * (1.0 - angularDifference / angularRange);
-         }
-      }
    }
 
    public void reset()

@@ -27,11 +27,13 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, actuators);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
       GoForwardBehaviorNode goForward = new GoForwardBehaviorNode(sensors, actuators);
+      DeliverFlagBehaviorNode deliverFlag = new DeliverFlagBehaviorNode(sensors, actuators);
 
       behaviorTree.addChild(avoidWalls);
       behaviorTree.addChild(avoidPredators);
       behaviorTree.addChild(getFood);
       behaviorTree.addChild(goForward);
+      behaviorTree.addChild(deliverFlag);
    }
 
    @Override
@@ -95,29 +97,25 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public void senseDroppedFlag(int flagId)
    {
-      // TODO Auto-generated method stub
-      
+      sensors.senseDroppedFlag(flagId);
    }
 
    @Override
    public void sensePickedUpFlag(int id)
    {
-      // TODO Auto-generated method stub
-      
+      sensors.sensePickedUpFlag(id);
    }
 
    @Override
    public void senseDeliveredFlag(int flagId)
    {
-      // TODO Auto-generated method stub
-      
+      sensors.senseDeliveredFlag(flagId);
    }
 
    @Override
    public void senseCarryingFlag(int flagId)
    {
-      // TODO Auto-generated method stub
-      
+      sensors.senseCarryingFlag(flagId);
    }
 
    @Override

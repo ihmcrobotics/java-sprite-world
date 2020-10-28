@@ -1,21 +1,23 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree;
 
-import java.util.ArrayList;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Point2DReadOnly;
+
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RobotBehaviorSensors
 {
    private final ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFoodInBodyFrame = new ArrayList<Triple<Integer,Point2D,Vector2D>>();
    private final ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators = new ArrayList<>();
    private final ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame = new ArrayList<Pair<Vector2D,Double>>();
-   
+   private ImmutablePair<Point2D, Integer> positionInBodyFrameAndIdOfClosestFlag;
+
    private double heading;
    private double velocity;
    private double globalX = 1.5, globalY = 1.5;
@@ -23,7 +25,12 @@ public class RobotBehaviorSensors
    private double score;
    private double health;
    private double elapsedTime;
-   
+
+   private AtomicInteger sensedDroppedFlag = new AtomicInteger();
+   private AtomicInteger sensedPickedUpFlag = new AtomicInteger();
+   private AtomicInteger sensedDeliveredFlag = new AtomicInteger();
+   private AtomicInteger sensedCarryingFlag = new AtomicInteger();
+
    public ArrayList<Triple<Integer, Point2D, Vector2D>> getLocationOfAllFoodInBodyFrame()
    {
       return locationOfAllFoodInBodyFrame;
@@ -119,8 +126,6 @@ public class RobotBehaviorSensors
       this.vectorsAndDistancesToWallInBodyFrame.addAll(vectorsAndDistancesToWallInBodyFrame);
    }
 
-   private ImmutablePair<Point2D, Integer> positionInBodyFrameAndIdOfClosestFlag;
-   
    public Pair<Point2D, Integer> getPositionInBodyFrameAndIdOfClosestFlag()
    {
       return positionInBodyFrameAndIdOfClosestFlag;
@@ -130,5 +135,44 @@ public class RobotBehaviorSensors
    {
       this.positionInBodyFrameAndIdOfClosestFlag = new ImmutablePair<Point2D, Integer>(positionInBodyFrameAndIdOfClosestFlag.getLeft(), positionInBodyFrameAndIdOfClosestFlag.getRight());
    }
- 
+
+   public void senseDroppedFlag(int flagId)
+   {
+      sensedDroppedFlag.set(flagId);
+   }
+
+   public void sensePickedUpFlag(int id)
+   {
+      sensedPickedUpFlag.set(id);
+   }
+
+   public void senseDeliveredFlag(int flagId)
+   {
+      sensedDeliveredFlag.set(flagId);
+   }
+
+   public void senseCarryingFlag(int flagId)
+   {
+      sensedCarryingFlag.set(flagId);
+   }
+
+   public int pollSensedDroppedFlag()
+   {
+      return sensedDroppedFlag.getAndSet(-1);
+   }
+
+   public int pollSensedPickedUpFlag()
+   {
+      return sensedPickedUpFlag.getAndSet(-1);
+   }
+
+   public int pollSensedDeliveredFlag()
+   {
+      return sensedDeliveredFlag.getAndSet(-1);
+   }
+
+   public int pollSensedCarryingFlag()
+   {
+      return sensedCarryingFlag.getAndSet(-1);
+   }
 }

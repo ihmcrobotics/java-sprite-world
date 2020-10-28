@@ -4,6 +4,9 @@ import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeAction;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeNodeStatus;
+import us.ihmc.javaSpriteWorld.examples.stephen.ObjectResponseDescription;
+import us.ihmc.javaSpriteWorld.examples.stephen.RampedAngularReward;
+import us.ihmc.javaSpriteWorld.examples.stephen.SteeringBasedAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +20,7 @@ public class AvoidPredatorsBehaviorNode  implements BehaviorTreeAction
    private final RobotBehaviorSensors sensors;
    private final RobotBehaviorActuators actuators;
 
-   private static final double rewardScaleWhenBehindRobot = 0.7;
-   private final List<RampedAngularReward> responseDescriptions = new ArrayList<>();
+   private final List<ObjectResponseDescription> responseDescriptions = new ArrayList<>();
    private final double basePredator = 1.75;
    private final double predatorAngularCostRange = Math.toRadians(80.0);
 
@@ -54,78 +56,18 @@ public class AvoidPredatorsBehaviorNode  implements BehaviorTreeAction
          return BehaviorTreeNodeStatus.SUCCESS;
       }
 
-      double angle = -Math.PI;
-      double maxReward = Double.NEGATIVE_INFINITY;
-      double maxRewardHeading = Double.NaN;
+      double maxRewardHeading = SteeringBasedAction.getMaxRewardHeading(responseDescriptions);
 
-      while (angle <= Math.PI)
-      {
-         double reward = 0.0;
-         for (int i = 0; i < responseDescriptions.size(); i++)
-         {
-            reward += responseDescriptions.get(i).getRewardAtAngle(angle);
-         }
-
-         if (reward > maxReward)
-         {
-            maxReward = reward;
-            maxRewardHeading = angle;
-         }
-
-         angle += 0.01;
-      }
-
+      double[] accelerationAndTurnRate = new double[2];
       double velocityWhenAligned = 3.0;
-      double targetVelocity;
-      double angleToStopAndTurn = Math.toRadians(60.0);
-      double deltaDesiredHeading = maxRewardHeading;
-
       double kAcceleration = 3.0;
       double kTurn = 4.0;
-      double acceleration;
 
-      if (Math.abs(deltaDesiredHeading) < angleToStopAndTurn)
-      {
-         targetVelocity = EuclidCoreTools.interpolate(velocityWhenAligned, 0.0, Math.abs(deltaDesiredHeading / angleToStopAndTurn));
-         acceleration = Math.max(kAcceleration * (targetVelocity - sensors.getVelocity()), 0.0);
-      }
-      else
-      {
-         targetVelocity = 0.0;
-         acceleration = kAcceleration * (targetVelocity - sensors.getVelocity());
-      }
+      SteeringBasedAction.computeActionGivenHeading(accelerationAndTurnRate, maxRewardHeading, velocityWhenAligned, kAcceleration, kTurn, sensors.getVelocity());
 
-      actuators.setAcceleration(acceleration);
-      actuators.setTurnRate(kTurn * deltaDesiredHeading);
+      actuators.setAcceleration(accelerationAndTurnRate[0]);
+      actuators.setTurnRate(accelerationAndTurnRate[1]);
 
       return BehaviorTreeNodeStatus.RUNNING;
-   }
-
-   private static class RampedAngularReward
-   {
-      private final double headingOfObjectInBodyFrame;
-      private final double angularRange;
-      private final double rewardWhenFacingObject;
-
-      public RampedAngularReward(double headingOfObjectInBodyFrame, double angularRange, double rewardWhenFacingObject)
-      {
-         this.headingOfObjectInBodyFrame = headingOfObjectInBodyFrame;
-         this.angularRange = angularRange;
-         this.rewardWhenFacingObject = rewardWhenFacingObject;
-      }
-
-      public double getRewardAtAngle(double headingInBodyFrame)
-      {
-         double angularDifference = Math.abs(EuclidCoreTools.angleDifferenceMinusPiToPi(headingInBodyFrame, headingOfObjectInBodyFrame));
-         if (angularDifference > angularRange)
-         {
-            return 0.0;
-         }
-         else
-         {
-            double multiplier = EuclidCoreTools.interpolate(1.0, rewardScaleWhenBehindRobot, Math.abs(headingOfObjectInBodyFrame) / Math.PI);
-            return multiplier * rewardWhenFacingObject * (1.0 - angularDifference / angularRange);
-         }
-      }
    }
 }

@@ -30,7 +30,7 @@ public class BehaviorUtils
       return Math.atan2(-x, y);
    }
 
-   public static void bodyFrameToWorldFrame(Point2DReadOnly bodyFramePoint, Point2DBasics worldFramePointToSet, double heading, Point2D xyPosition)
+   public static void bodyFrameToWorldFrame(Point2DReadOnly bodyFramePoint, Point2DBasics worldFramePointToSet, double heading, Point2DReadOnly xyPosition)
    {
       double relativeWorldVectorX = bodyFramePoint.getX() * Math.cos(heading) - bodyFramePoint.getY() * Math.sin(heading);
       double relativeWorldVectorY = bodyFramePoint.getX() * Math.sin(heading) + bodyFramePoint.getY() * Math.cos(heading);
@@ -39,7 +39,7 @@ public class BehaviorUtils
       worldFramePointToSet.setY(relativeWorldVectorY + xyPosition.getY());
    }
 
-   public static void worldFrameToBodyFrame(Point2DReadOnly worldFramePoint, Point2DBasics bodyFramePointToSet, double heading, Point2D xyPosition)
+   public static void worldFrameToBodyFrame(Point2DReadOnly worldFramePoint, Point2DBasics bodyFramePointToSet, double heading, Point2DReadOnly xyPosition)
    {
       double dx = worldFramePoint.getX() - xyPosition.getX();
       double dy = worldFramePoint.getY() - xyPosition.getY();
