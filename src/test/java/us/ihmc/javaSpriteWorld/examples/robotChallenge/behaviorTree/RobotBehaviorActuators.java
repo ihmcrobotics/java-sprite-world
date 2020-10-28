@@ -4,6 +4,7 @@ public class RobotBehaviorActuators
 {
    private double turnRate;
    private double acceleration;
+   private boolean dropFlag;
    
    public double getTurnRate()
    {
@@ -20,5 +21,15 @@ public class RobotBehaviorActuators
    public void setAcceleration(double acceleration)
    {
       this.acceleration = acceleration;
+   }
+   
+   public boolean getDropFlag()
+   {
+      return dropFlag;
+   }
+   
+   public void setDropFlag(boolean dropFlag)
+   {
+      this.dropFlag = dropFlag;
    }
 }

@@ -133,14 +133,13 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public boolean getDropFlag()
    {
-      // TODO Auto-generated method stub
-      return false;
+      return actuators.getDropFlag();
    }
 
    @Override
    public void senseScoreHealthTime(double score, double health, double elapsedTime)
    {
-      // TODO Auto-generated method stub
+      
       
    }
 
