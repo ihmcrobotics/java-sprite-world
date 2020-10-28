@@ -26,10 +26,10 @@ public class RobotBehaviorSensors
    private double health;
    private double elapsedTime;
 
-   private AtomicInteger sensedDroppedFlag = new AtomicInteger();
-   private AtomicInteger sensedPickedUpFlag = new AtomicInteger();
-   private AtomicInteger sensedDeliveredFlag = new AtomicInteger();
-   private AtomicInteger sensedCarryingFlag = new AtomicInteger();
+   private AtomicInteger sensedDroppedFlag = new AtomicInteger(-1);
+   private AtomicInteger sensedPickedUpFlag = new AtomicInteger(-1);
+   private AtomicInteger sensedDeliveredFlag = new AtomicInteger(-1);
+   private AtomicInteger sensedCarryingFlag = new AtomicInteger(-1);
 
    public ArrayList<Triple<Integer, Point2D, Vector2D>> getLocationOfAllFoodInBodyFrame()
    {

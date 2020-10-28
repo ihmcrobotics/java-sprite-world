@@ -32,7 +32,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       behaviorTree.addChild(avoidWalls);
       behaviorTree.addChild(avoidPredators);
       behaviorTree.addChild(getFood);
-      behaviorTree.addChild(goForward);
+//      behaviorTree.addChild(goForward);
       behaviorTree.addChild(deliverFlag);
    }
 
