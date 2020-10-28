@@ -30,18 +30,32 @@ public class AvoidWallsBehaviorNode implements BehaviorTreeAction
       Vector2D boundaryRepulsion = new Vector2D();
       double boundaryStrength = 3.0;
       double boundaryGraduation = 2.5;
+      double wallDistanceActivationThreshold = 0.2;
+      double closestWallDistance = Double.POSITIVE_INFINITY;
       for (LineSegment2D wall : environment.getWalls())
       {
-         Point2D closest = EuclidGeometryTools.orthogonalProjectionOnLineSegment2D(sensors.getGlobalPosition(),
+         Point2D closestPointOnWall = EuclidGeometryTools.orthogonalProjectionOnLineSegment2D(sensors.getGlobalPosition(),
                                                                                    wall.getFirstEndpoint(),
                                                                                    wall.getSecondEndpoint());
-         boundaryRepulsion.add(fieldVector(closest, sensors.getGlobalPosition(),
-                                           distance -> boundaryStrength / Math.pow(distance, boundaryGraduation)));
+         double wallDistance = sensors.getGlobalPosition().distance(closestPointOnWall);
+         if (wallDistance < closestWallDistance)
+            closestWallDistance = wallDistance;
+
+         if (wallDistance < wallDistanceActivationThreshold)
+         {
+            boundaryRepulsion.add(fieldVector(closestPointOnWall, sensors.getGlobalPosition(),
+                                              distance -> boundaryStrength / Math.pow(distance, boundaryGraduation)));
+         }
       }
 
-
-      lastVelocity = doAttractionVectorControl(sensors, actuators, boundaryRepulsion, lastVelocity, dt);
-
-      return BehaviorTreeNodeStatus.SUCCESS;
+      if (closestWallDistance < wallDistanceActivationThreshold)
+      {
+         lastVelocity = doAttractionVectorControl(sensors, actuators, boundaryRepulsion, lastVelocity, dt);
+         return BehaviorTreeNodeStatus.RUNNING;
+      }
+      else
+      {
+         return BehaviorTreeNodeStatus.SUCCESS;
+      }
    }
 }
