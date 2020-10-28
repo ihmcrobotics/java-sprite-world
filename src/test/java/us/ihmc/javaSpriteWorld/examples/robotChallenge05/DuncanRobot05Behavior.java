@@ -46,11 +46,10 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private AlphaFilter velocityFilter = new AlphaFilter(25.0);
    private AlphaFilter headingFilter = new AlphaFilter(15.0);
 
-   SimulationConstructionSet scs = new SimulationConstructionSet(new Robot("Robot"),
-                                                                 new NullGraphics3DAdapter(),
-                                                                 new SimulationConstructionSetParameters());
+   private final boolean runSCS;
+   private SimulationConstructionSet scs;
    private final YoRegistry yoRegistry = new YoRegistry(getClass().getSimpleName());
-//   private final YoRegistry yoRegistry = scs.getRootRegistry();
+   //   private final YoRegistry yoRegistry = scs.getRootRegistry();
    private final YoDouble headingAngle = new YoDouble("HeadingAngle", yoRegistry);
    private final YoDouble groundTruthHeading = new YoDouble("GroundTruthHeading", yoRegistry);
    private final YoVector2D headingVector = new YoVector2D("HeadingVector", yoRegistry);
@@ -67,6 +66,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    private final List<YoPoint2D> noisyHits = new ArrayList<>();
    private final List<YoVector2D> hitErrors = new ArrayList<>();
    public static final int NUMBER_OF_SENSORS = 9;
+
    {
       for (int i = 0; i < NUMBER_OF_SENSORS; i++)
       {
@@ -77,10 +77,12 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          sensorFilters.add(new AlphaFilter(3.0));
       }
    }
+
    private static final int NUMBER_OF_PREDATORS = 3;
    private final List<YoPoint2D> yoPredators = new ArrayList<>();
    private final List<AlphaFilteredTuple2D> predatorPositionFilters = new ArrayList<>();
    private final List<YoPoint2D> filteredYoPredators = new ArrayList<>();
+
    {
       for (int i = 0; i < NUMBER_OF_PREDATORS; i++)
       {
@@ -90,17 +92,19 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          predatorPositionFilters.add(new AlphaFilteredTuple2D(filtered, 10.0));
       }
    }
-   public static final int NUMBER_OF_FOOD = 10;
+
    private final List<YoPoint2D> yoNoisyFood = new ArrayList<>();
    private final List<YoPoint2D> yoFilteredFood = new ArrayList<>();
    private final Map<Integer, Pair<AlphaFilter, AlphaFilter>> foodFilters = new HashMap<>();
+
    {
-      for (int i = 0; i < NUMBER_OF_FOOD; i++)
+      for (int i = 0; i < getNumberOfFood(); i++)
       {
          yoNoisyFood.add(new YoPoint2D("NoisyFood" + i, yoRegistry));
          yoFilteredFood.add(new YoPoint2D("FilteredFood" + i, yoRegistry));
       }
    }
+
    private final YoVector2D slamCorrection = new YoVector2D("SlamCorrection", yoRegistry);
    private final AlphaFilteredTuple2D slamCorrectionFilter = new AlphaFilteredTuple2D(slamCorrection, 20.0);
    private final YoVector2D boundaryRepulsion = new YoVector2D("BoundaryRepulsion", yoRegistry);
@@ -133,85 +137,92 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
    public DuncanRobot05Behavior()
    {
-      scs.addYoRegistry(yoRegistry);
-      scs.setDT(1.0, 1);
-      scs.setCameraFix(0.4, 0.0, 0.0);
-      GraphArrayWindow predatorGraphs = scs.createNewGraphWindow("Predators");
-      for (int i = 0; i < NUMBER_OF_PREDATORS; i++)
-      {
-         predatorGraphs.setupGraph(new String[] {yoPredators.get(i).getYoX().getName(), filteredYoPredators.get(i).getYoX().getName()});
-         predatorGraphs.setupGraph(new String[] {yoPredators.get(i).getYoY().getName(), filteredYoPredators.get(i).getYoY().getName()});
-      }
-      predatorGraphs.getGraphArrayPanel().addColumn();
-      GraphArrayWindow foodGraphs = scs.createNewGraphWindow("Food");
-      for (int i = 0; i < NUMBER_OF_FOOD; i++)
-      {
-         foodGraphs.setupGraph(new String[] {yoNoisyFood.get(i).getYoX().getName(), yoFilteredFood.get(i).getYoX().getName()});
-         foodGraphs.setupGraph(new String[] {yoNoisyFood.get(i).getYoY().getName(), yoFilteredFood.get(i).getYoY().getName()});
-      }
-      foodGraphs.getGraphArrayPanel().addColumn();
-      GraphArrayWindow sensorGraphs = scs.createNewGraphWindow("Sensors");
-      String[] hitErrorsX = new String[NUMBER_OF_SENSORS];
-      String[] hitErrorsY = new String[NUMBER_OF_SENSORS];
-      for (int i = 0; i < NUMBER_OF_SENSORS; i++)
-      {
-         hitErrorsX[i] = hitErrors.get(i).getYoX().getName();
-         hitErrorsY[i] = hitErrors.get(i).getYoY().getName();
-         sensorGraphs.setupGraph(new String[] {noisyHits.get(i).getYoX().getName(),
-                                 estimatedHits.get(i).getYoX().getName(),
-                                 actualHits.get(i).getYoX().getName()});
-         sensorGraphs.setupGraph(new String[] {noisyHits.get(i).getYoY().getName(),
-                                 estimatedHits.get(i).getYoY().getName(),
-                                 actualHits.get(i).getYoY().getName()});
-      }
-      sensorGraphs.setupGraph(hitErrorsX);
-      sensorGraphs.setupGraph(hitErrorsY);
-      sensorGraphs.getGraphArrayPanel().addColumn();
-      scs.setupGraph(noisyVelocity.getName(), velocity.getName());
-      scs.setupGraph(noisyHeading.getName(), headingAngle.getName(), groundTruthHeading.getName());
-//      scs.setupGraph(headingVector.getYoX().getName());
-//      scs.setupGraph(headingVector.getYoY().getName());
-//      scs.setupGraph(slamCorrection.getYoX().getName());
-//      scs.setupGraph(slamCorrection.getYoY().getName());
-//      scs.setupGraph(boundaryRepulsion.getYoX().getName());
-//      scs.setupGraph(boundaryRepulsion.getYoY().getName());
-//      scs.setupGraph(predatorRepulsion.getYoX().getName());
-//      scs.setupGraph(predatorRepulsion.getYoY().getName());
-//      scs.setupGraph(foodAttraction.getYoX().getName());
-//      scs.setupGraph(foodAttraction.getYoY().getName());
-//      scs.setupGraph(flagField.getYoX().getName());
-//      scs.setupGraph(flagField.getYoY().getName());
-//      scs.setupGraph(attractionVector.getYoX().getName());
-//      scs.setupGraph(attractionVector.getYoY().getName());
-      scs.setupGraph(boundaryRepulsionMagnitude.getName(),
-                     predatorRepulsionMagnitude.getName(),
-                     foodAttractionMagnitude.getName(),
-                     flagFieldMagnitude.getName(),
-                     wanderFieldMagnitude.getName(),
-                     attractionMagnitude.getName());
-      scs.setupGraph(me.getYoX().getName(), me.getYoY().getName(), groundTruthPosition.getYoX().getName(), groundTruthPosition.getYoY().getName());
-      scs.setupGraph(acceleration.getName());
-      scs.setupGraph(turnRate.getName());
-      scs.setupGraph(new String[] {yoClosestFlag.getName(), goal.getName(), goalFlag.getName(), carriedFlag.getName()});
-      scs.setupGraph(distanceToGoal.getName());
-      scs.setupGraph(new String[] {wanderMode.getName(), wandering.getName()});
-      scs.setupGraph(health.getName());
-      scs.setupGraph(score.getName());
-      scs.setupGraph(time.getName());
-      scs.getGUI().getGraphArrayPanel().addColumn();
-      scs.skipLoadingDefaultConfiguration();
-      scs.hideViewport();
-      scs.changeBufferSize(4096);
-      JToggleButton pauseButton = new JToggleButton("Pause");
-      pauseButton.addActionListener(e -> {
-         paused = pauseButton.isSelected();
-         scs.setScrollGraphsEnabled(paused);
-      });
-      scs.addButton(pauseButton);
+      this(true);
+   }
 
-      scs.startOnAThread();
-      while (!scs.hasSimulationThreadStarted())
-         ThreadTools.sleep(200);
+   public DuncanRobot05Behavior(boolean runSCS)
+   {
+      this.runSCS = runSCS;
+      if (runSCS)
+      {
+         scs = new SimulationConstructionSet(new Robot("Robot"), new NullGraphics3DAdapter(), new SimulationConstructionSetParameters());
+         scs.addYoRegistry(yoRegistry);
+         scs.setDT(1.0, 1);
+         scs.setCameraFix(0.4, 0.0, 0.0);
+         GraphArrayWindow predatorGraphs = scs.createNewGraphWindow("Predators");
+         for (int i = 0; i < NUMBER_OF_PREDATORS; i++)
+         {
+            predatorGraphs.setupGraph(new String[] {yoPredators.get(i).getYoX().getName(), filteredYoPredators.get(i).getYoX().getName()});
+            predatorGraphs.setupGraph(new String[] {yoPredators.get(i).getYoY().getName(), filteredYoPredators.get(i).getYoY().getName()});
+         }
+         predatorGraphs.getGraphArrayPanel().addColumn();
+         GraphArrayWindow foodGraphs = scs.createNewGraphWindow("Food");
+         for (int i = 0; i < getNumberOfFood(); i++)
+         {
+            foodGraphs.setupGraph(new String[] {yoNoisyFood.get(i).getYoX().getName(), yoFilteredFood.get(i).getYoX().getName()});
+            foodGraphs.setupGraph(new String[] {yoNoisyFood.get(i).getYoY().getName(), yoFilteredFood.get(i).getYoY().getName()});
+         }
+         foodGraphs.getGraphArrayPanel().addColumn();
+         GraphArrayWindow sensorGraphs = scs.createNewGraphWindow("Sensors");
+         String[] hitErrorsX = new String[NUMBER_OF_SENSORS];
+         String[] hitErrorsY = new String[NUMBER_OF_SENSORS];
+         for (int i = 0; i < NUMBER_OF_SENSORS; i++)
+         {
+            hitErrorsX[i] = hitErrors.get(i).getYoX().getName();
+            hitErrorsY[i] = hitErrors.get(i).getYoY().getName();
+            sensorGraphs.setupGraph(new String[] {noisyHits.get(i).getYoX().getName(), estimatedHits.get(i).getYoX().getName(), actualHits.get(i).getYoX().getName()});
+            sensorGraphs.setupGraph(new String[] {noisyHits.get(i).getYoY().getName(), estimatedHits.get(i).getYoY().getName(), actualHits.get(i).getYoY().getName()});
+         }
+         sensorGraphs.setupGraph(hitErrorsX);
+         sensorGraphs.setupGraph(hitErrorsY);
+         sensorGraphs.getGraphArrayPanel().addColumn();
+         scs.setupGraph(noisyVelocity.getName(), velocity.getName());
+         scs.setupGraph(noisyHeading.getName(), headingAngle.getName(), groundTruthHeading.getName());
+         //      scs.setupGraph(headingVector.getYoX().getName());
+         //      scs.setupGraph(headingVector.getYoY().getName());
+         //      scs.setupGraph(slamCorrection.getYoX().getName());
+         //      scs.setupGraph(slamCorrection.getYoY().getName());
+         //      scs.setupGraph(boundaryRepulsion.getYoX().getName());
+         //      scs.setupGraph(boundaryRepulsion.getYoY().getName());
+         //      scs.setupGraph(predatorRepulsion.getYoX().getName());
+         //      scs.setupGraph(predatorRepulsion.getYoY().getName());
+         //      scs.setupGraph(foodAttraction.getYoX().getName());
+         //      scs.setupGraph(foodAttraction.getYoY().getName());
+         //      scs.setupGraph(flagField.getYoX().getName());
+         //      scs.setupGraph(flagField.getYoY().getName());
+         //      scs.setupGraph(attractionVector.getYoX().getName());
+         //      scs.setupGraph(attractionVector.getYoY().getName());
+         scs.setupGraph(boundaryRepulsionMagnitude.getName(),
+                        predatorRepulsionMagnitude.getName(),
+                        foodAttractionMagnitude.getName(),
+                        flagFieldMagnitude.getName(),
+                        wanderFieldMagnitude.getName(),
+                        attractionMagnitude.getName());
+         scs.setupGraph(me.getYoX().getName(), me.getYoY().getName(), groundTruthPosition.getYoX().getName(), groundTruthPosition.getYoY().getName());
+         scs.setupGraph(acceleration.getName());
+         scs.setupGraph(turnRate.getName());
+         scs.setupGraph(new String[] {yoClosestFlag.getName(), goal.getName(), goalFlag.getName(), carriedFlag.getName()});
+         scs.setupGraph(distanceToGoal.getName());
+         scs.setupGraph(new String[] {wanderMode.getName(), wandering.getName()});
+         scs.setupGraph(health.getName());
+         scs.setupGraph(score.getName());
+         scs.setupGraph(time.getName());
+         scs.getGUI().getGraphArrayPanel().addColumn();
+         scs.skipLoadingDefaultConfiguration();
+         scs.hideViewport();
+         scs.changeBufferSize(4096);
+         JToggleButton pauseButton = new JToggleButton("Pause");
+         pauseButton.addActionListener(e ->
+                                       {
+                                          paused = pauseButton.isSelected();
+                                          scs.setScrollGraphsEnabled(paused);
+                                       });
+         scs.addButton(pauseButton);
+
+         scs.startOnAThread();
+         while (!scs.hasSimulationThreadStarted())
+            ThreadTools.sleep(200);
+      }
    }
 
    @Override
@@ -227,6 +238,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       noisyHeading.set(rawHeading);
       headingAngle.set(headingFilter.filter(rawHeading));
    }
+
    @Override
    public void senseWallRangeInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame)
    {
@@ -288,6 +300,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    {
       LogTools.info("Picked up: {} Going for: {}", id, goalFlag.getValue());
    }
+
    @Override
    public void senseCarryingFlag(int flagId)
    {
@@ -298,7 +311,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    public void senseDeliveredFlag(int flagId)
    {
       LogTools.info("Goal! Flag: {}", flagId);
-      if (goalFlag.getValue() < 5)
+      if (goalFlag.getValue() < getNumberOfFlags())
       {
          goalFlag.add(1);
       }
@@ -343,12 +356,12 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       transform.getRotation().appendYawRotation(headingAngle.getValue());
       transform.transform(headingVector);
 
-      if (!initializedValues) initializeValues();
+      if (!initializedValues)
+         initializeValues();
 
       // 0 heading is y+ (up)
       double dt = 0.01;
-      me.add(dt * velocity.getValue() * headingVector.getX(),
-             dt * velocity.getValue() * headingVector.getY());
+      me.add(dt * velocity.getValue() * headingVector.getX(), dt * velocity.getValue() * headingVector.getY());
 
       double fieldGraduation = 1.5;
       Vector2D mouse = new Vector2D(mousePressedX, mousePressedY);
@@ -365,7 +378,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          Pair<Vector2D, Double> sensor = sensors.get(i);
 
          Vector2D scanRayWorld = bodyToWorld(sensor.getLeft());
-//         Vector2D scanRayWorld = sensor.getLeft();
+         //         Vector2D scanRayWorld = sensor.getLeft();
          Point2D estimatedIntersection = new Point2D();
          double closest = 100.0;
          for (LineSegment2D wall : walls)
@@ -399,8 +412,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          noisyHit.add(noisyHitMovement);
          noisyHits.get(i).set(noisyHit);
 
-         hitErrors.get(i).set(estimatedHits.get(i).getX() - actualHits.get(i).getX(),
-                              estimatedHits.get(i).getY() - actualHits.get(i).getY());
+         hitErrors.get(i).set(estimatedHits.get(i).getX() - actualHits.get(i).getX(), estimatedHits.get(i).getY() - actualHits.get(i).getY());
 
          // should add up the "wrench" of each instead
          slamCorrection.add(hitErrors.get(i));
@@ -423,7 +435,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       {
          predatorRepulsion.add(fieldVector(bodyToWorld(predator.getLeft()), me, distance -> 7.0 / Math.pow(distance, 3.0)));
       }
-//      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
+      //      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
 
       foodAttraction.setToZero();
       for (Triple<Integer, Point2D, Vector2D> food : foods)
@@ -456,15 +468,13 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       wanderField.setToZero();
       if (carriedFlag.getValue() == goalFlag.getValue()) // attract to goal; no flags nearby
       {
-         flagField.add(fieldVector(me, new Point2D(9.0, 9.0), distance ->
+         flagField.add(fieldVector(me, new Point2D(getMapSizeX() * 0.9, getMapSizeY() * 0.9), distance ->
          {
             distanceToGoal.set(distance);
             return 15.0 / Math.pow(distance, 0.5);
          }));
       }
-      else if (closestFlag != null
-               && closestFlag.getRight() != goalFlag.getValue()
-               && predatorRepulsion.length() < 2.0) // looking for a flag i.e. wander
+      else if (closestFlag != null && closestFlag.getRight() != goalFlag.getValue() && predatorRepulsion.length() < 2.0) // looking for a flag i.e. wander
       {
          wandering.set(true);
          int second = (int) Math.floor(time.getValue()) / 7;
@@ -473,19 +483,19 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          switch (wanderMode.getValue())
          {
             case 0:
-               wanderField.add(fieldVector(me, new Point2D(5.0, 5.0), magnitude));
+               wanderField.add(fieldVector(me, new Point2D(getMapSizeX() * 0.5, getMapSizeY() * 0.5), magnitude));
                break;
             case 1:
-               wanderField.add(fieldVector(me, new Point2D(9.0, 9.0), magnitude));
+               wanderField.add(fieldVector(me, new Point2D(getMapSizeX() * 0.9, getMapSizeY() * 0.9), magnitude));
                break;
             case 2:
-               wanderField.add(fieldVector(me, new Point2D(9.0, 1.0), magnitude));
+               wanderField.add(fieldVector(me, new Point2D(getMapSizeX() * 0.9, getMapSizeY() * 0.1), magnitude));
                break;
             case 3:
-               wanderField.add(fieldVector(me, new Point2D(1.0, 1.0), magnitude));
+               wanderField.add(fieldVector(me, new Point2D(getMapSizeX() * 1.0, getMapSizeY() * 0.1), magnitude));
                break;
             default:
-               wanderField.add(fieldVector(me, new Point2D(1.0, 9.0), magnitude));
+               wanderField.add(fieldVector(me, new Point2D(getMapSizeX() * 0.1, getMapSizeY() * 0.9), magnitude));
                break;
          }
       }
@@ -503,8 +513,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       boundaryFilter.filter();
       predatorFilter.filter();
       foodFilter.filter();
-//      attractionVector.add(meToMouse);
-//      attractionVector.add(meToCenter);
+      //      attractionVector.add(meToMouse);
+      //      attractionVector.add(meToCenter);
       attractionVector.add(wanderField);
       attractionVector.add(boundaryRepulsion);
       attractionVector.add(predatorRepulsion);
@@ -534,10 +544,12 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
       double accelerationToReturn = acceleration.getValue();
       double turnRateToReturn = turnRate.getValue();
-      if (Double.isNaN(acceleration.getValue())) accelerationToReturn = 0.0;
-      if (Double.isNaN(turnRate.getValue())) turnRateToReturn = 0.0;
+      if (Double.isNaN(acceleration.getValue()))
+         accelerationToReturn = 0.0;
+      if (Double.isNaN(turnRate.getValue()))
+         turnRateToReturn = 0.0;
 
-      if (!paused)
+      if (runSCS && !paused)
          scs.tickAndUpdate();
 
       return new double[] {accelerationToReturn, turnRateToReturn};
@@ -545,11 +557,31 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 
    protected List<LineSegment2D> getWalls()
    {
-      LineSegment2D left = new LineSegment2D(0.0, 0.0, 0.0, 10.0);
-      LineSegment2D top = new LineSegment2D(0.0, 10.0, 10.0, 10.0);
-      LineSegment2D right = new LineSegment2D(10.0, 10.0, 10.0, 0.0);
-      LineSegment2D bottom = new LineSegment2D(10.0, 0.0, 0.0, 0.0);
+      LineSegment2D left = new LineSegment2D(0.0, 0.0, 0.0, getMapSizeY());
+      LineSegment2D top = new LineSegment2D(0.0, getMapSizeY(), getMapSizeX(), getMapSizeY());
+      LineSegment2D right = new LineSegment2D(getMapSizeX(), getMapSizeY(), getMapSizeX(), 0.0);
+      LineSegment2D bottom = new LineSegment2D(getMapSizeX(), 0.0, 0.0, 0.0);
       return Arrays.asList(left, right, bottom, top);
+   }
+
+   protected int getNumberOfFood()
+   {
+      return 10;
+   }
+
+   protected int getNumberOfFlags()
+   {
+      return 5;
+   }
+
+   protected double getMapSizeX()
+   {
+      return 10.0;
+   }
+
+   protected double getMapSizeY()
+   {
+      return 10.0;
    }
 
    double lastVelocity = 0.0;
@@ -655,7 +687,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public boolean getDropFlag()
    {
-      return ((me.getX() > 8.0) && (me.getY() > 8.0));
+      return ((me.getX() > getMapSizeX() * 0.8) && (me.getY() > getMapSizeY() * 0.8));
    }
 
    @Override
@@ -675,7 +707,8 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
    @Override
    public void exit()
    {
-      scs.closeAndDispose();
+      if (runSCS)
+         scs.closeAndDispose();
    }
 
    @Override
