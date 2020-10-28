@@ -69,8 +69,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public void senseWallRangeInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame)
    {
-      // TODO Auto-generated method stub
-      
+      sensors.setVectorsAndDistancesToWallInBodyFrame(vectorsAndDistancesToWallInBodyFrame);
    }
 
    @Override
@@ -88,8 +87,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public void senseClosestFlagInBodyFrame(Pair<Point2D, Integer> positionInBodyFrameAndIdOfClosestFlag)
    {
-      // TODO Auto-generated method stub
-      
+      sensors.setPositionInBodyFrameAndIdOfClosestFlag(positionInBodyFrameAndIdOfClosestFlag);
    }
 
    @Override

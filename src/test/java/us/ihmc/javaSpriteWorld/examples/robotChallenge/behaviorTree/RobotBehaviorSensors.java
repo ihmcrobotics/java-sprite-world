@@ -2,6 +2,7 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -11,9 +12,10 @@ import us.ihmc.euclid.tuple2D.interfaces.Point2DReadOnly;
 
 public class RobotBehaviorSensors
 {
-   private ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFoodInBodyFrame = new ArrayList<Triple<Integer,Point2D,Vector2D>>();
-   private ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators = new ArrayList<>();
-
+   private final ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFoodInBodyFrame = new ArrayList<Triple<Integer,Point2D,Vector2D>>();
+   private final ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators = new ArrayList<>();
+   private final ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame = new ArrayList<Pair<Vector2D,Double>>();
+   
    private double heading;
    private double velocity;
    private double globalX, globalY;
@@ -104,6 +106,29 @@ public class RobotBehaviorSensors
    public void setElapsedTime(double elapsedTime)
    {
       this.elapsedTime = elapsedTime;
+   }
+
+   public ArrayList<Pair<Vector2D, Double>> getVectorsAndDistancesToWallInBodyFrame()
+   {
+      return vectorsAndDistancesToWallInBodyFrame;
+   }
+
+   public void setVectorsAndDistancesToWallInBodyFrame(ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame)
+   {
+      this.vectorsAndDistancesToWallInBodyFrame.clear();
+      this.vectorsAndDistancesToWallInBodyFrame.addAll(vectorsAndDistancesToWallInBodyFrame);
+   }
+
+   private ImmutablePair<Point2D, Integer> positionInBodyFrameAndIdOfClosestFlag;
+   
+   public Pair<Point2D, Integer> getPositionInBodyFrameAndIdOfClosestFlag()
+   {
+      return positionInBodyFrameAndIdOfClosestFlag;
+   }
+
+   public void setPositionInBodyFrameAndIdOfClosestFlag(Pair<Point2D, Integer> positionInBodyFrameAndIdOfClosestFlag)
+   {
+      this.positionInBodyFrameAndIdOfClosestFlag = new ImmutablePair<Point2D, Integer>(positionInBodyFrameAndIdOfClosestFlag.getLeft(), positionInBodyFrameAndIdOfClosestFlag.getRight());
    }
  
 }
