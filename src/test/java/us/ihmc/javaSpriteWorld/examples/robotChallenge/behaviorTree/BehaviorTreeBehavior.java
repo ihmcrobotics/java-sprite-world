@@ -73,7 +73,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public void senseFoodInBodyFrame(ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFood)
    {
-      sensors.setLocationOfAllFoodInBodyFrame(locationOfAllFood);
+      sensors.setLocationOfAllFood(locationOfAllFood);
    }
 
    @Override
