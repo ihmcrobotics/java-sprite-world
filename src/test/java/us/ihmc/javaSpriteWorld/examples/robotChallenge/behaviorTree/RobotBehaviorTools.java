@@ -1,5 +1,8 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
@@ -38,5 +41,32 @@ public class RobotBehaviorTools
       vector.normalize();
       vector.scale(magnitude.apply(distance));
       return vector;
+   }
+
+   public static double doAttractionVectorControl(RobotBehaviorSensors sensors,
+                                                  RobotBehaviorActuators actuators,
+                                                  Vector2D attraction,
+                                                  double lastVelocity,
+                                                  double dt)
+   {
+      Vector2D headingVector = new Vector2D(0.0, 1.0);
+      RigidBodyTransform transform = new RigidBodyTransform();
+      transform.getRotation().appendYawRotation(sensors.getHeading());
+      transform.transform(headingVector);
+
+      double desiredSpeed = attraction.length();
+      double angleToAttraction = EuclidGeometryTools.angleFromFirstToSecondVector2D(headingVector.getX(),
+                                                                                    headingVector.getY(),
+                                                                                    attraction.getX(),
+                                                                                    attraction.getY());
+
+      double velocity = sensors.getVelocity();
+      actuators.setAcceleration(1.0 * (desiredSpeed - velocity));
+
+      double angularVelocity = (velocity - lastVelocity) / dt;
+      double turnRate = (5.0 * angleToAttraction) + (-0.5 * angularVelocity);
+      actuators.setTurnRate(turnRate);
+
+      return velocity;
    }
 }
