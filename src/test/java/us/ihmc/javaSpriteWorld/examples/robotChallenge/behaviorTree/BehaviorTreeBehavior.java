@@ -22,7 +22,9 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    {
       behaviorTree = new SequenceNode();
       
+      AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, actuators);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
+
       behaviorTree.addChild(getFood);
    }
 
