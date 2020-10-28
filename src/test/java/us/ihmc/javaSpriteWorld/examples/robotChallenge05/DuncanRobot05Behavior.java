@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import us.ihmc.commons.MathTools;
 import us.ihmc.commons.thread.ThreadTools;
 import us.ihmc.euclid.geometry.Line2D;
+import us.ihmc.euclid.geometry.LineSegment2D;
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
 import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
@@ -356,11 +357,7 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       Point2D center = new Point2D(5.0, 5.0);
       Vector2D meToCenter = fieldVector(me, center, distance -> 7.0 * Math.pow(distance, 1.5));
 
-      Line2D left = new Line2D(0.0, 0.0, 0.0, 1.0);
-      Line2D right = new Line2D(10.0, 0.0, 0.0, 1.0);
-      Line2D bottom = new Line2D(0.0, 0.0, 1.0, 0.0);
-      Line2D top = new Line2D(0.0, 10.0, 1.0, 0.0);
-      List<Line2D> walls = Arrays.asList(left, right, bottom, top);
+      List<LineSegment2D> walls = getWalls();
 
       slamCorrection.setToZero();
       for (int i = 0; i < sensors.size(); i++)
@@ -371,17 +368,20 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
 //         Vector2D scanRayWorld = sensor.getLeft();
          Point2D estimatedIntersection = new Point2D();
          double closest = 100.0;
-         for (Line2D wall : walls)
+         for (LineSegment2D wall : walls)
          {
             Point2D potentialEstimatedIntersection = new Point2D();
-            wall.intersectionWith(new Line2D(me, scanRayWorld), potentialEstimatedIntersection);
+            boolean intersects = wall.intersectionWith(new Line2D(me, scanRayWorld), potentialEstimatedIntersection);
 
-            Vector2D toIntersection = new Vector2D();
-            toIntersection.sub(potentialEstimatedIntersection, me);
-            if (toIntersection.dot(scanRayWorld) > 0.0 && potentialEstimatedIntersection.distance(me) < closest)
+            if (intersects)
             {
-               estimatedIntersection = potentialEstimatedIntersection;
-               closest = estimatedIntersection.distance(me);
+               Vector2D toIntersection = new Vector2D();
+               toIntersection.sub(potentialEstimatedIntersection, me);
+               if (toIntersection.dot(scanRayWorld) > 0.0 && potentialEstimatedIntersection.distance(me) < closest)
+               {
+                  estimatedIntersection = potentialEstimatedIntersection;
+                  closest = estimatedIntersection.distance(me);
+               }
             }
          }
 
@@ -412,14 +412,11 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
       boundaryRepulsion.setToZero();
       double boundaryStrength = 3.0;
       double boundaryGraduation = 2.5;
-      Point2D closestLeft = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, left.getPoint(), left.getDirection());
-      Point2D closestRight = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, right.getPoint(), right.getDirection());
-      Point2D closestBottom = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, bottom.getPoint(), bottom.getDirection());
-      Point2D closestTop = EuclidGeometryTools.orthogonalProjectionOnLine2D(me, top.getPoint(), top.getDirection());
-      boundaryRepulsion.add(fieldVector(closestLeft, me, distance -> boundaryStrength / Math.pow(distance, boundaryGraduation)));
-      boundaryRepulsion.add(fieldVector(closestRight, me, distance -> boundaryStrength / Math.pow(distance, boundaryGraduation)));
-      boundaryRepulsion.add(fieldVector(closestBottom, me, distance -> boundaryStrength / Math.pow(distance, boundaryGraduation)));
-      boundaryRepulsion.add(fieldVector(closestTop, me, distance -> boundaryStrength / Math.pow(distance, boundaryGraduation)));
+      for (LineSegment2D wall : walls)
+      {
+         Point2D closest = EuclidGeometryTools.orthogonalProjectionOnLineSegment2D(me, wall.getFirstEndpoint(), wall.getSecondEndpoint());
+         boundaryRepulsion.add(fieldVector(closest, me, distance -> boundaryStrength / Math.pow(distance, boundaryGraduation)));
+      }
 
       predatorRepulsion.setToZero();
       for (Pair<Point2DBasics, Vector2D> predator : predators)
@@ -544,6 +541,15 @@ public class DuncanRobot05Behavior implements Robot05Behavior, Robot06Behavior
          scs.tickAndUpdate();
 
       return new double[] {accelerationToReturn, turnRateToReturn};
+   }
+
+   protected List<LineSegment2D> getWalls()
+   {
+      LineSegment2D left = new LineSegment2D(0.0, 0.0, 0.0, 10.0);
+      LineSegment2D top = new LineSegment2D(0.0, 10.0, 10.0, 10.0);
+      LineSegment2D right = new LineSegment2D(10.0, 10.0, 10.0, 0.0);
+      LineSegment2D bottom = new LineSegment2D(10.0, 0.0, 0.0, 0.0);
+      return Arrays.asList(left, right, bottom, top);
    }
 
    double lastVelocity = 0.0;
