@@ -39,6 +39,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, actuators);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
 
+      behaviorTree.addChild(avoidPredators);
       behaviorTree.addChild(getFood);
       BehaviorTreeAction eatFood = () ->
       {
