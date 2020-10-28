@@ -3,6 +3,7 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge05;
 import java.util.Random;
 
 import us.ihmc.javaSpriteWorld.examples.duncan.DuncanRobot05Behavior;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree.BehaviorTreeBehavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallenge01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
 import us.ihmc.javaSpriteWorld.examples.stephen.StephenRobotBehavior;
@@ -11,7 +12,8 @@ public class RobotChallenge05
 {
    public static void main(String[] args)
    {
-      String player = System.getProperty("player", "Stephen");
+//      String player = System.getProperty("player", "Stephen");
+      String player = System.getProperty("player", "BehaviorTree");
 //      String player = System.getProperty("player", "Simple");
       RobotChallenge01 robotChallenge = createRobotChallenge(player);
 //      robotChallenge.runSimulation();
@@ -58,6 +60,8 @@ public class RobotChallenge05
          simpleBehavior = new DuncanRobot05Behavior();
       else if (player.equals("Stephen"))
          simpleBehavior = new StephenRobotBehavior();
+      else if (player.equals("BehaviorTree"))
+         simpleBehavior = new BehaviorTreeBehavior();
       else
          simpleBehavior = new SimpleRobot05Behavior(xMax, yMax);
       return simpleBehavior;
