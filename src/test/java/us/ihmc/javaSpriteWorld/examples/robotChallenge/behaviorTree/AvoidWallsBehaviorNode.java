@@ -18,7 +18,7 @@ public class AvoidWallsBehaviorNode implements BehaviorTreeAction
    public BehaviorTreeNodeStatus tick()
    {
 
+
       return BehaviorTreeNodeStatus.SUCCESS;
    }
-
 }
