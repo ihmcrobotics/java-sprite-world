@@ -13,16 +13,22 @@ import us.ihmc.javaSpriteWorld.examples.stephen.StephenRobotBehavior;
  */
 public class RobotChallenge06
 {
+   public static final String DEBUG_PLAYER = System.getProperty("player", "Simple");
+   public static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("debug", "false"));
 
    public static void main(String[] args)
    {
-//      String player = System.getProperty("player", "Stephen");
-//      String player = System.getProperty("player", "Simple");
       String[] players = {"Stephen", "Duncan"};
       
       HashMap<String, RobotChallenge01> robotChallenges = new HashMap<String, RobotChallenge01>();
       HashMap<String, double[]> scores = new HashMap<String, double[]>();
-      
+
+      if (DEBUG)
+      {
+         RobotChallenge01 robotChallenge = createRobotChallenge(DEBUG_PLAYER);
+         robotChallenge.runSimulation();
+      }
+
       for (String player : players)
       {
          RobotChallenge01 robotChallenge = createRobotChallenge(player);
