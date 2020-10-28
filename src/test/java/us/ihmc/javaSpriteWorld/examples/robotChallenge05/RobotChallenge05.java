@@ -39,7 +39,7 @@ public class RobotChallenge05
       RobotChallengeRules05 rules = new RobotChallengeRules05(robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), simpleBehavior);      
       robotChallenge.setRobotChallengeRules(rules);
       
-      if (player.equals("Simple"))
+      if (player.equals("Simple") || player.equals("BehaviorTree"))
       {
          rules.setTesting(true);
       }
