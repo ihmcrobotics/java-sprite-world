@@ -3,9 +3,16 @@ package us.ihmc.javaSpriteWorld.examples.duncan;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import us.ihmc.commons.thread.ThreadTools;
+import us.ihmc.euclid.geometry.Line2D;
+import us.ihmc.euclid.geometry.LineSegment2D;
+import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
+import us.ihmc.euclid.transform.RigidBodyTransform;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Point2DBasics;
+import us.ihmc.euclid.tuple2D.interfaces.Point2DReadOnly;
+import us.ihmc.euclid.tuple2D.interfaces.Tuple2DReadOnly;
+import us.ihmc.euclid.tuple2D.interfaces.Vector2DReadOnly;
 import us.ihmc.jMonkeyEngineToolkit.NullGraphics3DAdapter;
 import us.ihmc.simulationconstructionset.Robot;
 import us.ihmc.simulationconstructionset.SimulationConstructionSet;
@@ -23,13 +30,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class DuncansRobotBehavior extends FunctionalRobotBehaviorAdapter
 {
    private final Environment environment;
    private boolean paused = false;
    private boolean initializedValues = false;
-   private double mousePressedX = 5.0, mousePressedY = 5.0;
+   private Point2D mousePressedPosition = new Point2D(1.0, 1.0);
    private ArrayList<Pair<Vector2D, Double>> sensors;
    private ArrayList<Pair<Vector2D, Double>> noisySensors;
    private ArrayList<Triple<Integer, Point2D, Vector2D>> foods;
@@ -38,6 +46,7 @@ public class DuncansRobotBehavior extends FunctionalRobotBehaviorAdapter
 
    private AlphaFilter velocityFilter = new AlphaFilter(25.0);
    private AlphaFilter headingFilter = new AlphaFilter(15.0);
+   double lastVelocity = 0.0; // PD controller
 
    private final boolean runSCS;
    private int numberOfFlags;
@@ -181,6 +190,11 @@ public class DuncansRobotBehavior extends FunctionalRobotBehaviorAdapter
                                         }
                                         yoClosestFlag.set(closestFlag.getRight());
                                      });
+      setSenseMousePressed(mousePressedPosition ->
+                           {
+                              this.mousePressedPosition = mousePressedPosition;
+                           });
+      setGetAccelerationAndTurnRate(this::doControl);
    }
 
    private void setupYoVariables()
@@ -205,6 +219,248 @@ public class DuncansRobotBehavior extends FunctionalRobotBehaviorAdapter
          yoNoisyFood.add(new YoPoint2D("NoisyFood" + i, yoRegistry));
          yoFilteredFood.add(new YoPoint2D("FilteredFood" + i, yoRegistry));
       }
+   }
+
+   private void initializeValues()
+   {
+      initializedValues = true;
+      me.set(1.5, 1.5);
+      goalFlag.set(1);
+      carriedFlag.set(-1);
+   }
+
+   private Pair<Double, Double> doControl()
+   {
+      headingVector.set(0.0, 1.0);
+      RigidBodyTransform transform = new RigidBodyTransform();
+      transform.getRotation().appendYawRotation(headingAngle.getValue());
+      transform.transform(headingVector);
+
+      if (!initializedValues)
+         initializeValues();
+
+      // 0 heading is y+ (up)
+      double dt = 0.01;
+      me.add(dt * velocity.getValue() * headingVector.getX(), dt * velocity.getValue() * headingVector.getY());
+
+      double fieldGraduation = 1.5;
+
+      Vector2D meToMouse = fieldVector(me, mousePressedPosition, distance -> 10.0 * Math.pow(distance, 1.5));
+      Point2D center = new Point2D(5.0, 5.0);
+      Vector2D meToCenter = fieldVector(me, center, distance -> 7.0 * Math.pow(distance, 1.5));
+
+      List<LineSegment2D> walls = environment.getWalls();
+
+      slamCorrection.setToZero();
+      for (int i = 0; i < sensors.size(); i++)
+      {
+         Pair<Vector2D, Double> sensor = sensors.get(i);
+
+         Vector2D scanRayWorld = bodyToWorld(sensor.getLeft());
+         //         Vector2D scanRayWorld = sensor.getLeft();
+         Point2D estimatedIntersection = new Point2D();
+         double closest = 100.0;
+         for (LineSegment2D wall : walls)
+         {
+            Point2D potentialEstimatedIntersection = new Point2D();
+            boolean intersects = wall.intersectionWith(new Line2D(me, scanRayWorld), potentialEstimatedIntersection);
+
+            if (intersects)
+            {
+               Vector2D toIntersection = new Vector2D();
+               toIntersection.sub(potentialEstimatedIntersection, me);
+               if (toIntersection.dot(scanRayWorld) > 0.0 && potentialEstimatedIntersection.distance(me) < closest)
+               {
+                  estimatedIntersection = potentialEstimatedIntersection;
+                  closest = estimatedIntersection.distance(me);
+               }
+            }
+         }
+
+         estimatedHits.get(i).set(estimatedIntersection);
+
+         Point2D actualHit = new Point2D(me);
+         Vector2D hitMovement = new Vector2D(scanRayWorld);
+         hitMovement.scale(sensor.getRight());
+         actualHit.add(hitMovement);
+         actualHits.get(i).set(actualHit);
+
+         Point2D noisyHit = new Point2D(me);
+         Vector2D noisyHitMovement = new Vector2D(scanRayWorld);
+         noisyHitMovement.scale(noisySensors.get(i).getRight());
+         noisyHit.add(noisyHitMovement);
+         noisyHits.get(i).set(noisyHit);
+
+         hitErrors.get(i).set(estimatedHits.get(i).getX() - actualHits.get(i).getX(), estimatedHits.get(i).getY() - actualHits.get(i).getY());
+
+         // should add up the "wrench" of each instead
+         slamCorrection.add(hitErrors.get(i));
+      }
+      slamCorrection.scale(0.01 * 1.0 / NUMBER_OF_SENSORS);
+      slamCorrectionFilter.filter();
+      me.add(slamCorrection);
+
+      boundaryRepulsion.setToZero();
+      double boundaryStrength = 3.0;
+      double boundaryGraduation = 2.5;
+      for (LineSegment2D wall : walls)
+      {
+         Point2D closest = EuclidGeometryTools.orthogonalProjectionOnLineSegment2D(me, wall.getFirstEndpoint(), wall.getSecondEndpoint());
+         boundaryRepulsion.add(fieldVector(closest, me, distance -> boundaryStrength / Math.pow(distance, boundaryGraduation)));
+      }
+
+      predatorRepulsion.setToZero();
+      for (Pair<Point2DBasics, Vector2D> predator : predators)
+      {
+         predatorRepulsion.add(fieldVector(bodyToWorld(predator.getLeft()), me, distance -> 7.0 / Math.pow(distance, 3.0)));
+      }
+      //      predatorRepulsion.scale(1.0 / locationOfAllPredators.size());
+
+      foodAttraction.setToZero();
+      for (Triple<Integer, Point2D, Vector2D> food : foods)
+      {
+         foodAttraction.add(fieldVector(me, bodyToWorld(food.getMiddle()), distance -> 0.5 / Math.pow(distance, 1.5)));
+      }
+
+      attractionVector.setToZero();
+
+      flagField.setToZero();
+      if (closestFlag != null)
+      {
+         if (closestFlag.getRight() == goalFlag.getValue())
+         {
+            if (carriedFlag.getValue() != goalFlag.getValue()) // attract toward next flag to pick up
+            {
+               flagField.add(fieldVector(me, bodyToWorld(closestFlag.getLeft()), distance ->
+               {
+                  distanceToGoal.set(distance);
+                  return 12.0 / Math.pow(distance, fieldGraduation);
+               }));
+            }
+         }
+         else // repulse from out-of-order flag
+         {
+            flagField.add(fieldVector(bodyToWorld(closestFlag.getLeft()), me, distance -> 2.0 / Math.pow(distance, 1.5)));
+         }
+      }
+      wandering.set(false);
+      wanderField.setToZero();
+      if (carriedFlag.getValue() == goalFlag.getValue()) // attract to goal; no flags nearby
+      {
+         flagField.add(fieldVector(me, new Point2D(environment.getMapSizeX() * 0.9, environment.getMapSizeY() * 0.9), distance ->
+         {
+            distanceToGoal.set(distance);
+            return 15.0 / Math.pow(distance, 0.5);
+         }));
+      }
+      else if (closestFlag != null && closestFlag.getRight() != goalFlag.getValue() && predatorRepulsion.length() < 2.0) // looking for a flag i.e. wander
+      {
+         wandering.set(true);
+         int second = (int) Math.floor(time.getValue()) / 7;
+         wanderMode.set(second % 5);
+         Function<Double, Double> magnitude = distance -> 1.0 * Math.pow(distance, 1.0);
+         switch (wanderMode.getValue())
+         {
+            case 0:
+               wanderField.add(fieldVector(me, new Point2D(environment.getMapSizeX() * 0.5, environment.getMapSizeY() * 0.5), magnitude));
+               break;
+            case 1:
+               wanderField.add(fieldVector(me, new Point2D(environment.getMapSizeX() * 0.9, environment.getMapSizeY() * 0.9), magnitude));
+               break;
+            case 2:
+               wanderField.add(fieldVector(me, new Point2D(environment.getMapSizeX() * 0.9, environment.getMapSizeY() * 0.1), magnitude));
+               break;
+            case 3:
+               wanderField.add(fieldVector(me, new Point2D(environment.getMapSizeX() * 1.0, environment.getMapSizeY() * 0.1), magnitude));
+               break;
+            default:
+               wanderField.add(fieldVector(me, new Point2D(environment.getMapSizeX() * 0.1, environment.getMapSizeY() * 0.9), magnitude));
+               break;
+         }
+      }
+      if (carriedFlag.getValue() == goalFlag.getValue())
+      {
+         goal.set(10);
+      }
+      else
+      {
+         goal.set(goalFlag.getValue());
+      }
+      flagFilter.filter();
+      attractionVector.add(flagField);
+
+      boundaryFilter.filter();
+      predatorFilter.filter();
+      foodFilter.filter();
+      //      attractionVector.add(meToMouse);
+      //      attractionVector.add(meToCenter);
+      attractionVector.add(wanderField);
+      attractionVector.add(boundaryRepulsion);
+      attractionVector.add(predatorRepulsion);
+      attractionVector.add(foodAttraction);
+
+      attractionFilter.filter();
+
+      boundaryRepulsionMagnitude.set(boundaryRepulsion.length());
+      predatorRepulsionMagnitude.set(predatorRepulsion.length());
+      foodAttractionMagnitude.set(foodAttraction.length());
+      flagFieldMagnitude.set(flagField.length());
+      wanderFieldMagnitude.set(wanderField.length());
+      attractionMagnitude.set(attractionVector.length());
+
+      double desiredSpeed = attractionVector.length();
+
+      double angleToAttraction = EuclidGeometryTools.angleFromFirstToSecondVector2D(headingVector.getX(),
+                                                                                    headingVector.getY(),
+                                                                                    attractionVector.getX(),
+                                                                                    attractionVector.getY());
+
+      acceleration.set(1.0 * (desiredSpeed - velocity.getValue()));
+
+      double angularVelocity = (velocity.getValue() - lastVelocity) / dt;
+      turnRate.set((5.0 * angleToAttraction) + (-0.5 * angularVelocity));
+      lastVelocity = velocity.getValue();
+
+      double accelerationToReturn = acceleration.getValue();
+      double turnRateToReturn = turnRate.getValue();
+      if (Double.isNaN(acceleration.getValue()))
+         accelerationToReturn = 0.0;
+      if (Double.isNaN(turnRate.getValue()))
+         turnRateToReturn = 0.0;
+
+      if (runSCS && !paused)
+         scs.tickAndUpdate();
+
+      return Pair.of(accelerationToReturn, turnRateToReturn);
+   }
+
+   private Point2D bodyToWorld(Point2DReadOnly pointInBody)
+   {
+      Point2D pointInWorld = new Point2D(pointInBody);
+      RigidBodyTransform transform = new RigidBodyTransform();
+      transform.getRotation().setYawPitchRoll(-headingAngle.getValue(), 0.0, 0.0);
+      pointInWorld.applyInverseTransform(transform);
+      pointInWorld.add(me);
+      return pointInWorld;
+   }
+
+   private Vector2D bodyToWorld(Vector2DReadOnly vectorInBody)
+   {
+      Vector2D vectorInWorld = new Vector2D(vectorInBody);
+      RigidBodyTransform transform = new RigidBodyTransform();
+      transform.getRotation().setYawPitchRoll(-headingAngle.getValue(), 0.0, 0.0);
+      vectorInWorld.applyInverseTransform(transform);
+      return vectorInWorld;
+   }
+
+   private Vector2D fieldVector(Tuple2DReadOnly from, Tuple2DReadOnly to, Function<Double, Double> magnitude)
+   {
+      Vector2D vector = new Vector2D(to);
+      vector.sub(from);
+      double distance = vector.length();
+      vector.normalize();
+      vector.scale(magnitude.apply(distance));
+      return vector;
    }
 
    private void setupSCS()
