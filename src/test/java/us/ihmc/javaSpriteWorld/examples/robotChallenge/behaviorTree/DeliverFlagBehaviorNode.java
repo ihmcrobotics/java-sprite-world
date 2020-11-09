@@ -20,7 +20,7 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
    private static final Random random = new Random(3920);
 
    private final RobotBehaviorSensors sensors;
-   private final RobotBehaviorActuators actuators;
+   private final BehaviorStatusHolder statusHolder;
 
    private final List<ObjectResponseDescription> responseDescriptions = new ArrayList<>();
 
@@ -43,10 +43,10 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
    private final int counterToSwitchExploreArea = 500;
    private final double proximityToExploreAreaToSwitch = 0.4;
 
-   public DeliverFlagBehaviorNode(RobotBehaviorSensors sensors, RobotBehaviorActuators actuators)
+   public DeliverFlagBehaviorNode(RobotBehaviorSensors sensors, BehaviorStatusHolder statusHolder)
    {
       this.sensors = sensors;
-      this.actuators = actuators;
+      this.statusHolder = statusHolder;
 
       for (int i = 0; i < flagLocations.length; i++)
       {
@@ -167,16 +167,13 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
 
       double maxRewardHeading = SteeringBasedAction.getMaxRewardHeading(responseDescriptions);
 
-      double[] accelerationAndTurnRate = new double[2];
       double velocityWhenAligned = 3.0;
       double kAcceleration = 3.0;
       double kTurn = 4.0;
 
-      SteeringBasedAction.computeActionGivenHeading(accelerationAndTurnRate, maxRewardHeading, velocityWhenAligned, kAcceleration, kTurn, sensors.getVelocity());
-
-      actuators.setAcceleration(accelerationAndTurnRate[0]);
-      actuators.setTurnRate(accelerationAndTurnRate[1]);
-      actuators.setDropFlag(getDropFlag());
+      statusHolder.setHasFlag(inDeliverFlagMode);
+      SteeringBasedAction.computeActionGivenHeading(statusHolder.getFlagAction(), maxRewardHeading, velocityWhenAligned, kAcceleration, kTurn, sensors.getVelocity());
+      statusHolder.setDropFlag(getDropFlag());
 
       return BehaviorTreeNodeStatus.RUNNING;
    }

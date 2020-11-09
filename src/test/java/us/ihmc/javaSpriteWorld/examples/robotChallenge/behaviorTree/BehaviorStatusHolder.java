@@ -11,6 +11,7 @@ public class BehaviorStatusHolder
    private final double[] predatorAction = new double[2];
    private final double[] hungerAction = new double[2];
    private final double[] flagAction = new double[2];
+   private boolean dropFlag;
 
    public double getWallWeight()
    {
@@ -50,6 +51,11 @@ public class BehaviorStatusHolder
    public double[] getFlagAction()
    {
       return flagAction;
+   }
+
+   public boolean isDropFlag()
+   {
+      return dropFlag;
    }
 
    public void setWallWeight(double wallWeight)
@@ -94,5 +100,10 @@ public class BehaviorStatusHolder
    {
       flagAction[0] = acceleration;
       flagAction[1] = turnRate;
+   }
+
+   public void setDropFlag(boolean dropFlag)
+   {
+      this.dropFlag = dropFlag;
    }
 }

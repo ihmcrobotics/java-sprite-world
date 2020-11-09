@@ -11,8 +11,10 @@ import static us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree.Robot
 
 public class AvoidWallsBehaviorNode implements BehaviorTreeAction
 {
+   private static double WALL_DISTANCE_ACTIVATION_THRESHOLD = 1.0;
+
    private final RobotBehaviorSensors sensors;
-   private final RobotBehaviorActuators actuators;
+   private final BehaviorStatusHolder statusHolder;
    private double accelerationGain = 1.0;
    private double turnRateGain = 5.0;
    private double turnRateDamping = -0.5;
@@ -21,13 +23,12 @@ public class AvoidWallsBehaviorNode implements BehaviorTreeAction
    private double lastVelocity = 0.0;
    private double boundaryStrength = 3.0;
    private double boundaryGraduation = 2.5;
-   private double wallDistanceActivationThreshold = 1.0;
 
-   public AvoidWallsBehaviorNode(RobotBehaviorSensors sensors, RobotBehaviorActuators actuators, RobotBehaviorEnvironment environment)
+   public AvoidWallsBehaviorNode(RobotBehaviorSensors sensors, RobotBehaviorEnvironment environment, BehaviorStatusHolder statusHolder)
    {
       this.sensors = sensors;
-      this.actuators = actuators;
       this.environment = environment;
+      this.statusHolder = statusHolder;
    }
 
    @Override
@@ -44,18 +45,17 @@ public class AvoidWallsBehaviorNode implements BehaviorTreeAction
          if (wallDistance < closestWallDistance)
             closestWallDistance = wallDistance;
 
-         if (wallDistance < wallDistanceActivationThreshold)
+         if (wallDistance < WALL_DISTANCE_ACTIVATION_THRESHOLD)
          {
             boundaryRepulsion.add(fieldVector(closestPointOnWall, sensors.getGlobalPosition(),
                                               distance -> boundaryStrength / Math.pow(distance, boundaryGraduation)));
          }
       }
 
-      if (closestWallDistance < wallDistanceActivationThreshold)
-      {
-         lastVelocity = doAttractionVectorControl(sensors, actuators, boundaryRepulsion, lastVelocity, dt, accelerationGain, turnRateGain, turnRateDamping);
-         return BehaviorTreeNodeStatus.RUNNING;
-      }
+      boolean enable = closestWallDistance < WALL_DISTANCE_ACTIVATION_THRESHOLD;
+
+      statusHolder.setWallWeight(enable ? 1.0 : 0.0);
+      lastVelocity = doAttractionVectorControl(sensors, statusHolder.getWallAction(), boundaryRepulsion, lastVelocity, dt, accelerationGain, turnRateGain, turnRateDamping);
 
       return BehaviorTreeNodeStatus.SUCCESS;
    }
@@ -87,6 +87,6 @@ public class AvoidWallsBehaviorNode implements BehaviorTreeAction
 
    public void setWallDistanceActivationThreshold(double wallDistanceActivationThreshold)
    {
-      this.wallDistanceActivationThreshold = wallDistanceActivationThreshold;
+      this.WALL_DISTANCE_ACTIVATION_THRESHOLD = wallDistanceActivationThreshold;
    }
 }

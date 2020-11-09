@@ -18,7 +18,7 @@ public class AvoidPredatorsBehaviorNode  implements BehaviorTreeAction
    public static final double PREDATOR_PROXIMITY_TO_ACTIVATE = 2.0;
    
    private final RobotBehaviorSensors sensors;
-   private final RobotBehaviorActuators actuators;
+   private final BehaviorStatusHolder statusHolder;
 
    private final List<ObjectResponseDescription> responseDescriptions = new ArrayList<>();
    private final double basePredator = 1.75;
@@ -27,10 +27,10 @@ public class AvoidPredatorsBehaviorNode  implements BehaviorTreeAction
    private final double predWeight = 1.0;
    private final double currentHeadingWeight = 0.1;
 
-   public AvoidPredatorsBehaviorNode(RobotBehaviorSensors sensors, RobotBehaviorActuators actuators)
+   public AvoidPredatorsBehaviorNode(RobotBehaviorSensors sensors, BehaviorStatusHolder statusHolder)
    {
       this.sensors = sensors;
-      this.actuators = actuators;
+      this.statusHolder = statusHolder;
    }
 
    @Override
@@ -56,22 +56,15 @@ public class AvoidPredatorsBehaviorNode  implements BehaviorTreeAction
 
       responseDescriptions.add(new RampedAngularReward(0.0, Math.PI, currentHeadingWeight));
 
-      if (closestPredatorDistance > PREDATOR_PROXIMITY_TO_ACTIVATE)
-      {
-         return BehaviorTreeNodeStatus.SUCCESS;
-      }
-
+      boolean enable = closestPredatorDistance < PREDATOR_PROXIMITY_TO_ACTIVATE;
       double maxRewardHeading = SteeringBasedAction.getMaxRewardHeading(responseDescriptions);
 
-      double[] accelerationAndTurnRate = new double[2];
       double velocityWhenAligned = 3.0;
       double kAcceleration = 3.0;
       double kTurn = 4.0;
 
-      SteeringBasedAction.computeActionGivenHeading(accelerationAndTurnRate, maxRewardHeading, velocityWhenAligned, kAcceleration, kTurn, sensors.getVelocity());
-
-      actuators.setAcceleration(accelerationAndTurnRate[0]);
-      actuators.setTurnRate(accelerationAndTurnRate[1]);
+      statusHolder.setPredatorWeight(enable ? 1.0 : 0.0);
+      SteeringBasedAction.computeActionGivenHeading(statusHolder.getPredatorAction(), maxRewardHeading, velocityWhenAligned, kAcceleration, kTurn, sensors.getVelocity());
 
       return BehaviorTreeNodeStatus.RUNNING;
    }

@@ -13,7 +13,7 @@ import us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeNodeStatus;
 public class GetFoodBehaviorNode implements BehaviorTreeAction
 {
    private final RobotBehaviorSensors sensors;
-   private final RobotBehaviorActuators actuators;
+   private final BehaviorStatusHolder statusHolder;
    private double accelerationGain = 1.0;
    private double turnRateGain = 5.0;
    private double turnRateDamping = -0.5;
@@ -30,17 +30,17 @@ public class GetFoodBehaviorNode implements BehaviorTreeAction
    private double dt = 0.01;
    private double lastVelocity = 0.0; // PD controller
 
-   public GetFoodBehaviorNode(RobotBehaviorSensors sensors, RobotBehaviorActuators actuators)
+   public GetFoodBehaviorNode(RobotBehaviorSensors sensors, BehaviorStatusHolder statusHolder)
    {
       this.sensors = sensors;
-      this.actuators = actuators;
+      this.statusHolder = statusHolder;
    }
 
    @Override
    public BehaviorTreeNodeStatus tick()
    {
-      if (notHungry()) return BehaviorTreeNodeStatus.SUCCESS;
-      
+      boolean notHungry = notHungry();
+
       Triple<Integer, Point2D, Vector2D> closestFood = null;
       double closestDistance = Double.POSITIVE_INFINITY;
       for (Triple<Integer, Point2D, Vector2D> food : sensors.getLocationOfAllFoodInBodyFrame())
@@ -53,9 +53,8 @@ public class GetFoodBehaviorNode implements BehaviorTreeAction
             closestFood = food;
          }
       }
-      
-      if (notHungryEnoughToChaseDownClosestFood(closestDistance))
-         return BehaviorTreeNodeStatus.SUCCESS;
+
+      boolean notHungryEnoughToChaseDownClosestFood = notHungryEnoughToChaseDownClosestFood(closestDistance);
 
       double finalClosestDistance = closestDistance;
       Vector2D attraction = RobotBehaviorTools.fieldVector(sensors.getGlobalPosition(),
@@ -65,7 +64,8 @@ public class GetFoodBehaviorNode implements BehaviorTreeAction
       attraction.normalize();
       attraction.scale(getFoodAttractionVectorConstantLength);
 
-      lastVelocity = doAttractionVectorControl(sensors, actuators, attraction, lastVelocity, dt, accelerationGain, turnRateGain, turnRateDamping);
+      statusHolder.setHungerWeight((notHungry || notHungryEnoughToChaseDownClosestFood) ? 0.0 : 1.0);
+      lastVelocity = doAttractionVectorControl(sensors, statusHolder.getHungerAction(), attraction, lastVelocity, dt, accelerationGain, turnRateGain, turnRateDamping);
 
       return BehaviorTreeNodeStatus.RUNNING;
    }

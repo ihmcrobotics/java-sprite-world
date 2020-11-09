@@ -25,11 +25,13 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       int challengeNumber = 5;
       RobotBehaviorEnvironment environment = new RobotBehaviorEnvironment(challengeNumber);
 
-      AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, actuators, environment);
-      AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, actuators);
-      GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
+      BehaviorStatusHolder statusHolder = new BehaviorStatusHolder();
+
+      AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, environment, statusHolder);
+      AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, statusHolder);
+      GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, statusHolder);
       GoForwardBehaviorNode goForward = new GoForwardBehaviorNode(sensors, actuators);
-      deliverFlag = new DeliverFlagBehaviorNode(sensors, actuators);
+      deliverFlag = new DeliverFlagBehaviorNode(sensors, statusHolder);
       HighLevelDeciderNode highLevelDecider = new HighLevelDeciderNode(statusHolder, actuators);
 
       behaviorTree.addChild(avoidWalls);

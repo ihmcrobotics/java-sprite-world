@@ -42,7 +42,7 @@ public class RobotBehaviorTools
    }
 
    public static double doAttractionVectorControl(RobotBehaviorSensors sensors,
-                                                  RobotBehaviorActuators actuators,
+                                                  double[] accelerationAndTurnRate,
                                                   Vector2D attraction,
                                                   double lastVelocity,
                                                   double dt,
@@ -62,11 +62,11 @@ public class RobotBehaviorTools
                                                                                     attraction.getY());
 
       double velocity = sensors.getVelocity();
-      actuators.setAcceleration(accelerationGain * (desiredSpeed - velocity));
+      accelerationAndTurnRate[0] = accelerationGain * (desiredSpeed - velocity);
 
       double angularVelocity = (velocity - lastVelocity) / dt;
       double turnRate = (turnRateGain * angleToAttraction) + (turnRateDamping * angularVelocity);
-      actuators.setTurnRate(turnRate);
+      accelerationAndTurnRate[1] = turnRate;
 
       return velocity;
    }
