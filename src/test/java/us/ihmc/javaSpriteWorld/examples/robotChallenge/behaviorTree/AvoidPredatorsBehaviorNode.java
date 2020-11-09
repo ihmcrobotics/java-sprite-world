@@ -66,6 +66,6 @@ public class AvoidPredatorsBehaviorNode  implements BehaviorTreeAction
       statusHolder.setPredatorWeight(enable ? 1.0 : 0.0);
       SteeringBasedAction.computeActionGivenHeading(statusHolder.getPredatorAction(), maxRewardHeading, velocityWhenAligned, kAcceleration, kTurn, sensors.getVelocity());
 
-      return BehaviorTreeNodeStatus.RUNNING;
+      return BehaviorTreeNodeStatus.SUCCESS;
    }
 }

@@ -175,7 +175,7 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
       SteeringBasedAction.computeActionGivenHeading(statusHolder.getFlagAction(), maxRewardHeading, velocityWhenAligned, kAcceleration, kTurn, sensors.getVelocity());
       statusHolder.setDropFlag(getDropFlag());
 
-      return BehaviorTreeNodeStatus.RUNNING;
+      return BehaviorTreeNodeStatus.SUCCESS;
    }
 
    private void computeGoToFlagReward(Tuple2DReadOnly flagInBodyFrame, double reward)

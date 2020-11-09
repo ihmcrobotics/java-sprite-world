@@ -67,7 +67,7 @@ public class GetFoodBehaviorNode implements BehaviorTreeAction
       statusHolder.setHungerWeight((notHungry || notHungryEnoughToChaseDownClosestFood) ? 0.0 : 1.0);
       lastVelocity = doAttractionVectorControl(sensors, statusHolder.getHungerAction(), attraction, lastVelocity, dt, accelerationGain, turnRateGain, turnRateDamping);
 
-      return BehaviorTreeNodeStatus.RUNNING;
+      return BehaviorTreeNodeStatus.SUCCESS;
    }
 
    private boolean notHungryEnoughToChaseDownClosestFood(double closestDistance)
