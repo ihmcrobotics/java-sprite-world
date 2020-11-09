@@ -12,6 +12,7 @@ public class BehaviorStatusHolder
    private final double[] hungerAction = new double[2];
    private final double[] flagAction = new double[2];
    private boolean dropFlag;
+   private boolean trapped;
 
    public double getWallWeight()
    {
@@ -105,5 +106,10 @@ public class BehaviorStatusHolder
    public void setDropFlag(boolean dropFlag)
    {
       this.dropFlag = dropFlag;
+   }
+
+   public void setTrapped()
+   {
+      this.trapped = true;
    }
 }
