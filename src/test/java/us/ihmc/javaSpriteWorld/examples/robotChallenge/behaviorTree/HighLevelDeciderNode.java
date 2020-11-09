@@ -21,7 +21,7 @@ public class HighLevelDeciderNode implements BehaviorTreeAction
           && statusHolder.getWallWeight() > 0.5
           && !calculateSimilar(statusHolder.getWallAction(), statusHolder.getPredatorAction()))
       {
-         statusHolder.setTrapped();
+         statusHolder.setTrapped(true);
          return BehaviorTreeNodeStatus.SUCCESS;
       }
 

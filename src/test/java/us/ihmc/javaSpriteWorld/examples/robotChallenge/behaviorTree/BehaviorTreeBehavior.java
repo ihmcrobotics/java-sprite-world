@@ -33,6 +33,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       GoForwardBehaviorNode goForward = new GoForwardBehaviorNode(sensors, actuators);
       deliverFlag = new DeliverFlagBehaviorNode(sensors, statusHolder);
       HighLevelDeciderNode highLevelDecider = new HighLevelDeciderNode(statusHolder, actuators);
+      TrappedNode trapped = new TrappedNode(statusHolder, actuators);
 
       behaviorTree.addChild(avoidWalls);
       behaviorTree.addChild(avoidPredators);
@@ -40,6 +41,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
 //      behaviorTree.addChild(goForward);
       behaviorTree.addChild(deliverFlag);
       behaviorTree.addChild(highLevelDecider);
+      behaviorTree.addChild(trapped);
    }
 
    @Override

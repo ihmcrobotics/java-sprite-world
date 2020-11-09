@@ -108,8 +108,13 @@ public class BehaviorStatusHolder
       this.dropFlag = dropFlag;
    }
 
-   public void setTrapped()
+   public void setTrapped(boolean trapped)
    {
-      this.trapped = true;
+      this.trapped = trapped;
+   }
+
+   public boolean isTrapped()
+   {
+      return trapped;
    }
 }
