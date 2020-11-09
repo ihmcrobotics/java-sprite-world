@@ -42,6 +42,8 @@ public class HighLevelDeciderNode implements BehaviorTreeAction
          actuators.setTurnRate(flagAction[1]);
       }
 
+      actuators.setDropFlag(statusHolder.isDropFlag());
+
       return BehaviorTreeNodeStatus.SUCCESS;
    }
 }
