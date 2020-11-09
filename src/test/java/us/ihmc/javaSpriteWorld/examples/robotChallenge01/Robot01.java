@@ -124,6 +124,8 @@ public class Robot01 implements RobotChallengeRobot
    {
       setX(1.5);
       setY(1.5);
+      setXDot(0.0);
+      setYDot(0.0);
    }
 
    @Override

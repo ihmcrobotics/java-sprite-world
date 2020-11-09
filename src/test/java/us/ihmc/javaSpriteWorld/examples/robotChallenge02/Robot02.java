@@ -157,6 +157,8 @@ public class Robot02 implements RobotChallengeRobot
       setY(1.5);
       setVelocity(0.0);
       setHeading(0.0);
+      setTurnRate(0.0);
+      setAcceleration(0.0);
    }
 
    @Override
