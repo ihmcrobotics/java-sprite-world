@@ -30,12 +30,14 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
       GoForwardBehaviorNode goForward = new GoForwardBehaviorNode(sensors, actuators);
       deliverFlag = new DeliverFlagBehaviorNode(sensors, actuators);
+      HighLevelDeciderNode highLevelDecider = new HighLevelDeciderNode(statusHolder, actuators);
 
       behaviorTree.addChild(avoidWalls);
       behaviorTree.addChild(avoidPredators);
       behaviorTree.addChild(getFood);
 //      behaviorTree.addChild(goForward);
       behaviorTree.addChild(deliverFlag);
+      behaviorTree.addChild(highLevelDecider);
    }
 
    @Override
