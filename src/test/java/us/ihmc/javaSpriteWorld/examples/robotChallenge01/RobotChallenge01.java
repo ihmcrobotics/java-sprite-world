@@ -33,6 +33,10 @@ public class RobotChallenge01
    private final SpriteWorld spriteWorld;
    private final SpriteStage stage;
    private final RobotChallengeRobot robot;
+
+   private final TextBoxSprite healthSprite;
+   private final TextBoxSprite scoreSprite;
+
    private final FoodList01 foodList;
    private final PredatorList01 predatorList;
    private final FlagList flagList;
@@ -85,6 +89,23 @@ public class RobotChallenge01
       //      stage.addBackdrop(backgammonBoardBackdrop);
       //      spriteWorld.setStage(stage, true);
 
+      int fontSize = 28;
+      int relativeWidth = 8;
+      double height = yMax * 0.04;
+      
+      healthSprite = new TextBoxSprite("Health", height, fontSize, relativeWidth);
+      healthSprite.setX(xMax * 0.05);
+      healthSprite.setY(yMax * 1.01);
+      healthSprite.setText(" ");
+      
+      scoreSprite = new TextBoxSprite("Score", height, fontSize, relativeWidth);
+      scoreSprite.setX(xMax * 0.05);
+      scoreSprite.setY(yMax * 1.05);
+      scoreSprite.setText(" ");
+
+      spriteWorld.addSprite(healthSprite);
+      spriteWorld.addSprite(scoreSprite);
+      
       spriteWorld.addSprite(robot.getSprite());      
 
       collisionGroup = new SpriteCollisionGroup();
@@ -366,10 +387,12 @@ public class RobotChallenge01
 
          if (time > timeForNextUpdate)
          {
-            System.out.println("Score = " + score + ", health = " + robot.getHealth() + ", time = " + time);
-            timeForNextUpdate = time + 10.0;
+            timeForNextUpdate = time + 0.5;
+
+            healthSprite.setText("Health: " + String.format("%2.2f", robot.getHealth()));
+            scoreSprite.setText("Score: " + this.getScore());
          }
-            
+         
          if (robot.getHealth() < 5.0)
             break;
          

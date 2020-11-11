@@ -118,7 +118,7 @@ public class Sprite
    {
 	   return name;
    }
-   
+
    public synchronized int addCostume(String filename)
    {
       SpriteCostume costume = SpriteCostume.createFromFile(filename);
@@ -126,7 +126,13 @@ public class Sprite
 
       return -1;
    }
-   
+
+   public synchronized void clearCostumes()
+   {
+      this.costumeNumber = -1;
+      this.costumes.clear();
+   }
+
    public synchronized int addCostume(SpriteCostume spriteCostume)
    {
       costumes.add(spriteCostume);
