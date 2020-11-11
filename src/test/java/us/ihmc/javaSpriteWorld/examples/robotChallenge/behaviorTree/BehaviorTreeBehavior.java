@@ -42,14 +42,14 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       HighLevelDeciderNode highLevelDecider = new HighLevelDeciderNode(statusHolder, actuators);
       TrappedActionNode trappedAction = new TrappedActionNode(statusHolder, actuators);
 
-      evaluationTree.addChild(trappedEvaluation);
+//      evaluationTree.addChild(trappedEvaluation);
       evaluationTree.addChild(avoidWalls);
       evaluationTree.addChild(avoidPredators);
       evaluationTree.addChild(getFood);
       evaluationTree.addChild(deliverFlag);
 
       decisionTree.addChild(highLevelDecider);
-      decisionTree.addChild(trappedAction);
+//      decisionTree.addChild(trappedAction);
 //      decisionTree.addChild(goForward);
    }
 
@@ -145,7 +145,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public double[] getAccelerationAndTurnRate()
    {
-      evaluationTree.tick();
+      behaviorTree.tick();
       return new double[] {actuators.getAcceleration(), actuators.getTurnRate()};
    }
 
