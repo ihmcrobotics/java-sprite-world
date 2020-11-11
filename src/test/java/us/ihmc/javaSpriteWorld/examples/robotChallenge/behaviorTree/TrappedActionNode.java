@@ -1,7 +1,9 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree;
 
+import us.ihmc.commons.Conversions;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeAction;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeNodeStatus;
+import us.ihmc.log.LogTools;
 
 public class TrappedActionNode implements BehaviorTreeAction
 {
@@ -17,10 +19,9 @@ public class TrappedActionNode implements BehaviorTreeAction
    @Override
    public BehaviorTreeNodeStatus tick()
    {
-      if (statusHolder.isTrapped())
+      if (System.nanoTime() - statusHolder.getTrappedTime() < Conversions.secondsToNanoseconds(1.0))
       {
-         statusHolder.setTrapped(false);
-
+         // TODO
          // do a persistent travel backwards thing
       }
 

@@ -33,7 +33,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
 
       BehaviorStatusHolder statusHolder = new BehaviorStatusHolder();
 
-      TrappedEvaluationNode trappedEvaluation = new TrappedEvaluationNode();
+      TrappedEvaluationNode trappedEvaluation = new TrappedEvaluationNode(statusHolder);
       AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, environment, statusHolder);
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, statusHolder);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, statusHolder);
@@ -42,7 +42,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       HighLevelDeciderNode highLevelDecider = new HighLevelDeciderNode(statusHolder, actuators);
       TrappedActionNode trappedAction = new TrappedActionNode(statusHolder, actuators);
 
-//      evaluationTree.addChild(trappedEvaluation);
+      evaluationTree.addChild(trappedEvaluation);
       evaluationTree.addChild(avoidWalls);
       evaluationTree.addChild(avoidPredators);
       evaluationTree.addChild(getFood);
