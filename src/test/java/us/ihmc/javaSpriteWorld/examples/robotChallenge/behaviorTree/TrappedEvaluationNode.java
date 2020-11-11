@@ -18,11 +18,12 @@ public class TrappedEvaluationNode implements BehaviorTreeNode
    @Override
    public BehaviorTreeNodeStatus tick()
    {
-      if (statusHolder.getPredatorWeight() > 0.5
+      if (!statusHolder.isTrapped()
+          && statusHolder.getPredatorWeight() > 0.5
           && statusHolder.getWallWeight() > 0.5
           && !calculateSimilar(statusHolder.getWallAction(), statusHolder.getPredatorAction()))
       {
-         statusHolder.setTrapped(System.nanoTime());
+         statusHolder.setTrapped(System.nanoTime(), sensors.getHeading());
          LogTools.info("Trapped!");
       }
 

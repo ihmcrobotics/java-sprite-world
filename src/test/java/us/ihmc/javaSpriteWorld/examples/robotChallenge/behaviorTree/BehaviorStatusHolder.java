@@ -1,5 +1,7 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree;
 
+import us.ihmc.commons.Conversions;
+
 public class BehaviorStatusHolder
 {
    private double wallWeight;
@@ -13,6 +15,7 @@ public class BehaviorStatusHolder
    private final double[] flagAction = new double[2];
    private boolean dropFlag;
    private long trappedTime;
+   private double trappedHeading;
 
    public double getWallWeight()
    {
@@ -108,13 +111,24 @@ public class BehaviorStatusHolder
       this.dropFlag = dropFlag;
    }
 
-   public void setTrapped(long trappedTime)
+   public void setTrapped(long trappedTime, double heading)
    {
       this.trappedTime = trappedTime;
+      this.trappedHeading = heading;
    }
 
    public long getTrappedTime()
    {
       return trappedTime;
+   }
+
+   public double getTrappedHeading()
+   {
+      return trappedHeading;
+   }
+
+   public boolean isTrapped()
+   {
+      return System.nanoTime() - trappedTime < Conversions.secondsToNanoseconds(1.0);
    }
 }
