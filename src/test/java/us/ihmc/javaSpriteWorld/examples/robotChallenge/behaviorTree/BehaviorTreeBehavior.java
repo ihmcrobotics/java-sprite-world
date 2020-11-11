@@ -13,6 +13,8 @@ import us.ihmc.javaSpriteWorld.examples.robotChallenge05.Robot05Behavior;
 public class BehaviorTreeBehavior implements Robot05Behavior
 {
    private final SequenceNode behaviorTree;
+   private final SequenceNode evaluationTree;
+   private final SequenceNode decisionTree;
    private final RobotBehaviorActuators actuators = new RobotBehaviorActuators();
    private final RobotBehaviorSensors sensors = new RobotBehaviorSensors();
 
@@ -21,27 +23,34 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    public BehaviorTreeBehavior()
    {
       behaviorTree = new SequenceNode();
+      evaluationTree = new SequenceNode();
+      decisionTree = new SequenceNode();
+      behaviorTree.addChild(evaluationTree);
+      behaviorTree.addChild(decisionTree);
 
       int challengeNumber = 5;
       RobotBehaviorEnvironment environment = new RobotBehaviorEnvironment(challengeNumber);
 
       BehaviorStatusHolder statusHolder = new BehaviorStatusHolder();
 
+      TrappedEvaluationNode trappedEvaluation = new TrappedEvaluationNode();
       AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, environment, statusHolder);
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, statusHolder);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, statusHolder);
       GoForwardBehaviorNode goForward = new GoForwardBehaviorNode(sensors, actuators);
       deliverFlag = new DeliverFlagBehaviorNode(sensors, statusHolder);
       HighLevelDeciderNode highLevelDecider = new HighLevelDeciderNode(statusHolder, actuators);
-      TrappedNode trapped = new TrappedNode(statusHolder, actuators);
+      TrappedActionNode trappedAction = new TrappedActionNode(statusHolder, actuators);
 
-      behaviorTree.addChild(avoidWalls);
-      behaviorTree.addChild(avoidPredators);
-      behaviorTree.addChild(getFood);
-//      behaviorTree.addChild(goForward);
-      behaviorTree.addChild(deliverFlag);
-      behaviorTree.addChild(highLevelDecider);
-      behaviorTree.addChild(trapped);
+      evaluationTree.addChild(trappedEvaluation);
+      evaluationTree.addChild(avoidWalls);
+      evaluationTree.addChild(avoidPredators);
+      evaluationTree.addChild(getFood);
+      evaluationTree.addChild(deliverFlag);
+
+      decisionTree.addChild(highLevelDecider);
+      decisionTree.addChild(trappedAction);
+//      decisionTree.addChild(goForward);
    }
 
    @Override
@@ -136,7 +145,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public double[] getAccelerationAndTurnRate()
    {
-      behaviorTree.tick();
+      evaluationTree.tick();
       return new double[] {actuators.getAcceleration(), actuators.getTurnRate()};
    }
 
