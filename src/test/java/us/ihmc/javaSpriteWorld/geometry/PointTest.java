@@ -1,11 +1,9 @@
 package us.ihmc.javaSpriteWorld.geometry;
 
-import static us.ihmc.robotics.Assert.*;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import us.ihmc.javaSpriteWorld.geometry.Point;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("gui")
 public class PointTest
@@ -21,20 +19,23 @@ public class PointTest
       double rotation = 0.0;
       
       point.transform(false, false, xTranslation, yTranslation, rotation);
-      
-      assertEquals(point.getX(), 3.5, 1e-7);
-      assertEquals(point.getY(), 6.1, 1e-7);
-      
-      
+
+      double expected3 = point.getX();
+      assertEquals(expected3, 3.5, 1e-7);
+      double expected2 = point.getY();
+      assertEquals(expected2, 6.1, 1e-7);
+
       point.set(1.0, 0.0);
       
       xTranslation = 0.0;
       yTranslation = 0.0;
       rotation = Math.PI/2.0;
       point.transform(false, false, xTranslation, yTranslation, rotation);
-      
-      assertEquals(point.getX(), 0.0, 1e-7);
-      assertEquals(point.getY(), 1.0, 1e-7);
+
+      double expected1 = point.getX();
+      assertEquals(expected1, 0.0, 1e-7);
+      double expected = point.getY();
+      assertEquals(expected, 1.0, 1e-7);
    }
 
 }

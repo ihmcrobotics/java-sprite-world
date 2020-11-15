@@ -1,17 +1,16 @@
 package us.ihmc.javaSpriteWorld;
 
-import static us.ihmc.robotics.Assert.*;
-
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import us.ihmc.javaSpriteWorld.Sprite;
 import us.ihmc.javaSpriteWorld.geometry.AxisAlignedBoundingBox2D;
 import us.ihmc.javaSpriteWorld.geometry.ConvexPolygon;
 import us.ihmc.javaSpriteWorld.geometry.ConvexPolygonIntersectionDetector;
 import us.ihmc.javaSpriteWorld.geometry.Point;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("gui")
 public class SpriteTest
@@ -45,17 +44,20 @@ public class SpriteTest
       ConvexPolygonIntersectionDetector intersectionDetector = new ConvexPolygonIntersectionDetector();
       boolean arePolygonsIntersecting = intersectionDetector.arePolygonsIntersecting(collisionPolygonsOne.get(0), collisionPolygonsOne.get(0));
       assertTrue(arePolygonsIntersecting);
-      
+
       spriteOne.setRotationInDegrees(90.0);
-      
-      
-      assertEquals(90.0, spriteOne.getRotationInDegrees(), 1e-7);
-      assertEquals(Math.PI/2.0, spriteOne.getRotationInRadians(), 1e-7);
-      
+
+      double actual11 = spriteOne.getRotationInDegrees();
+      assertEquals(90.0, actual11, 1e-7);
+      double actual10 = spriteOne.getRotationInRadians();
+      assertEquals(Math.PI / 2.0, actual10, 1e-7);
+
       spriteOne.setRotationInRadians(Math.PI);
-      assertEquals(180.0, spriteOne.getRotationInDegrees(), 1e-7);
-      assertEquals(Math.PI, spriteOne.getRotationInRadians(), 1e-7);
-      
+      double actual9 = spriteOne.getRotationInDegrees();
+      assertEquals(180.0, actual9, 1e-7);
+      double actual8 = spriteOne.getRotationInRadians();
+      assertEquals(Math.PI, actual8, 1e-7);
+
       spriteOne.setX(20.0);
       
       collisionPolygonsOne.clear();
@@ -66,22 +68,29 @@ public class SpriteTest
 
       arePolygonsIntersecting = intersectionDetector.arePolygonsIntersecting(collisionPolygonsOne.get(0), collisionPolygonsTwo.get(0));
       assertFalse(arePolygonsIntersecting);
-      
+
       AxisAlignedBoundingBox2D boundingBoxOne = new AxisAlignedBoundingBox2D();
       spriteOne.getAxisAlignedBoundingBox(boundingBoxOne);
       
       AxisAlignedBoundingBox2D boundingBoxTwo = new AxisAlignedBoundingBox2D();
       spriteTwo.getAxisAlignedBoundingBox(boundingBoxTwo);
-      
-      assertEquals(19.0, boundingBoxOne.getMinX(), 1e-7);
-      assertEquals(-1.0, boundingBoxOne.getMinY(), 1e-7);
-      assertEquals(21.0, boundingBoxOne.getMaxX(), 1e-7);
-      assertEquals(1.0, boundingBoxOne.getMaxY(), 1e-7);
-      
-      assertEquals(-1.0, boundingBoxTwo.getMinX(), 1e-7);
-      assertEquals(-1.0, boundingBoxTwo.getMinY(), 1e-7);
-      assertEquals(1.0, boundingBoxTwo.getMaxX(), 1e-7);
-      assertEquals(1.0, boundingBoxTwo.getMaxY(), 1e-7);
 
+      double actual7 = boundingBoxOne.getMinX();
+      assertEquals(19.0, actual7, 1e-7);
+      double actual6 = boundingBoxOne.getMinY();
+      assertEquals(-1.0, actual6, 1e-7);
+      double actual5 = boundingBoxOne.getMaxX();
+      assertEquals(21.0, actual5, 1e-7);
+      double actual4 = boundingBoxOne.getMaxY();
+      assertEquals(1.0, actual4, 1e-7);
+
+      double actual3 = boundingBoxTwo.getMinX();
+      assertEquals(-1.0, actual3, 1e-7);
+      double actual2 = boundingBoxTwo.getMinY();
+      assertEquals(-1.0, actual2, 1e-7);
+      double actual1 = boundingBoxTwo.getMaxX();
+      assertEquals(1.0, actual1, 1e-7);
+      double actual = boundingBoxTwo.getMaxY();
+      assertEquals(1.0, actual, 1e-7);
    }
 }

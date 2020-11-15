@@ -1,15 +1,11 @@
 package us.ihmc.javaSpriteWorld.geometry;
 
-import static us.ihmc.robotics.Assert.*;
-
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import us.ihmc.javaSpriteWorld.geometry.ConvexPolygon;
-import us.ihmc.javaSpriteWorld.geometry.ConvexPolygonIntersectionDetector;
-import us.ihmc.javaSpriteWorld.geometry.Point;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("gui")
 public class ConvexPolygonIntersectionDetectorTest
@@ -56,7 +52,7 @@ public class ConvexPolygonIntersectionDetectorTest
       firstIsFullyInsideSecond = detector.isFirstPolygonFullyInsideSecondPolygon(polygonOne, polygonThree);
       assertFalse(intersecting);
       assertFalse(firstIsFullyInsideSecond);
-      
+
       ArrayList<Point> pointsFour = new ArrayList<>();
 
       pointsFour.add(new Point(21.0, 1.0));
@@ -85,7 +81,7 @@ public class ConvexPolygonIntersectionDetectorTest
       firstIsFullyInsideSecond = detector.isFirstPolygonFullyInsideSecondPolygon(polygonFour, polygonFour);
       assertTrue(intersecting);
       assertFalse(firstIsFullyInsideSecond);
-      
+
       ArrayList<Point> pointsFive = new ArrayList<>();
 
       pointsOne.add(new Point(0.5, 0.5));
@@ -99,7 +95,6 @@ public class ConvexPolygonIntersectionDetectorTest
       assertTrue(firstIsFullyInsideSecond);
       firstIsFullyInsideSecond = detector.isFirstPolygonFullyInsideSecondPolygon(polygonOne, polygonFive);
       assertFalse(firstIsFullyInsideSecond);
-
    }
 
 }
