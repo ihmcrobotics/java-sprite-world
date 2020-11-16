@@ -23,7 +23,7 @@ public class TrappedEvaluationNode implements BehaviorTreeNode
           && statusHolder.getWallWeight() > 0.5
           && !calculateSimilar(statusHolder.getWallAction(), statusHolder.getPredatorAction()))
       {
-         statusHolder.setTrapped(System.nanoTime(), sensors.getHeading());
+         statusHolder.setTrapped(sensors.getHeading());
          LogTools.info("Trapped!");
       }
 

@@ -10,7 +10,8 @@ public class TrappedActionNode implements BehaviorTreeAction
    private RobotBehaviorSensors sensors;
    private BehaviorStatusHolder statusHolder;
    private RobotBehaviorActuators actuators;
-   private double lastAngularVelocity = 0.0;
+   private double lastHeading = 0.0;
+   private boolean trappedInitialized = false;
 
    public TrappedActionNode(RobotBehaviorSensors sensors, BehaviorStatusHolder statusHolder, RobotBehaviorActuators actuators)
    {
@@ -24,9 +25,16 @@ public class TrappedActionNode implements BehaviorTreeAction
    {
       if (statusHolder.isTrapped())
       {
+         if (!trappedInitialized)
+         {
+            trappedInitialized = true;
+
+            lastHeading = sensors.getHeading();
+         }
+
          // do a persistent travel backwards thing
 
-         double elapsedTrappedTime = Conversions.nanosecondsToSeconds(System.nanoTime() - statusHolder.getTrappedTime());
+         double elapsedTrappedTime = statusHolder.getTrappedTime();
 
          double desiredSpeed;
          double angleToAttraction;
@@ -35,28 +43,35 @@ public class TrappedActionNode implements BehaviorTreeAction
          {
             desiredSpeed = 0.0;
             angleToAttraction = -headingError;
-            LogTools.info("Slowing down");
          }
          else if (elapsedTrappedTime < 0.6) // turn around
          {
             desiredSpeed = 0.0;
             angleToAttraction = -headingError - Math.PI;
-            LogTools.info("Turning around");
          }
          else // go backwards
          {
-            desiredSpeed = 1.0;
+            desiredSpeed = 8.0;
             angleToAttraction = -headingError - Math.PI;
-            LogTools.info("Going backwards");
          }
 
          double velocity = sensors.getVelocity();
-         actuators.setAcceleration(1.0 * (desiredSpeed - velocity));
+         double acceleration = 3.0 * (desiredSpeed - velocity);
+         actuators.setAcceleration(acceleration);
 
-         double angularVelocity = (velocity - lastAngularVelocity) / 0.01;
-         actuators.setTurnRate((5.0 * angleToAttraction) + (-0.5 * angularVelocity));
+         double dt = 0.01;
+         double headingChange = sensors.getHeading() - lastHeading;
+         double angularVelocity = headingChange / dt;
+         lastHeading = sensors.getHeading();
+
+         double turnRate = (8.0 * angleToAttraction) + (-0.2 * angularVelocity);
+         actuators.setTurnRate(turnRate);
 
          return BehaviorTreeNodeStatus.RUNNING;
+      }
+      else
+      {
+         trappedInitialized = false;
       }
 
       return BehaviorTreeNodeStatus.SUCCESS;

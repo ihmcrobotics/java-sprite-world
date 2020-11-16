@@ -48,7 +48,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       evaluationTree.addChild(getFood);
       evaluationTree.addChild(deliverFlag);
 
-//      decisionTree.addChild(trappedAction);
+      decisionTree.addChild(trappedAction);
       decisionTree.addChild(highLevelDecider);
 //      decisionTree.addChild(goForward);
    }
