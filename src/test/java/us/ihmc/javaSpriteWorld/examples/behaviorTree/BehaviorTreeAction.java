@@ -5,5 +5,6 @@ package us.ihmc.javaSpriteWorld.examples.behaviorTree;
  */
 public interface BehaviorTreeAction extends BehaviorTreeNode
 {
+
    // TODO: What is common among actions?
 }

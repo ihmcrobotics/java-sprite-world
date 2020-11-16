@@ -18,29 +18,36 @@ public class AvoidWallsBehaviorNode implements BehaviorTreeAction
    private double accelerationGain = 1.0;
    private double turnRateGain = 5.0;
    private double turnRateDamping = -0.5;
+   private RobotBehaviorActuators actuators;
    private RobotBehaviorEnvironment environment;
    private double dt = 0.01;
    private double lastVelocity = 0.0;
    private double boundaryStrength = 3.0;
    private double boundaryGraduation = 2.5;
+   private double[] action = new double[2];
+   private double utility;
 
-   public AvoidWallsBehaviorNode(RobotBehaviorSensors sensors, RobotBehaviorEnvironment environment, BehaviorStatusHolder statusHolder)
+   public AvoidWallsBehaviorNode(RobotBehaviorSensors sensors,
+                                 RobotBehaviorActuators actuators,
+                                 RobotBehaviorEnvironment environment,
+                                 BehaviorStatusHolder statusHolder)
    {
       this.sensors = sensors;
+      this.actuators = actuators;
       this.environment = environment;
       this.statusHolder = statusHolder;
    }
 
    @Override
-   public BehaviorTreeNodeStatus tick()
+   public double evaluateUtility()
    {
       Vector2D boundaryRepulsion = new Vector2D();
       double closestWallDistance = Double.POSITIVE_INFINITY;
       for (LineSegment2D wall : environment.getWalls())
       {
          Point2D closestPointOnWall = EuclidGeometryTools.orthogonalProjectionOnLineSegment2D(sensors.getGlobalPosition(),
-                                                                                   wall.getFirstEndpoint(),
-                                                                                   wall.getSecondEndpoint());
+                                                                                              wall.getFirstEndpoint(),
+                                                                                              wall.getSecondEndpoint());
          double wallDistance = sensors.getGlobalPosition().distance(closestPointOnWall);
          if (wallDistance < closestWallDistance)
             closestWallDistance = wallDistance;
@@ -54,8 +61,17 @@ public class AvoidWallsBehaviorNode implements BehaviorTreeAction
 
       boolean enable = closestWallDistance < WALL_DISTANCE_ACTIVATION_THRESHOLD;
 
-      statusHolder.setWallWeight(enable ? 1.0 : 0.0);
-      lastVelocity = doAttractionVectorControl(sensors, statusHolder.getWallAction(), boundaryRepulsion, lastVelocity, dt, accelerationGain, turnRateGain, turnRateDamping);
+      utility = enable ? 1.0 : 0.0;
+      lastVelocity = doAttractionVectorControl(sensors, action, boundaryRepulsion, lastVelocity, dt, accelerationGain, turnRateGain, turnRateDamping);
+
+      return utility;
+   }
+
+   @Override
+   public BehaviorTreeNodeStatus tick()
+   {
+      actuators.setAcceleration(action[0]);
+      actuators.setTurnRate(action[1]);
 
       return BehaviorTreeNodeStatus.SUCCESS;
    }

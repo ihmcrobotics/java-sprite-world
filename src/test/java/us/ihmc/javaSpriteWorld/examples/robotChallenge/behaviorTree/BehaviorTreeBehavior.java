@@ -34,7 +34,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       BehaviorStatusHolder statusHolder = new BehaviorStatusHolder();
 
       TrappedEvaluationNode trappedEvaluation = new TrappedEvaluationNode(sensors, statusHolder);
-      AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, environment, statusHolder);
+      AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, actuators, environment, statusHolder);
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, statusHolder);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, statusHolder);
       GoForwardBehaviorNode goForward = new GoForwardBehaviorNode(sensors, actuators);
