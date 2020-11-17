@@ -29,13 +29,14 @@ public class BehaviorTreeBehavior implements Robot05Behavior
 //      TrappedEvaluationNode trappedEvaluation = new TrappedEvaluationNode(sensors, statusHolder);
       AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, actuators, environment);
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, statusHolder);
-      GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, statusHolder);
+      GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
       GoForwardBehaviorNode goForward = new GoForwardBehaviorNode(sensors, actuators);
       DeliverFlagBehaviorNode deliverFlag = new DeliverFlagBehaviorNode(sensors, statusHolder);
       HighLevelDeciderNode highLevelDecider = new HighLevelDeciderNode(statusHolder, actuators);
       TrappedActionNode trappedAction = new TrappedActionNode(sensors, statusHolder, actuators);
 
       utilitySelector.addChild(avoidWalls);
+      utilitySelector.addChild(getFood);
 
 //      evaluationTree.addChild(trappedEvaluation);
 //      evaluationTree.addChild(avoidWalls);
