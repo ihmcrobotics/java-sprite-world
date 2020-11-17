@@ -19,8 +19,7 @@ public class UtilitySelectorNode extends BehaviorTreeControlFlowNodeBasics
 
       if (highestUtility > 0.0)
       {
-         nodeOfHighestUtility.tick();
-         return BehaviorTreeNodeStatus.SUCCESS;
+         return nodeOfHighestUtility.tick();
       }
       else
       {
