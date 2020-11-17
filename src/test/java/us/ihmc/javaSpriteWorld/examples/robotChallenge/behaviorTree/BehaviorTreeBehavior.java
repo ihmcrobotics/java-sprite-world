@@ -33,7 +33,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, actuators);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
       GoForwardBehaviorNode goForward = new GoForwardBehaviorNode(sensors, actuators);
-      DeliverFlagBehaviorNode deliverFlag = new DeliverFlagBehaviorNode(sensors, statusHolder);
+      DeliverFlagBehaviorNode deliverFlag = new DeliverFlagBehaviorNode(sensors, actuators);
       HighLevelDeciderNode highLevelDecider = new HighLevelDeciderNode(statusHolder, actuators);
       TrappedActionNode trappedAction = new TrappedActionNode(sensors, statusHolder, actuators);
       ZeroMotionAction zeroMotion = new ZeroMotionAction(sensors, actuators);
@@ -41,6 +41,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       utilitySelector.addChild(avoidWalls);
       utilitySelector.addChild(getFood);
       utilitySelector.addChild(avoidPredators);
+      utilitySelector.addChild(deliverFlag);
 
       fallbackNode.addChild(utilitySelector);
       fallbackNode.addChild(zeroMotion);

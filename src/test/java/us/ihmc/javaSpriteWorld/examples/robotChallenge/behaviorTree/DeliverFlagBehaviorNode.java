@@ -20,7 +20,7 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
    private static final Random random = new Random(3920);
 
    private final RobotBehaviorSensors sensors;
-   private final BehaviorStatusHolder statusHolder;
+   private final RobotBehaviorActuators actuators;
 
    private final List<ObjectResponseDescription> responseDescriptions = new ArrayList<>();
 
@@ -43,10 +43,14 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
    private final int counterToSwitchExploreArea = 500;
    private final double proximityToExploreAreaToSwitch = 0.4;
 
-   public DeliverFlagBehaviorNode(RobotBehaviorSensors sensors, BehaviorStatusHolder statusHolder)
+   private boolean hasFlag;
+   private boolean dropFlag;
+   private final double[] flagAction = new double[2];
+
+   public DeliverFlagBehaviorNode(RobotBehaviorSensors sensors, RobotBehaviorActuators actuators)
    {
       this.sensors = sensors;
-      this.statusHolder = statusHolder;
+      this.actuators = actuators;
 
       for (int i = 0; i < flagLocations.length; i++)
       {
@@ -84,11 +88,16 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
    }
 
    @Override
-   public BehaviorTreeNodeStatus tick()
+   public double evaluateUtility()
    {
       if (sensors.isSimulationReset())
       {
          reset();
+      }
+
+      if (sensors.getPositionInBodyFrameAndIdOfClosestFlag() == null)
+      {
+         return 0.0;
       }
 
       responseDescriptions.clear();
@@ -176,9 +185,24 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
       double kAcceleration = 3.0;
       double kTurn = 4.0;
 
-      statusHolder.setHasFlag(inDeliverFlagMode);
-      SteeringBasedAction.computeActionGivenHeading(statusHolder.getFlagAction(), maxRewardHeading, velocityWhenAligned, kAcceleration, kTurn, sensors.getVelocity());
-      statusHolder.setDropFlag(getDropFlag());
+      hasFlag = inDeliverFlagMode;
+      SteeringBasedAction.computeActionGivenHeading(flagAction, maxRewardHeading, velocityWhenAligned, kAcceleration, kTurn, sensors.getVelocity());
+      dropFlag = getDropFlag();
+
+      actuators.setAcceleration(flagAction[0]);
+      actuators.setTurnRate(flagAction[1]);
+
+      actuators.setDropFlag(dropFlag);
+
+      double utility = 1.0;
+      return utility;
+   }
+
+   @Override
+   public BehaviorTreeNodeStatus tick()
+   {
+      actuators.setAcceleration(flagAction[0]);
+      actuators.setTurnRate(flagAction[1]);
 
       return BehaviorTreeNodeStatus.SUCCESS;
    }
