@@ -7,19 +7,21 @@ import org.apache.commons.lang3.tuple.Triple;
 
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
+import us.ihmc.javaSpriteWorld.examples.behaviorTree.FallbackNode;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.UtilitySelectorNode;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.Robot05Behavior;
 
+import static us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeNodeStatus.SUCCESS;
+
 public class BehaviorTreeBehavior implements Robot05Behavior
 {
-   private final UtilitySelectorNode utilitySelector;
+   private final FallbackNode fallbackNode = new FallbackNode();
+   private final UtilitySelectorNode utilitySelector  = new UtilitySelectorNode();
    private final RobotBehaviorActuators actuators = new RobotBehaviorActuators();
    private final RobotBehaviorSensors sensors = new RobotBehaviorSensors();
 
    public BehaviorTreeBehavior()
    {
-      utilitySelector = new UtilitySelectorNode();
-
       int challengeNumber = 5;
       RobotBehaviorEnvironment environment = new RobotBehaviorEnvironment(challengeNumber);
 
@@ -28,15 +30,20 @@ public class BehaviorTreeBehavior implements Robot05Behavior
 
 //      TrappedEvaluationNode trappedEvaluation = new TrappedEvaluationNode(sensors, statusHolder);
       AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, actuators, environment);
-      AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, statusHolder);
+      AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, actuators);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
       GoForwardBehaviorNode goForward = new GoForwardBehaviorNode(sensors, actuators);
       DeliverFlagBehaviorNode deliverFlag = new DeliverFlagBehaviorNode(sensors, statusHolder);
       HighLevelDeciderNode highLevelDecider = new HighLevelDeciderNode(statusHolder, actuators);
       TrappedActionNode trappedAction = new TrappedActionNode(sensors, statusHolder, actuators);
+      ZeroMotionAction zeroMotion = new ZeroMotionAction(sensors, actuators);
 
       utilitySelector.addChild(avoidWalls);
       utilitySelector.addChild(getFood);
+      utilitySelector.addChild(avoidPredators);
+
+      fallbackNode.addChild(utilitySelector);
+      fallbackNode.addChild(zeroMotion);
 
 //      evaluationTree.addChild(trappedEvaluation);
 //      evaluationTree.addChild(avoidWalls);
@@ -141,7 +148,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public double[] getAccelerationAndTurnRate()
    {
-      utilitySelector.tick();
+      fallbackNode.tick();
       sensors.clearSimulationReset();
       return new double[] {actuators.getAcceleration(), actuators.getTurnRate()};
    }
