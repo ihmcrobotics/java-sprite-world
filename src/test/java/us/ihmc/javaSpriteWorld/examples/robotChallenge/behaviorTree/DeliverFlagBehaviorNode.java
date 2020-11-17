@@ -86,6 +86,11 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
    @Override
    public BehaviorTreeNodeStatus tick()
    {
+      if (sensors.isSimulationReset())
+      {
+         reset();
+      }
+
       responseDescriptions.clear();
       takeANoteOfFlagLocation();
       updateAreaToExplore();

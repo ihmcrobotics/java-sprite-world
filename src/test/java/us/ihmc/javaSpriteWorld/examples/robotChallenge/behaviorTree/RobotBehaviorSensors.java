@@ -8,7 +8,6 @@ import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Point2DReadOnly;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RobotBehaviorSensors
@@ -30,6 +29,23 @@ public class RobotBehaviorSensors
    private AtomicInteger sensedPickedUpFlag = new AtomicInteger(-1);
    private AtomicInteger sensedDeliveredFlag = new AtomicInteger(-1);
    private AtomicInteger sensedCarryingFlag = new AtomicInteger(-1);
+
+   private boolean simulationReset = false;
+
+   public void setSimulationReset()
+   {
+      simulationReset = true;
+   }
+
+   public boolean isSimulationReset()
+   {
+      return simulationReset;
+   }
+
+   public void clearSimulationReset()
+   {
+      simulationReset = false;
+   }
 
    public ArrayList<Triple<Integer, Point2D, Vector2D>> getLocationOfAllFoodInBodyFrame()
    {

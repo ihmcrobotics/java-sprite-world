@@ -16,8 +16,6 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    private final RobotBehaviorActuators actuators = new RobotBehaviorActuators();
    private final RobotBehaviorSensors sensors = new RobotBehaviorSensors();
 
-   private final DeliverFlagBehaviorNode deliverFlag;
-
    public BehaviorTreeBehavior()
    {
       utilitySelector = new UtilitySelectorNode();
@@ -33,7 +31,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, statusHolder);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, statusHolder);
       GoForwardBehaviorNode goForward = new GoForwardBehaviorNode(sensors, actuators);
-      deliverFlag = new DeliverFlagBehaviorNode(sensors, statusHolder);
+      DeliverFlagBehaviorNode deliverFlag = new DeliverFlagBehaviorNode(sensors, statusHolder);
       HighLevelDeciderNode highLevelDecider = new HighLevelDeciderNode(statusHolder, actuators);
       TrappedActionNode trappedAction = new TrappedActionNode(sensors, statusHolder, actuators);
 
@@ -143,6 +141,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    public double[] getAccelerationAndTurnRate()
    {
       utilitySelector.tick();
+      sensors.clearSimulationReset();
       return new double[] {actuators.getAcceleration(), actuators.getTurnRate()};
    }
 
@@ -163,7 +162,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public void reset()
    {
-      deliverFlag.reset();
+      sensors.setSimulationReset();
    }
 
    @Override
