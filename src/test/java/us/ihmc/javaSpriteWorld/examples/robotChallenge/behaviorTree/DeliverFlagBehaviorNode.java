@@ -194,7 +194,7 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
 
       actuators.setDropFlag(dropFlag);
 
-      double utility = 1.0;
+      double utility = 0.9;
       return utility;
    }
 

@@ -11,8 +11,6 @@ import us.ihmc.javaSpriteWorld.examples.behaviorTree.FallbackNode;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.UtilitySelectorNode;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.Robot05Behavior;
 
-import static us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeNodeStatus.SUCCESS;
-
 public class BehaviorTreeBehavior implements Robot05Behavior
 {
    private final FallbackNode fallbackNode = new FallbackNode();
@@ -25,17 +23,12 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       int challengeNumber = 5;
       RobotBehaviorEnvironment environment = new RobotBehaviorEnvironment(challengeNumber);
 
-
-      BehaviorStatusHolder statusHolder = new BehaviorStatusHolder();
-
-//      TrappedEvaluationNode trappedEvaluation = new TrappedEvaluationNode(sensors, statusHolder);
       AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, actuators, environment);
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, actuators);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
       GoForwardBehaviorNode goForward = new GoForwardBehaviorNode(sensors, actuators);
       DeliverFlagBehaviorNode deliverFlag = new DeliverFlagBehaviorNode(sensors, actuators);
-      HighLevelDeciderNode highLevelDecider = new HighLevelDeciderNode(statusHolder, actuators);
-      TrappedActionNode trappedAction = new TrappedActionNode(sensors, statusHolder, actuators);
+      TrappedActionNode trappedAction = new TrappedActionNode(sensors, actuators);
       ZeroMotionAction zeroMotion = new ZeroMotionAction(sensors, actuators);
 
       utilitySelector.addChild(avoidWalls);
@@ -45,16 +38,6 @@ public class BehaviorTreeBehavior implements Robot05Behavior
 
       fallbackNode.addChild(utilitySelector);
       fallbackNode.addChild(zeroMotion);
-
-//      evaluationTree.addChild(trappedEvaluation);
-//      evaluationTree.addChild(avoidWalls);
-//      evaluationTree.addChild(avoidPredators);
-//      evaluationTree.addChild(getFood);
-//      evaluationTree.addChild(deliverFlag);
-
-//      decisionTree.addChild(trappedAction);
-//      decisionTree.addChild(highLevelDecider);
-//      decisionTree.addChild(goForward);
    }
 
    @Override
@@ -143,7 +126,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    public void senseHitWall()
    {
       // TODO Auto-generated method stub
-      
+
    }
 
    @Override
@@ -180,7 +163,4 @@ public class BehaviorTreeBehavior implements Robot05Behavior
       // TODO Auto-generated method stub
       
    }
-   
- 
-
 }
