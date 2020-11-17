@@ -14,7 +14,6 @@ public class AvoidWallsBehaviorNode implements BehaviorTreeAction
    private static double WALL_DISTANCE_ACTIVATION_THRESHOLD = 1.0;
 
    private final RobotBehaviorSensors sensors;
-   private final BehaviorStatusHolder statusHolder;
    private double accelerationGain = 1.0;
    private double turnRateGain = 5.0;
    private double turnRateDamping = -0.5;
@@ -29,13 +28,11 @@ public class AvoidWallsBehaviorNode implements BehaviorTreeAction
 
    public AvoidWallsBehaviorNode(RobotBehaviorSensors sensors,
                                  RobotBehaviorActuators actuators,
-                                 RobotBehaviorEnvironment environment,
-                                 BehaviorStatusHolder statusHolder)
+                                 RobotBehaviorEnvironment environment)
    {
       this.sensors = sensors;
       this.actuators = actuators;
       this.environment = environment;
-      this.statusHolder = statusHolder;
    }
 
    @Override
