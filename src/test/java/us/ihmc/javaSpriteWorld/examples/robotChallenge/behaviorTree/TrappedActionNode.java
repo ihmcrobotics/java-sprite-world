@@ -1,9 +1,7 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree;
 
-import us.ihmc.commons.Conversions;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeAction;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeNodeStatus;
-import us.ihmc.log.LogTools;
 
 public class TrappedActionNode implements BehaviorTreeAction
 {
