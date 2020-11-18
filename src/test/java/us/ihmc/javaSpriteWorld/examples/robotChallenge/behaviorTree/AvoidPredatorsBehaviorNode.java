@@ -1,9 +1,11 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree;
 
+import us.ihmc.commons.MathTools;
 import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
-import us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeAction;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeNodeStatus;
+import us.ihmc.javaSpriteWorld.examples.behaviorTree.utility.LogisticUtilityAxis;
+import us.ihmc.javaSpriteWorld.examples.behaviorTree.utility.UtilityBasedAction;
 import us.ihmc.javaSpriteWorld.examples.stephen.ObjectResponseDescription;
 import us.ihmc.javaSpriteWorld.examples.stephen.RampedAngularReward;
 import us.ihmc.javaSpriteWorld.examples.stephen.SteeringBasedAction;
@@ -13,9 +15,9 @@ import java.util.List;
 
 import static us.ihmc.javaSpriteWorld.examples.stephen.BehaviorUtils.headingFromVector;
 
-public class AvoidPredatorsBehaviorNode  implements BehaviorTreeAction
+public class AvoidPredatorsBehaviorNode extends UtilityBasedAction
 {
-   public static final double PREDATOR_PROXIMITY_TO_ACTIVATE = 2.0;
+   public static final double PREDATOR_PROXIMITY_TO_ACTIVATE = 1.5;
    
    private final RobotBehaviorSensors sensors;
    private final RobotBehaviorActuators actuators;
@@ -33,10 +35,21 @@ public class AvoidPredatorsBehaviorNode  implements BehaviorTreeAction
    {
       this.sensors = sensors;
       this.actuators = actuators;
+
+      // PREDATOR_PROXIMITY_TO_ACTIVATE
+      addUtilityAxis(new LogisticUtilityAxis(5000.0, -1.2, 1.1, 0.5, this::normalizedPredatorDistance));
+   }
+
+   private double normalizedPredatorDistance()
+   {
+      double normalDistance = PREDATOR_PROXIMITY_TO_ACTIVATE * 2.0;
+      double clampedDistance = MathTools.clamp(sensors.getClosestPredatorDistance(), 0.0, normalDistance);
+      double normalizedInput = clampedDistance / normalDistance;
+      return normalizedInput;
    }
 
    @Override
-   public double evaluateUtility()
+   public BehaviorTreeNodeStatus tick()
    {
       responseDescriptions.clear();
 
@@ -52,21 +65,14 @@ public class AvoidPredatorsBehaviorNode  implements BehaviorTreeAction
 
       responseDescriptions.add(new RampedAngularReward(0.0, Math.PI, currentHeadingWeight));
 
-      boolean enable = sensors.getClosestPredatorDistance() < PREDATOR_PROXIMITY_TO_ACTIVATE;
       double maxRewardHeading = SteeringBasedAction.getMaxRewardHeading(responseDescriptions);
 
       double velocityWhenAligned = 3.0;
       double kAcceleration = 3.0;
       double kTurn = 4.0;
 
-      double utility = enable ? 1.0 : 0.0;
       SteeringBasedAction.computeActionGivenHeading(predatorAction, maxRewardHeading, velocityWhenAligned, kAcceleration, kTurn, sensors.getVelocity());
-      return utility;
-   }
 
-   @Override
-   public BehaviorTreeNodeStatus tick()
-   {
       actuators.setAcceleration(predatorAction[0]);
       actuators.setTurnRate(predatorAction[1]);
 
