@@ -11,6 +11,8 @@ import us.ihmc.euclid.tuple2D.interfaces.Point2DReadOnly;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree.RobotBehaviorTools.bodyToWorld;
+
 public class RobotBehaviorSensors
 {
    private final ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFoodInBodyFrame = new ArrayList<Triple<Integer,Point2D,Vector2D>>();
@@ -34,15 +36,21 @@ public class RobotBehaviorSensors
    private boolean simulationReset = false;
 
    double closestPredatorDistance;
+   double closestFoodDistance;
 
    public double getClosestPredatorDistance()
    {
       return closestPredatorDistance;
    }
 
+   public double getClosestFoodDistance()
+   {
+      return closestFoodDistance;
+   }
+
    public void processSensorData()
    {
-      closestPredatorDistance = Double.MAX_VALUE;
+      closestPredatorDistance = Double.POSITIVE_INFINITY;
       for (int i = 0; i < getLocationOfAllPredators().size(); i++)
       {
          Point2D predatorInBodyFrame = getLocationOfAllPredators().get(i).getLeft();
@@ -51,6 +59,17 @@ public class RobotBehaviorSensors
          if (distance < closestPredatorDistance)
          {
             closestPredatorDistance = distance;
+         }
+      }
+
+      closestFoodDistance = Double.POSITIVE_INFINITY;
+      for (Triple<Integer, Point2D, Vector2D> food : getLocationOfAllFoodInBodyFrame())
+      {
+         Point2D foodLocation = bodyToWorld(this, food.getMiddle());
+         double distance = getGlobalPosition().distance(foodLocation);
+         if (distance < closestFoodDistance)
+         {
+            closestFoodDistance = distance;
          }
       }
    }
