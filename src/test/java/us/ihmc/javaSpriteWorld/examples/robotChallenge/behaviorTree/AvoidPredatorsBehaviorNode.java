@@ -36,7 +36,7 @@ public class AvoidPredatorsBehaviorNode extends UtilityBasedAction
       this.sensors = sensors;
       this.actuators = actuators;
 
-      // PREDATOR_PROXIMITY_TO_ACTIVATE
+      // flipped boolean curve
       addUtilityAxis(new LogisticUtilityAxis(5000.0, -1.2, 1.1, 0.5, this::normalizedPredatorDistance));
    }
 
