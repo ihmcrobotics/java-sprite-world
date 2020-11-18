@@ -26,7 +26,6 @@ public class AvoidWallsBehaviorNode extends UtilityBasedAction
    private double boundaryStrength = 3.0;
    private double boundaryGraduation = 2.5;
    private double[] action = new double[2];
-   private double utility;
 
    public AvoidWallsBehaviorNode(RobotBehaviorSensors sensors,
                                  RobotBehaviorActuators actuators,
