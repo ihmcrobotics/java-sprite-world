@@ -9,20 +9,20 @@ import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.FallbackNode;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.UtilitySelectorNode;
-import us.ihmc.javaSpriteWorld.examples.robotChallenge05.Robot05Behavior;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
 
-public class BehaviorTreeBehavior implements Robot05Behavior
+public class BehaviorTreeBehavior implements Robot06Behavior
 {
    private final FallbackNode fallbackNode = new FallbackNode();
    private final UtilitySelectorNode utilitySelector  = new UtilitySelectorNode();
    private final RobotBehaviorActuators actuators = new RobotBehaviorActuators();
-   private final RobotBehaviorSensors sensors = new RobotBehaviorSensors();
+   private final RobotBehaviorSensors sensors;
    private final RobotBehaviorEnvironment environment;
 
-   public BehaviorTreeBehavior()
+   public BehaviorTreeBehavior(int challengeNumber, int numberOfFlags)
    {
-      int challengeNumber = 5;
       environment = new RobotBehaviorEnvironment(challengeNumber);
+      sensors = new RobotBehaviorSensors(numberOfFlags);
 
       AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, actuators, environment);
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, actuators);

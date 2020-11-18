@@ -3,6 +3,7 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge08;
 import java.util.Random;
 
 import us.ihmc.javaSpriteWorld.examples.duncan.DuncanRobot08Behavior;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree.BehaviorTreeBehavior;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge01.RobotChallenge01;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge02.Robot02;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge05.SimpleRobot05Behavior;
@@ -17,11 +18,12 @@ import us.ihmc.javaSpriteWorld.examples.stephen.StephenRobotBehavior;
  */
 public class RobotChallenge08
 {
-   public static final boolean DEBUGGING_MODE = Boolean.parseBoolean(System.getProperty("debug", "false"));
+   public static final boolean DEBUGGING_MODE = Boolean.parseBoolean(System.getProperty("debug", "true"));
+   public static final int NUMBER_OF_FLAGS = 6;
 
    public static void main(String[] args)
    {
-    String player = System.getProperty("player", "Simple");
+    String player = System.getProperty("player", "BehaviorTree");
     RobotChallenge01 robotChallenge = createRobotChallenge(player);
     if (DEBUGGING_MODE)
     {
@@ -45,9 +47,10 @@ public class RobotChallenge08
       RobotChallenge01 robotChallenge = createRobotChallenge(xMax, yMax, robot, random);
 
       RobotChallenge06NoiseParameters noiseParameters = new RobotChallenge06NoiseParameters();
+      noiseParameters.removeAllNoise();
       RobotChallengeRules06 rules = new RobotChallengeRules06(random, noiseParameters, robotChallenge, robot, robotChallenge.getFoodList(), robotChallenge.getPredatorList(), robotChallenge.getFlagList(), robotBehavior);
 
-      if (player.equals("Simple"))
+      if (player.equals("Simple") || player.equals("BehaviorTree"))
          rules.setTesting(true);
 
       robotChallenge.setRobotChallengeRules(rules);
@@ -60,7 +63,7 @@ public class RobotChallenge08
       robotChallenge.createSomeFood(30);
       double maximumPredatorSpeed = 1.5;
       robotChallenge.createSomePredators(3, maximumPredatorSpeed);
-      robotChallenge.createSomeFlags(6);
+      robotChallenge.createSomeFlags(NUMBER_OF_FLAGS);
       robotChallenge.createSomeRooms();
       return robotChallenge;
    }
@@ -72,6 +75,8 @@ public class RobotChallenge08
          robotBehavior = new DuncanRobot08Behavior(DEBUGGING_MODE);
       else if (player.equals("Stephen"))
          robotBehavior = new StephenRobotBehavior();
+      else if (player.equals("BehaviorTree"))
+         robotBehavior = new BehaviorTreeBehavior(8, NUMBER_OF_FLAGS);
       else
          robotBehavior = new SimpleRobot05Behavior(xMax, yMax);
       return robotBehavior;

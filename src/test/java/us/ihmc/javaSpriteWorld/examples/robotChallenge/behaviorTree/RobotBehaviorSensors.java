@@ -17,9 +17,11 @@ import static us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree.Robot
 
 public class RobotBehaviorSensors
 {
-   private final ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFoodInBodyFrame = new ArrayList<Triple<Integer,Point2D,Vector2D>>();
+   private final int numberOfFlags;
+
+   private final ArrayList<Triple<Integer, Point2D, Vector2D>> locationOfAllFoodInBodyFrame = new ArrayList<>();
    private final ArrayList<Pair<Point2D, Vector2D>> locationOfAllPredators = new ArrayList<>();
-   private final ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame = new ArrayList<Pair<Vector2D,Double>>();
+   private final ArrayList<Pair<Vector2D, Double>> vectorsAndDistancesToWallInBodyFrame = new ArrayList<>();
    private ImmutablePair<Point2D, Integer> positionInBodyFrameAndIdOfClosestFlag;
 
    private double heading;
@@ -40,6 +42,16 @@ public class RobotBehaviorSensors
    double closestPredatorDistance;
    double closestFoodDistance;
    double closestWallDistance;
+
+   public RobotBehaviorSensors(int numberOfFlags)
+   {
+      this.numberOfFlags = numberOfFlags;
+   }
+
+   public int getNumberOfFlags()
+   {
+      return numberOfFlags;
+   }
 
    public double getClosestPredatorDistance()
    {

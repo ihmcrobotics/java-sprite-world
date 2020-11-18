@@ -10,6 +10,8 @@ import us.ihmc.javaSpriteWorld.examples.stephen.StephenRobotBehavior;
 
 public class RobotChallenge05 
 {
+   public static final int NUMBER_OF_FLAGS = 5;
+
    public static void main(String[] args)
    {
 //      String player = System.getProperty("player", "Stephen");
@@ -52,7 +54,7 @@ public class RobotChallenge05
       robotChallenge.createSomeFood(10);
       double maximumPredatorSpeed = 1.5;
       robotChallenge.createSomePredators(3, maximumPredatorSpeed);
-      robotChallenge.createSomeFlags(5);
+      robotChallenge.createSomeFlags(NUMBER_OF_FLAGS);
       return robotChallenge;
    }
 
@@ -64,7 +66,7 @@ public class RobotChallenge05
       else if (player.equals("Stephen"))
          simpleBehavior = new StephenRobotBehavior();
       else if (player.equals("BehaviorTree"))
-         simpleBehavior = new BehaviorTreeBehavior();
+         simpleBehavior = new BehaviorTreeBehavior(5, NUMBER_OF_FLAGS);
       else
          simpleBehavior = new SimpleRobot05Behavior(xMax, yMax);
       return simpleBehavior;

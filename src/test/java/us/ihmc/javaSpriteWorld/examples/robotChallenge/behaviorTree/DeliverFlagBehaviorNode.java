@@ -34,7 +34,7 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
 
    private int flagIdToChase = 1;
    private boolean inDeliverFlagMode = false;
-   private final Point2D[] flagLocations = new Point2D[5];
+   private final Point2D[] flagLocations;
 
    private final Point2D[] areasToExplore;
    private final Point2D areaToExplore = new Point2D();
@@ -51,6 +51,8 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
    {
       this.sensors = sensors;
       this.actuators = actuators;
+
+      flagLocations = new Point2D[sensors.getNumberOfFlags()];
 
       for (int i = 0; i < flagLocations.length; i++)
       {
