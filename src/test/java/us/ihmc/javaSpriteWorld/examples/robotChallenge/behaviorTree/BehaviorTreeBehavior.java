@@ -132,6 +132,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public double[] getAccelerationAndTurnRate()
    {
+      sensors.processSensorData();
       fallbackNode.tick();
       sensors.clearSimulationReset();
       return new double[] {actuators.getAcceleration(), actuators.getTurnRate()};

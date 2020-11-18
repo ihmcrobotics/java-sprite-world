@@ -3,6 +3,7 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.euclid.tuple2D.interfaces.Point2DReadOnly;
@@ -31,6 +32,28 @@ public class RobotBehaviorSensors
    private AtomicInteger sensedCarryingFlag = new AtomicInteger(-1);
 
    private boolean simulationReset = false;
+
+   double closestPredatorDistance;
+
+   public double getClosestPredatorDistance()
+   {
+      return closestPredatorDistance;
+   }
+
+   public void processSensorData()
+   {
+      closestPredatorDistance = Double.MAX_VALUE;
+      for (int i = 0; i < getLocationOfAllPredators().size(); i++)
+      {
+         Point2D predatorInBodyFrame = getLocationOfAllPredators().get(i).getLeft();
+         double distance = EuclidCoreTools.norm(predatorInBodyFrame.getX(), predatorInBodyFrame.getY());
+
+         if (distance < closestPredatorDistance)
+         {
+            closestPredatorDistance = distance;
+         }
+      }
+   }
 
    public void setSimulationReset()
    {

@@ -39,7 +39,6 @@ public class AvoidPredatorsBehaviorNode  implements BehaviorTreeAction
    public double evaluateUtility()
    {
       responseDescriptions.clear();
-      double closestPredatorDistance = Double.MAX_VALUE;
 
       for (int i = 0; i < sensors.getLocationOfAllPredators().size(); i++)
       {
@@ -48,17 +47,12 @@ public class AvoidPredatorsBehaviorNode  implements BehaviorTreeAction
          double reward = - predWeight * Math.pow(basePredator, - distance);
          double heading = headingFromVector(predatorInBodyFrame);
 
-         if (distance < closestPredatorDistance)
-         {
-            closestPredatorDistance = distance;
-         }
-
          responseDescriptions.add(new RampedAngularReward(heading, predatorAngularCostRange, reward));
       }
 
       responseDescriptions.add(new RampedAngularReward(0.0, Math.PI, currentHeadingWeight));
 
-      boolean enable = closestPredatorDistance < PREDATOR_PROXIMITY_TO_ACTIVATE;
+      boolean enable = sensors.getClosestPredatorDistance() < PREDATOR_PROXIMITY_TO_ACTIVATE;
       double maxRewardHeading = SteeringBasedAction.getMaxRewardHeading(responseDescriptions);
 
       double velocityWhenAligned = 3.0;
