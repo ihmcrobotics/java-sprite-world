@@ -24,8 +24,7 @@ public class BehaviorTreeBehavior implements Robot06Behavior
       environment = new RobotBehaviorEnvironment(challengeNumber);
       sensors = new RobotBehaviorSensors(numberOfFlags);
 
-      AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, actuators, environment);
-      AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, actuators);
+      AvoidObstaclesNode avoidObstacles = new AvoidObstaclesNode(sensors, actuators, environment);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
 
       FlagBehaviorBlackBoard flagBlackboard = new FlagBehaviorBlackBoard();
@@ -37,9 +36,8 @@ public class BehaviorTreeBehavior implements Robot06Behavior
       TrappedActionNode trappedAction = new TrappedActionNode(sensors, actuators);
       ZeroMotionAction zeroMotion = new ZeroMotionAction(sensors, actuators);
 
-      utilitySelector.addChild(avoidWalls);
+      utilitySelector.addChild(avoidObstacles);
       utilitySelector.addChild(getFood);
-      utilitySelector.addChild(avoidPredators);
       utilitySelector.addChild(searchForFlag);
       utilitySelector.addChild(dropOffFlag);
       utilitySelector.addChild(goToFlag);
