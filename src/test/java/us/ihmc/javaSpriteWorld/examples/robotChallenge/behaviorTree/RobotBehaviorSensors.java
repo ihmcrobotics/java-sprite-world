@@ -3,6 +3,8 @@ package us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import us.ihmc.euclid.geometry.LineSegment2D;
+import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
 import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree.RobotBehaviorTools.bodyToWorld;
+import static us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree.RobotBehaviorTools.fieldVector;
 
 public class RobotBehaviorSensors
 {
@@ -37,6 +40,7 @@ public class RobotBehaviorSensors
 
    double closestPredatorDistance;
    double closestFoodDistance;
+   double closestWallDistance;
 
    public double getClosestPredatorDistance()
    {
@@ -48,7 +52,12 @@ public class RobotBehaviorSensors
       return closestFoodDistance;
    }
 
-   public void processSensorData()
+   public double getClosestWallDistance()
+   {
+      return closestWallDistance;
+   }
+
+   public void processSensorData(RobotBehaviorEnvironment environment)
    {
       closestPredatorDistance = Double.POSITIVE_INFINITY;
       for (int i = 0; i < getLocationOfAllPredators().size(); i++)
@@ -71,6 +80,17 @@ public class RobotBehaviorSensors
          {
             closestFoodDistance = distance;
          }
+      }
+
+      closestWallDistance = Double.POSITIVE_INFINITY;
+      for (LineSegment2D wall : environment.getWalls())
+      {
+         Point2D closestPointOnWall = EuclidGeometryTools.orthogonalProjectionOnLineSegment2D(getGlobalPosition(),
+                                                                                              wall.getFirstEndpoint(),
+                                                                                              wall.getSecondEndpoint());
+         double wallDistance = getGlobalPosition().distance(closestPointOnWall);
+         if (wallDistance < closestWallDistance)
+            closestWallDistance = wallDistance;
       }
    }
 

@@ -17,11 +17,12 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    private final UtilitySelectorNode utilitySelector  = new UtilitySelectorNode();
    private final RobotBehaviorActuators actuators = new RobotBehaviorActuators();
    private final RobotBehaviorSensors sensors = new RobotBehaviorSensors();
+   private final RobotBehaviorEnvironment environment;
 
    public BehaviorTreeBehavior()
    {
       int challengeNumber = 5;
-      RobotBehaviorEnvironment environment = new RobotBehaviorEnvironment(challengeNumber);
+      environment = new RobotBehaviorEnvironment(challengeNumber);
 
       AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, actuators, environment);
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, actuators);
@@ -131,7 +132,7 @@ public class BehaviorTreeBehavior implements Robot05Behavior
    @Override
    public double[] getAccelerationAndTurnRate()
    {
-      sensors.processSensorData();
+      sensors.processSensorData(environment);
       fallbackNode.tick();
       sensors.clearSimulationReset();
       return new double[] {actuators.getAcceleration(), actuators.getTurnRate()};
