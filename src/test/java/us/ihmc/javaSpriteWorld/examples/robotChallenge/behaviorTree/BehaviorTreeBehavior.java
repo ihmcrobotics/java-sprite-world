@@ -1,15 +1,15 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree;
 
-import java.util.ArrayList;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.FallbackNode;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.UtilitySelectorNode;
+import us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree.flags.*;
 import us.ihmc.javaSpriteWorld.examples.robotChallenge06.Robot06Behavior;
+
+import java.util.ArrayList;
 
 public class BehaviorTreeBehavior implements Robot06Behavior
 {
@@ -27,14 +27,23 @@ public class BehaviorTreeBehavior implements Robot06Behavior
       AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, actuators, environment);
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, actuators);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
-      DeliverFlagBehaviorNode deliverFlag = new DeliverFlagBehaviorNode(sensors, actuators, environment);
+
+      FlagBehaviorBlackBoard flagBlackboard = new FlagBehaviorBlackBoard();
+      SearchForFlagBehaviorNode searchForFlag = new SearchForFlagBehaviorNode(sensors, actuators, flagBlackboard, environment);
+      DropOffFlagBehaviorNode dropOffFlag = new DropOffFlagBehaviorNode(sensors, actuators, flagBlackboard, environment);
+      GoToFlagBehaviorNode goToFlag = new GoToFlagBehaviorNode(sensors, actuators, flagBlackboard);
+      GoToFlagDropOffBehaviorNode goToDropLocation = new GoToFlagDropOffBehaviorNode(sensors, actuators, flagBlackboard, environment);
+
       TrappedActionNode trappedAction = new TrappedActionNode(sensors, actuators);
       ZeroMotionAction zeroMotion = new ZeroMotionAction(sensors, actuators);
 
       utilitySelector.addChild(avoidWalls);
       utilitySelector.addChild(getFood);
       utilitySelector.addChild(avoidPredators);
-      utilitySelector.addChild(deliverFlag);
+      utilitySelector.addChild(searchForFlag);
+      utilitySelector.addChild(dropOffFlag);
+      utilitySelector.addChild(goToFlag);
+      utilitySelector.addChild(goToDropLocation);
 
       fallbackNode.addChild(utilitySelector);
       fallbackNode.addChild(zeroMotion);
