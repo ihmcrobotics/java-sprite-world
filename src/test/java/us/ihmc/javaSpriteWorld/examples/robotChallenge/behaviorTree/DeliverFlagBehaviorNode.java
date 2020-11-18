@@ -21,6 +21,7 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
 
    private final RobotBehaviorSensors sensors;
    private final RobotBehaviorActuators actuators;
+   private final RobotBehaviorEnvironment environment;
 
    private final List<ObjectResponseDescription> responseDescriptions = new ArrayList<>();
 
@@ -47,10 +48,11 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
    private boolean dropFlag;
    private final double[] flagAction = new double[2];
 
-   public DeliverFlagBehaviorNode(RobotBehaviorSensors sensors, RobotBehaviorActuators actuators)
+   public DeliverFlagBehaviorNode(RobotBehaviorSensors sensors, RobotBehaviorActuators actuators, RobotBehaviorEnvironment environment)
    {
       this.sensors = sensors;
       this.actuators = actuators;
+      this.environment = environment;
 
       flagLocations = new Point2D[sensors.getNumberOfFlags()];
 
@@ -65,7 +67,8 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
       {
          for (int j = 0; j < 3; j++)
          {
-            areasToExplore[3 * i + j] = new Point2D(5 + 3 * (i - 1), 5 + 3 * (j - 1));
+            areasToExplore[3 * i + j] = new Point2D((0.5 * environment.getMapSizeX()) + (0.3 * environment.getMapSizeX()) * (i - 1),
+                                                    (0.5 * environment.getMapSizeY()) + (0.3 * environment.getMapSizeY()) * (j - 1));
          }
       }
 
@@ -191,9 +194,6 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
       SteeringBasedAction.computeActionGivenHeading(flagAction, maxRewardHeading, velocityWhenAligned, kAcceleration, kTurn, sensors.getVelocity());
       dropFlag = getDropFlag();
 
-      actuators.setAcceleration(flagAction[0]);
-      actuators.setTurnRate(flagAction[1]);
-
       actuators.setDropFlag(dropFlag);
 
       double utility = 0.9;
@@ -247,12 +247,17 @@ public class DeliverFlagBehaviorNode implements BehaviorTreeAction
    private void takeANoteOfFlagLocation()
    {
       int flagZeroIndexId = sensors.getPositionInBodyFrameAndIdOfClosestFlag().getRight() - 1;
-      bodyFrameToWorldFrame(sensors.getPositionInBodyFrameAndIdOfClosestFlag().getLeft(), flagLocations[flagZeroIndexId], sensors.getHeading(), sensors.getGlobalPosition());
+      bodyFrameToWorldFrame(sensors.getPositionInBodyFrameAndIdOfClosestFlag().getLeft(),
+                            flagLocations[flagZeroIndexId],
+                            sensors.getHeading(),
+                            sensors.getGlobalPosition());
    }
 
    public boolean getDropFlag()
    {
-      return inDeliverFlagMode && (sensors.getGlobalPosition().getX() > 8.05 && sensors.getGlobalPosition().getY() > 8.05);
+      return inDeliverFlagMode
+             && (sensors.getGlobalPosition().getX() > (0.8 * environment.getMapSizeX())
+             && (sensors.getGlobalPosition().getY() > (0.8 * environment.getMapSizeY())));
    }
 
    public void reset()

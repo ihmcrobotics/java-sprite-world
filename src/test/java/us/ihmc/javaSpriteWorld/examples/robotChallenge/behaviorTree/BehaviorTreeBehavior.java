@@ -27,7 +27,7 @@ public class BehaviorTreeBehavior implements Robot06Behavior
       AvoidWallsBehaviorNode avoidWalls = new AvoidWallsBehaviorNode(sensors, actuators, environment);
       AvoidPredatorsBehaviorNode avoidPredators = new AvoidPredatorsBehaviorNode(sensors, actuators);
       GetFoodBehaviorNode getFood = new GetFoodBehaviorNode(sensors, actuators);
-      DeliverFlagBehaviorNode deliverFlag = new DeliverFlagBehaviorNode(sensors, actuators);
+      DeliverFlagBehaviorNode deliverFlag = new DeliverFlagBehaviorNode(sensors, actuators, environment);
       TrappedActionNode trappedAction = new TrappedActionNode(sensors, actuators);
       ZeroMotionAction zeroMotion = new ZeroMotionAction(sensors, actuators);
 
