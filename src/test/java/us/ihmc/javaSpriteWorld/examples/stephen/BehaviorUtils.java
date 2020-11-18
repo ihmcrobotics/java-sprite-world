@@ -59,5 +59,4 @@ public class BehaviorUtils
       bodyFrameVectorToSet.setX(worldFrameVector.getX() * Math.cos(heading) + worldFrameVector.getY() * Math.sin(heading));
       bodyFrameVectorToSet.setY(-worldFrameVector.getX() * Math.sin(heading) + worldFrameVector.getY() * Math.cos(heading));
    }
-
 }

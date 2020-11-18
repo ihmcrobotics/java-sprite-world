@@ -5,10 +5,13 @@ import static us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree.Robot
 
 import org.apache.commons.lang3.tuple.Triple;
 
+import us.ihmc.euclid.tools.AxisAngleTools;
+import us.ihmc.euclid.tools.EuclidCoreTools;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeNodeStatus;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.utility.UtilityBasedAction;
+import us.ihmc.javaSpriteWorld.examples.stephen.BehaviorUtils;
 
 public class GetFoodBehaviorNode extends UtilityBasedAction
 {
@@ -22,9 +25,11 @@ public class GetFoodBehaviorNode extends UtilityBasedAction
 
    private double getFoodAttractionVectorConstantLength = 10.0;
 
-   private final double hungerThreshold = 90.0;
-   private double desperateHungerThreshold = 60.0;
-   private double foodCloseishThreshold = 3.0;
+   private final double hungerThreshold = 80.0;
+   private double desperateHungerThreshold = 50.0;
+
+   private double foodCloseishAndInFrontThreshold = 3.0;
+   private double foodCloseishAndBehindThreshold = 0.8;
 
    private double dt = 0.01;
    private double lastVelocity = 0.0; // PD controller
@@ -40,7 +45,12 @@ public class GetFoodBehaviorNode extends UtilityBasedAction
    @Override
    public double evaluateUtility()
    {
-      boolean foodIsCloseish = sensors.getClosestFoodDistance() < foodCloseishThreshold;
+      Point2D closestFoodPositionInBody = sensors.getClosestFoodPositionInBody();
+      double headingOfClosestFood = EuclidCoreTools.trimAngleMinusPiToPi(BehaviorUtils.headingFromVector(closestFoodPositionInBody));
+      double distanceThreshold = EuclidCoreTools.interpolate(foodCloseishAndInFrontThreshold, foodCloseishAndBehindThreshold, Math.abs(headingOfClosestFood) / Math.PI);
+
+      boolean foodIsCloseish = sensors.getClosestFoodDistance() < distanceThreshold;
+
       boolean hungry = sensors.getHealth() < hungerThreshold;
       boolean desperatelyHungry = sensors.getHealth() < desperateHungerThreshold;
       double utility = (hungry && foodIsCloseish) || desperatelyHungry ? 1.0 : 0.0;

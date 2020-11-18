@@ -24,7 +24,7 @@ public class GoToFlagDropOffBehaviorNode implements BehaviorTreeAction
    private final FlagBehaviorBlackBoard flagBehaviorBlackBoard;
    private final RobotBehaviorEnvironment environment;
 
-   private final double avoidFlagWeight = 2.5;
+   private final double avoidFlagWeight = 1.75;
    private final double goToDropOffWeight = 0.7;
    private final double baseAvoidFlag = 1.75;
    private double goToDropOffAngularRange = Math.toRadians(180.0);
@@ -78,11 +78,15 @@ public class GoToFlagDropOffBehaviorNode implements BehaviorTreeAction
          responseDescriptions.add(new RampedAngularReward(dropOffHeading, goToDropOffAngularRange, goToDropOffWeight));
       }
 
-      if (flagBehaviorBlackBoard.getFlagIdToChase() != 5)
+      for (int i = 0; i < 5; i++)
       {
-         Point2D flagToAvoid = sensors.getPositionInBodyFrameAndIdOfClosestFlag().getLeft();
-         double headingOfFlagToAvoid = headingFromVector(flagToAvoid);
-         double distance = EuclidCoreTools.norm(flagToAvoid.getX(), flagToAvoid.getY());
+         int flagNumber = i + 1;
+         Point2D flagLocation = flagBehaviorBlackBoard.getFlagLocation(flagNumber);
+         if (flagLocation.containsNaN() || flagBehaviorBlackBoard.getFlagIdToChase() == flagNumber)
+            continue;
+
+         double headingOfFlagToAvoid = headingFromVector(flagLocation);
+         double distance = EuclidCoreTools.norm(flagLocation.getX(), flagLocation.getY());
          double cost = -avoidFlagWeight * Math.pow(baseAvoidFlag, - distance);
          responseDescriptions.add(new RampedAngularReward(headingOfFlagToAvoid, avoidFlagAngularRange, cost));
       }
@@ -90,7 +94,8 @@ public class GoToFlagDropOffBehaviorNode implements BehaviorTreeAction
       double maxRewardHeading = SteeringBasedAction.getMaxRewardHeading(responseDescriptions);
       double velocityWhenAligned = 3.0;
       double kAcceleration = 3.0;
-      double kTurn = 4.0;
+      double kTurn = 3.0;
+
       SteeringBasedAction.computeActionGivenHeading(action, maxRewardHeading, velocityWhenAligned, kAcceleration, kTurn, sensors.getVelocity());
 
       actuators.setAcceleration(action[0]);

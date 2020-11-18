@@ -39,9 +39,11 @@ public class RobotBehaviorSensors
 
    private boolean simulationReset = false;
 
-   double closestPredatorDistance;
-   double closestFoodDistance;
-   double closestWallDistance;
+   private double closestPredatorDistance;
+   private double closestFoodDistance;
+   private double closestWallDistance;
+
+   private int closestFoodIndex;
 
    public RobotBehaviorSensors(int numberOfFlags)
    {
@@ -61,6 +63,11 @@ public class RobotBehaviorSensors
    public double getClosestFoodDistance()
    {
       return closestFoodDistance;
+   }
+
+   public Point2D getClosestFoodPositionInBody()
+   {
+      return locationOfAllFoodInBodyFrame.get(closestFoodIndex).getMiddle();
    }
 
    public double getClosestWallDistance()
@@ -83,13 +90,15 @@ public class RobotBehaviorSensors
       }
 
       closestFoodDistance = Double.POSITIVE_INFINITY;
-      for (Triple<Integer, Point2D, Vector2D> food : getLocationOfAllFoodInBodyFrame())
+      for (int i = 0; i < locationOfAllFoodInBodyFrame.size(); i++)
       {
+         Triple<Integer, Point2D, Vector2D> food = locationOfAllFoodInBodyFrame.get(i);
          Point2D foodLocation = bodyToWorld(this, food.getMiddle());
          double distance = getGlobalPosition().distance(foodLocation);
          if (distance < closestFoodDistance)
          {
             closestFoodDistance = distance;
+            closestFoodIndex = i;
          }
       }
 

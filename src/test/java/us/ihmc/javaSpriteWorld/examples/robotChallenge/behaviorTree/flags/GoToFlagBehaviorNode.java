@@ -49,7 +49,7 @@ public class GoToFlagBehaviorNode implements BehaviorTreeAction
 
       double velocityWhenAligned = 3.0;
       double kAcceleration = 3.0;
-      double kTurn = 4.0;
+      double kTurn = 3.0;
       SteeringBasedAction.computeActionGivenHeading(action, heading, velocityWhenAligned, kAcceleration, kTurn, sensors.getVelocity());
 
       actuators.setAcceleration(action[0]);
