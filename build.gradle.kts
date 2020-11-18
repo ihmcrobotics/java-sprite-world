@@ -6,7 +6,7 @@ plugins {
 
 ihmc {
    group = "us.ihmc"
-   version = "0.0.1"
+   version = "0.0.2"
    vcsUrl = "https://stash.ihmc.us/projects/ICSL/repos/javaspriteworld"
    openSource = false
 
@@ -22,6 +22,4 @@ mainDependencies {
 testDependencies {
    api("us.ihmc:euclid:0.15.1")
    api("us.ihmc:euclid-geometry:0.15.1")
-   api("us.ihmc:log-tools:0.5.0")
-   api("us.ihmc:simulation-construction-set:0.21.1")
 }
