@@ -40,8 +40,8 @@ public class GetFoodBehaviorNode extends UtilityBasedAction
    @Override
    public double evaluateUtility()
    {
-      boolean hungry = sensors.getHealth() < hungerThreshold;
       boolean foodIsCloseish = sensors.getClosestFoodDistance() < foodCloseishThreshold;
+      boolean hungry = sensors.getHealth() < hungerThreshold;
       boolean desperatelyHungry = sensors.getHealth() < desperateHungerThreshold;
       double utility = (hungry && foodIsCloseish) || desperatelyHungry ? 1.0 : 0.0;
       return utility;
