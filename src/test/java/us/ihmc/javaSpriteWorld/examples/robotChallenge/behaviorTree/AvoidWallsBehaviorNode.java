@@ -1,15 +1,17 @@
 package us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree;
 
+import us.ihmc.commons.MathTools;
 import us.ihmc.euclid.geometry.LineSegment2D;
 import us.ihmc.euclid.geometry.tools.EuclidGeometryTools;
 import us.ihmc.euclid.tuple2D.Point2D;
 import us.ihmc.euclid.tuple2D.Vector2D;
-import us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeAction;
 import us.ihmc.javaSpriteWorld.examples.behaviorTree.BehaviorTreeNodeStatus;
+import us.ihmc.javaSpriteWorld.examples.behaviorTree.utility.LogisticUtilityAxis;
+import us.ihmc.javaSpriteWorld.examples.behaviorTree.utility.UtilityBasedAction;
 
 import static us.ihmc.javaSpriteWorld.examples.robotChallenge.behaviorTree.RobotBehaviorTools.*;
 
-public class AvoidWallsBehaviorNode implements BehaviorTreeAction
+public class AvoidWallsBehaviorNode extends UtilityBasedAction
 {
    private static double WALL_DISTANCE_ACTIVATION_THRESHOLD = 1.0;
 
@@ -33,14 +35,17 @@ public class AvoidWallsBehaviorNode implements BehaviorTreeAction
       this.sensors = sensors;
       this.actuators = actuators;
       this.environment = environment;
+
+      // flipped boolean curve
+      addUtilityAxis(new LogisticUtilityAxis(5000.0, -1.2, 1.1, 0.5, this::normalizedWallDistance));
    }
 
-   @Override
-   public double evaluateUtility()
+   private double normalizedWallDistance()
    {
-      boolean enable = sensors.getClosestWallDistance() < WALL_DISTANCE_ACTIVATION_THRESHOLD;
-      utility = enable ? 1.0 : 0.0;
-      return utility;
+      double normalDistance = WALL_DISTANCE_ACTIVATION_THRESHOLD * 2.0;
+      double clampedDistance = MathTools.clamp(sensors.getClosestWallDistance(), 0.0, normalDistance);
+      double normalizedInput = clampedDistance / normalDistance;
+      return normalizedInput;
    }
 
    @Override
