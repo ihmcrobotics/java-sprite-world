@@ -20,6 +20,6 @@ mainDependencies {
 }
 
 testDependencies {
-   api("us.ihmc:euclid:0.15.2")
-   api("us.ihmc:euclid-geometry:0.15.2")
+   api("us.ihmc:euclid:0.16.0")
+   api("us.ihmc:euclid-geometry:0.16.0")
 }
