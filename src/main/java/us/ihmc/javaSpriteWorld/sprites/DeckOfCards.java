@@ -17,7 +17,6 @@ public class DeckOfCards
       aceOfHeartsCostume.setXReferencePercent(0.1);
       aceOfHeartsCostume.setYReferencePercent(0.1);
       
-      aceOfHeartsCostume.
       aceOfHearts = new Sprite("aceOfHearts");
       aceOfHearts.setHeightPreserveScale(2.0, 0);
       aceOfHearts.addCostume(aceOfHeartsCostume);
