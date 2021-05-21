@@ -8,7 +8,7 @@ import us.ihmc.javaSpriteWorld.SpriteWorldViewerUsingSwing;
 public class DeckOfCards
 {
    private final SpriteCostume aceOfHeartsCostume;
-   private final Sprite aceOfHearts;
+   private Sprite aceOfHearts;
    
    public DeckOfCards()
    { 
