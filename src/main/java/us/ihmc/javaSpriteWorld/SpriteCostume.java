@@ -16,21 +16,34 @@ public class SpriteCostume
    public SpriteCostume(SpriteCostume costumeToCopy)
    {
       this(costumeToCopy.image);
-      
+
       setXReferencePercent(costumeToCopy.getXReferencePercent());
       setYReferencePercent(costumeToCopy.getYReferencePercent());
    }
-   
+
    public static SpriteCostume createFromFile(String filename)
    {
-//      InputStream inputStream = SpriteCostume.class.getResourceAsStream(filename);
+      InputStream inputStream = createInputStreamFromFile(filename);
+      return createFromInputStream(inputStream);
+   }
+
+   public static InputStream createInputStreamFromFile(String filename)
+   {
+      //      InputStream inputStream = SpriteCostume.class.getResourceAsStream(filename);
       InputStream inputStream = ClassLoader.getSystemResourceAsStream("us/ihmc/javaSpriteWorld/" + filename);
       if (inputStream == null)
       {
          System.err.println("Couldn't open resource as stream: " + filename);
          return null;
       }
-      return createFromInputStream(inputStream);
+      return inputStream;
+   }
+   
+   public static Image createImageFromFile(String filename)
+   {
+      InputStream inputStream = createInputStreamFromFile(filename);
+      Image image = new Image(inputStream);
+      return image;
    }
 
    public static SpriteCostume createFromURL(URL url)
@@ -70,11 +83,11 @@ public class SpriteCostume
    {
       if (image != null)
       {
-    	  this.heightToWidthRatio = image.getHeight() / image.getWidth();
+         this.heightToWidthRatio = image.getHeight() / image.getWidth();
       }
       else
       {
-    	  this.heightToWidthRatio = 1.0;
+         this.heightToWidthRatio = 1.0;
       }
    }
 

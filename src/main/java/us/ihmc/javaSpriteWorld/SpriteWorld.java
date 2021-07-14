@@ -108,6 +108,22 @@ public class SpriteWorld
       this.worldScrollsY = worldScrollsY;
    }
 
+   public void addSprites(ArrayList<Sprite> sprites)
+   {
+      for (Sprite sprite : sprites)
+      {
+         addSprite(sprite);
+      }
+   }
+
+   public void removeSprites(ArrayList<Sprite> sprites)
+   {
+      for (Sprite sprite : sprites)
+      {
+         removeSprite(sprite);
+      }
+   }
+
    public void addSprite(Sprite sprite)
    {
       if (!sprites.contains(sprite))
@@ -115,16 +131,64 @@ public class SpriteWorld
          sprites.add(sprite);
       }
    }
-   
+
    public boolean removeSprite(Sprite sprite)
    {
       return sprites.remove(sprite);
    }
 
+   public boolean moveSpriteBackward(Sprite sprite)
+   {
+      int index = sprites.indexOf(sprite);
+      if (index <= 0)
+         return false;
+
+      sprites.remove(index);
+      sprites.add(index - 1, sprite);
+      return true;
+   }
+   
+   public boolean moveSpriteToBack(Sprite sprite)
+   {
+      int index = sprites.indexOf(sprite);
+      if (index <= 0)
+         return false;
+
+      sprites.remove(index);
+      sprites.add(0, sprite);
+      return true;
+   }
+
+   public boolean moveSpriteForward(Sprite sprite)
+   {
+      int index = sprites.indexOf(sprite);
+      if (index == -1)
+         return false;
+      if (index == sprites.size() - 1)
+         return false;
+
+      sprites.remove(index);
+      sprites.add(index + 1, sprite);
+      return true;
+   }
+   
+   public boolean moveSpriteToFront(Sprite sprite)
+   {
+      int index = sprites.indexOf(sprite);
+      if (index == -1)
+         return false;
+      if (index == sprites.size() - 1)
+         return false;
+
+      sprites.remove(index);
+      sprites.add(sprite);
+      return true;
+   }
+
    public void setStage(SpriteStage spriteStage, boolean centerStageInWorld)
    {
       this.spriteStage = spriteStage;
-      
+
       if (centerStageInWorld)
       {
          spriteStage.setCenteredInSpriteWorld(this);
