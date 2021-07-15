@@ -156,22 +156,26 @@ public class DeckOfCards
          @Override
          public void spritePressed(SpriteWorldViewer viewer, Sprite sprite, double xWorld, double yWorld)
          {
-            spriteWorld.moveSpriteToBack(sprite);
+            spriteWorld.moveSpriteToFront(sprite);
             viewer.update();
          }
 
          @Override
          public void spriteDragged(SpriteWorldViewer viewer, Sprite sprite, double xWorld, double yWorld)
          {
-//            sprite.setX(xWorld);
-//            sprite.setY(yWorld);
-//            viewer.update();
+            sprite.setX(xWorld);
+            sprite.setY(yWorld);
+            viewer.update();
          }
 
          @Override
          public void spriteClicked(SpriteWorldViewer viewer, Sprite sprite, double xWorld, double yWorld, int clickCount)
          {
-            
+            if (clickCount > 1)
+            {
+               spriteWorld.moveSpriteToBack(sprite);
+               viewer.update();
+            }
          }
       };
 
