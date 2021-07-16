@@ -13,6 +13,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
+import us.ihmc.javaSpriteWorld.javaFX.JavaFXApplicationCreator;
+import us.ihmc.javaSpriteWorld.javaFX.SpriteWorldJavaFXGroup;
 
 public class SpriteWorldViewerUsingJavaFX implements SpriteWorldViewer
 {

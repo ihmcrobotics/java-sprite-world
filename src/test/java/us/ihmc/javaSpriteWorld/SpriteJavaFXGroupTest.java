@@ -9,6 +9,8 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import us.ihmc.javaSpriteWorld.javaFX.JavaFXApplicationCreator;
+import us.ihmc.javaSpriteWorld.javaFX.SpriteJavaFXGroup;
 
 @Tag("gui")
 public class SpriteJavaFXGroupTest

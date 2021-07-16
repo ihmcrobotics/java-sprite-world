@@ -12,6 +12,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import us.ihmc.javaSpriteWorld.javaFX.JavaFXApplicationCreator;
+import us.ihmc.javaSpriteWorld.javaFX.PixelatedImageView;
 
 @Tag("gui")
 public class SpriteCostumeTest

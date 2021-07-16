@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import us.ihmc.javaSpriteWorld.JavaFXApplicationCreator;
+import us.ihmc.javaSpriteWorld.javaFX.JavaFXApplicationCreator;
 
 @Tag("gui")
 public class JavaFXApplicationCreatorTest

@@ -1,4 +1,4 @@
-package us.ihmc.javaSpriteWorld;
+package us.ihmc.javaSpriteWorld.javaFX;
 
 import com.sun.javafx.sg.prism.NGImageView;
 import com.sun.javafx.sg.prism.NGNode;

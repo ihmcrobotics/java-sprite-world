@@ -1,4 +1,4 @@
-package us.ihmc.javaSpriteWorld;
+package us.ihmc.javaSpriteWorld.javaFX;
 
 import java.util.concurrent.CountDownLatch;
 

@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import javafx.scene.control.Button;
+import us.ihmc.javaSpriteWorld.swing.SpriteWorldPanel;
 
 public class SpriteWorldViewerUsingSwing implements SpriteWorldViewer
 {

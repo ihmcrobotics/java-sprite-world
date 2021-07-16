@@ -1,4 +1,4 @@
-package us.ihmc.javaSpriteWorld;
+package us.ihmc.javaSpriteWorld.javaFX;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +9,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
+import us.ihmc.javaSpriteWorld.GenericKeyEventHandler;
+import us.ihmc.javaSpriteWorld.GenericMouseEventHandler;
+import us.ihmc.javaSpriteWorld.Sprite;
+import us.ihmc.javaSpriteWorld.SpriteStage;
+import us.ihmc.javaSpriteWorld.SpriteWorld;
+import us.ihmc.javaSpriteWorld.SpriteWorldViewer;
 
 public class SpriteWorldJavaFXGroup extends Group
 {

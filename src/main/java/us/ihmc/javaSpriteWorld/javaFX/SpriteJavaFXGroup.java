@@ -1,4 +1,4 @@
-package us.ihmc.javaSpriteWorld;
+package us.ihmc.javaSpriteWorld.javaFX;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -10,6 +10,8 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
+import us.ihmc.javaSpriteWorld.Sprite;
+import us.ihmc.javaSpriteWorld.SpriteCostume;
 import javafx.scene.image.ImageView;
 
 public class SpriteJavaFXGroup extends Group

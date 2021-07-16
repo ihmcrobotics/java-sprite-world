@@ -9,11 +9,11 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import us.ihmc.javaSpriteWorld.JavaFXApplicationCreator;
 import us.ihmc.javaSpriteWorld.SampleSprites;
 import us.ihmc.javaSpriteWorld.Sprite;
 import us.ihmc.javaSpriteWorld.SpriteWorld;
-import us.ihmc.javaSpriteWorld.SpriteWorldJavaFXGroup;
+import us.ihmc.javaSpriteWorld.javaFX.JavaFXApplicationCreator;
+import us.ihmc.javaSpriteWorld.javaFX.SpriteWorldJavaFXGroup;
 
 @Tag("gui")
 public class SpriteWorldJavaFXGroupTest

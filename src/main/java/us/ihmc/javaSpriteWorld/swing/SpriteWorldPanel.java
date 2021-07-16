@@ -1,4 +1,4 @@
-package us.ihmc.javaSpriteWorld;
+package us.ihmc.javaSpriteWorld.swing;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -15,6 +15,13 @@ import javax.swing.JPanel;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import us.ihmc.javaSpriteWorld.GenericKeyEventHandler;
+import us.ihmc.javaSpriteWorld.GenericMouseEventHandler;
+import us.ihmc.javaSpriteWorld.Sprite;
+import us.ihmc.javaSpriteWorld.SpriteCostume;
+import us.ihmc.javaSpriteWorld.SpriteStage;
+import us.ihmc.javaSpriteWorld.SpriteWorld;
+import us.ihmc.javaSpriteWorld.SpriteWorldViewer;
 
 public class SpriteWorldPanel extends JPanel implements MouseMotionListener, MouseListener, KeyListener
 {

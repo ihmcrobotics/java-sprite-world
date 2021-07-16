@@ -1,4 +1,7 @@
-package us.ihmc.javaSpriteWorld;
+package us.ihmc.javaSpriteWorld.javaFX;
+
+import us.ihmc.javaSpriteWorld.SpriteStage;
+import us.ihmc.javaSpriteWorld.SpriteWorld;
 
 public class SpriteStageJavaFXGroup extends SpriteJavaFXGroup
 {
