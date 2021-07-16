@@ -14,7 +14,7 @@ import us.ihmc.javaSpriteWorld.SpriteWorldMouseListener;
 import us.ihmc.javaSpriteWorld.SpriteWorldViewer;
 import us.ihmc.javaSpriteWorld.SpriteWorldViewerUsingSwing;
 
-public class DeckOfCards
+public class DeckOfCardsSprites
 {
    private final EnumMap<DeckOfCardsNumber, EnumMap<DeckOfCardsSuit, Sprite>> sprites;
 
@@ -28,7 +28,12 @@ public class DeckOfCards
       Hearts, Diamonds, Clubs, Spades;
    }
 
-   public DeckOfCards()
+   public DeckOfCardsSprites()
+   {
+      this(0.5, 0.5, 1.0);
+   }
+
+   public DeckOfCardsSprites(double xReferencePercent, double yReferencePercent, double height)
    {
       Image image = SpriteCostume.createImageFromFile("sampleImages/cards/playingCards.png");
       PixelReader reader = image.getPixelReader();
@@ -49,13 +54,13 @@ public class DeckOfCards
 
             SpriteCostume costume = new SpriteCostume(writeableImage); //imageView.getImage());
 
-            costume.setXReferencePercent(0.0);
-            costume.setYReferencePercent(0.0);
+            costume.setXReferencePercent(xReferencePercent);
+            costume.setYReferencePercent(yReferencePercent);
 
             Sprite sprite = new Sprite(number + " Of " + suit);
             sprite.addCostume(costume);
 
-            sprite.setHeightPreserveScale(1.0, 0);
+            sprite.setHeightPreserveScale(height, 0);
             sprites.get(number).put(suit, sprite);
          }
       }
@@ -81,36 +86,31 @@ public class DeckOfCards
       return sprites.get(number).get(suit);
    }
 
-   public Sprite getAceOfHearts()
-   {
-      return getCard(DeckOfCardsNumber.Ace, DeckOfCardsSuit.Hearts);
-   }
-
    public static void main(String[] args)
    {
       SpriteWorldViewerUsingSwing viewer = new SpriteWorldViewerUsingSwing("Deck Viewer");
       SpriteWorld spriteWorld = new SpriteWorld();
 
       spriteWorld.setLeftBorderX(0.0);
-      spriteWorld.setRightBorderX(4.0);
+      spriteWorld.setRightBorderX(4.5);
 
       spriteWorld.setTopBorderY(0.0);
-      spriteWorld.setBottomBorderY(4.0);
+      spriteWorld.setBottomBorderY(4.5);
 
-      DeckOfCards deckOfCards = new DeckOfCards();
+      DeckOfCardsSprites deckOfCards = new DeckOfCardsSprites();
 
-      double y = 0.0;
-      for (DeckOfCards.DeckOfCardsSuit suit : DeckOfCards.DeckOfCardsSuit.values())
+      double y = 0.75;
+      for (DeckOfCardsSprites.DeckOfCardsSuit suit : DeckOfCardsSprites.DeckOfCardsSuit.values())
       {
-         double x = 0.0;
+         double x = 0.5;
          double rotation = -20.0;
 
-         for (DeckOfCards.DeckOfCardsNumber number : DeckOfCards.DeckOfCardsNumber.values())
+         for (DeckOfCardsSprites.DeckOfCardsNumber number : DeckOfCardsSprites.DeckOfCardsNumber.values())
          {
             Sprite card = deckOfCards.getCard(number, suit);
             spriteWorld.addSprite(card);
             card.setX(x);
-            card.setY(y);
+            card.setY(y + 6.0 - 6.0 * Math.cos(Math.PI * rotation / 180.0));
             card.setRotationInDegrees(rotation);
 
             x += 0.3;
@@ -118,27 +118,6 @@ public class DeckOfCards
          }
          y += 0.5;
       }
-
-      Sprite aceOfHearts = deckOfCards.getAceOfHearts();
-
-      //      spriteWorld.addSprite(aceOfHearts);
-      //      aceOfHearts.setX(0.0);
-      //      aceOfHearts.setY(0.0);
-
-      //      Sprite twoOfSpades = deckOfCards.getCard(DeckOfCardsNumber.Two, DeckOfCardsSuit.Spades);
-      //      Sprite kingOfSpades = deckOfCards.getCard(DeckOfCardsNumber.King, DeckOfCardsSuit.Spades);
-      //      spriteWorld.addSprite(twoOfSpades);
-      //      twoOfSpades.setX(0.2);
-      //      twoOfSpades.setY(0.2);
-
-      //      spriteWorld.moveSpriteToFront(aceOfHearts);
-      //      spriteWorld.moveSpriteBackwards(kingOfSpades);
-      //      spriteWorld.removeSprite(kingOfSpades);
-      //      spriteWorld.moveSpriteForward(aceOfHearts);
-      //      spriteWorld.moveSpriteForward(aceOfHearts);
-
-      //      spriteWorld.removeSprite(aceOfHearts);
-      //      spriteWorld.addSprite(aceOfHearts);
 
       viewer.setSpriteWorld(spriteWorld);
 
@@ -156,13 +135,15 @@ public class DeckOfCards
          @Override
          public void spritePressed(SpriteWorldViewer viewer, Sprite sprite, double xWorld, double yWorld)
          {
-            spriteWorld.moveSpriteToFront(sprite);
-            viewer.update();
+//            spriteWorld.moveSpriteForward(sprite);
+//            spriteWorld.moveSpriteToFront(sprite);
+//            viewer.update();
          }
 
          @Override
          public void spriteDragged(SpriteWorldViewer viewer, Sprite sprite, double xWorld, double yWorld)
          {
+            spriteWorld.moveSpriteToFront(sprite);
             sprite.setX(xWorld);
             sprite.setY(yWorld);
             viewer.update();
@@ -173,15 +154,21 @@ public class DeckOfCards
          {
             if (clickCount > 1)
             {
-               spriteWorld.moveSpriteToBack(sprite);
+               spriteWorld.moveSpriteBackward(sprite);
+               spriteWorld.moveSpriteBackward(sprite);
+               viewer.update();
+            }
+            else
+            {
+               spriteWorld.moveSpriteForward(sprite);
                viewer.update();
             }
          }
       };
 
-      for (DeckOfCards.DeckOfCardsSuit suit : DeckOfCards.DeckOfCardsSuit.values())
+      for (DeckOfCardsSprites.DeckOfCardsSuit suit : DeckOfCardsSprites.DeckOfCardsSuit.values())
       {
-         for (DeckOfCards.DeckOfCardsNumber number : DeckOfCards.DeckOfCardsNumber.values())
+         for (DeckOfCardsSprites.DeckOfCardsNumber number : DeckOfCardsSprites.DeckOfCardsNumber.values())
          {
             Sprite card = deckOfCards.getCard(number, suit);
             card.attachSpriteMouseListener(spriteMouseListener);

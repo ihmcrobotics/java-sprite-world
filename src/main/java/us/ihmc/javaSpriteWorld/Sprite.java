@@ -380,13 +380,23 @@ public class Sprite
 
       double spriteX = getX();
       double spriteY = getY();
+      double spriteRotation = getRotationInRadians();
 
-      double minXToCheck = spriteX - xReferencePercent * spriteWidth;
-      double maxXToCheck = spriteX + (1.0 - xReferencePercent) * spriteWidth;
-      double minYToCheck = spriteY - yReferencePercent * spriteHeight;
-      double maxYToCheck = spriteY + (1.0 - yReferencePercent) * spriteHeight;
+      double xClickInSpriteTranslatedFrame = worldX - spriteX;
+      double yClickInSpriteTranslatedFrame = worldY - spriteY;
+      
+      double cosine = Math.cos(spriteRotation);
+      double sine = Math.sin(spriteRotation);
+      
+      double xClickInSpriteFrame = cosine * xClickInSpriteTranslatedFrame + sine * yClickInSpriteTranslatedFrame;
+      double yClickInSpriteFrame = -sine * xClickInSpriteTranslatedFrame + cosine * yClickInSpriteTranslatedFrame;
+      
+      double minXToCheck = - xReferencePercent * spriteWidth;
+      double maxXToCheck = (1.0 - xReferencePercent) * spriteWidth;
+      double minYToCheck = - yReferencePercent * spriteHeight;
+      double maxYToCheck = (1.0 - yReferencePercent) * spriteHeight;
 
-      if ((worldX > minXToCheck) && (worldX < maxXToCheck) && (worldY > minYToCheck) && (worldY < maxYToCheck))
+      if ((xClickInSpriteFrame > minXToCheck) && (xClickInSpriteFrame < maxXToCheck) && (yClickInSpriteFrame > minYToCheck) && (yClickInSpriteFrame < maxYToCheck))
       {
          return true;
       }
