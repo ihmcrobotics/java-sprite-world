@@ -177,6 +177,11 @@ public class Sprite
 
       return costumeNumber;
    }
+   
+   public int getCostumeNumber()
+   {
+      return costumeNumber;
+   }
 
    public int getNumberOfCostumes()
    {
@@ -402,5 +407,11 @@ public class Sprite
       }
 
       return false;
+   }
+
+   @Override
+   public String toString()
+   {
+      return name;
    }
 }
