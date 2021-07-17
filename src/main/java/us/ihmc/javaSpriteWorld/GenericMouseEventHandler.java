@@ -5,9 +5,12 @@ import java.util.List;
 
 public class GenericMouseEventHandler
 {
+   private static final boolean DEBUG = false;
+
    private final SpriteWorldViewer viewer;
    private final SpriteWorld spriteWorld;
-   
+
+   private Sprite spritePressed = null;
    private Sprite spriteCurrentlyBeingDragged = null;
 
    public GenericMouseEventHandler(SpriteWorldViewer viewer, SpriteWorld spriteWorld)
@@ -36,7 +39,8 @@ public class GenericMouseEventHandler
 
    public void mouseEntered(double xWorld, double yWorld)
    {
-      //      System.out.println("Mouse entered : " + xWorld + ", " + yWorld);
+      if (DEBUG)
+         System.out.println("Mouse entered : " + xWorld + ", " + yWorld);
 
       ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
       for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
@@ -44,10 +48,11 @@ public class GenericMouseEventHandler
          spriteWorldMouseListener.mouseEnteredWorld(viewer, spriteWorld, xWorld, yWorld);
       }
    }
-   
+
    public void mouseMoved(double xWorld, double yWorld)
    {
-      //      System.out.println("Mouse moved : " + xWorld + ", " + yWorld);
+      if (DEBUG)
+         System.out.println("Mouse moved : " + xWorld + ", " + yWorld);
 
       ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
       for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
@@ -55,10 +60,11 @@ public class GenericMouseEventHandler
          spriteWorldMouseListener.mouseMovedInWorld(viewer, spriteWorld, xWorld, yWorld);
       }
    }
-   
+
    public void mouseExited(double xWorld, double yWorld)
    {
-      //      System.out.println("Mouse exited : " + xWorld + ", " + yWorld);
+      if (DEBUG)
+         System.out.println("Mouse exited : " + xWorld + ", " + yWorld);
 
       ArrayList<SpriteWorldMouseListener> spriteWorldMouseListeners = spriteWorld.getSpriteWorldMouseListeners();
       for (SpriteWorldMouseListener spriteWorldMouseListener : spriteWorldMouseListeners)
@@ -69,8 +75,10 @@ public class GenericMouseEventHandler
 
    public void mouseClicked(double xWorld, double yWorld, int clickCount)
    {
-      Sprite sprite = findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
-      //      System.out.println("Mouse Clicked on sprite " + sprite + " at " + xWorld + ", " + yWorld);
+      Sprite sprite = spritePressed; //findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
+
+      if (DEBUG)
+         System.out.println("Mouse Clicked on sprite " + sprite + " at " + xWorld + ", " + yWorld);
 
       if (sprite != null)
       {
@@ -94,7 +102,10 @@ public class GenericMouseEventHandler
    public void mousePressed(double xWorld, double yWorld)
    {
       Sprite sprite = findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
-      spriteCurrentlyBeingDragged = sprite;
+      spritePressed = sprite;
+
+      if (DEBUG)
+         System.out.println("Mouse Pressed on sprite " + sprite + " at " + xWorld + ", " + yWorld);
 
       if (sprite != null)
       {
@@ -118,11 +129,14 @@ public class GenericMouseEventHandler
 
    public void mouseReleased(double xWorld, double yWorld)
    {
-      Sprite sprite = findTopMostSpriteWithMouseListenersAt(xWorld, yWorld);
-      spriteCurrentlyBeingDragged = null;
+      if (DEBUG)
+         System.out.println("Mouse Released. spriteCurrentlyBeingDragged = " + spriteCurrentlyBeingDragged + " at " + xWorld + ", " + yWorld);
 
-      if (sprite != null)
+      if (spriteCurrentlyBeingDragged != null)
       {
+         Sprite sprite = spriteCurrentlyBeingDragged;
+         spriteCurrentlyBeingDragged = null;
+
          ArrayList<SpriteMouseListener> spriteMouseListeners = sprite.getSpriteMouseListeners();
 
          for (SpriteMouseListener spriteMouseListener : spriteMouseListeners)
@@ -142,8 +156,10 @@ public class GenericMouseEventHandler
 
    public void mouseDragged(double xWorld, double yWorld)
    {
-      //      System.out.println("Mouse Dragged! " + xWorld + spriteCurrentlyBeingDragged);
+      if (DEBUG)
+         System.out.println("Mouse Dragged! " + spriteCurrentlyBeingDragged);
 
+      spriteCurrentlyBeingDragged = spritePressed;
       Sprite sprite = spriteCurrentlyBeingDragged;
 
       if (sprite != null)
