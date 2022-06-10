@@ -17,6 +17,13 @@ ihmc {
 mainDependencies {
    api("org.apache.commons:commons-lang3:3.12.0")
    api("commons-io:commons-io:2.11.0")
+
+   var javaFXVersion = "17.0.2"
+   api(ihmc.javaFXModule("base", javaFXVersion))
+   api(ihmc.javaFXModule("controls", javaFXVersion))
+   api(ihmc.javaFXModule("graphics", javaFXVersion))
+   api(ihmc.javaFXModule("fxml", javaFXVersion))
+   api(ihmc.javaFXModule("swing", javaFXVersion))
 }
 
 testDependencies {

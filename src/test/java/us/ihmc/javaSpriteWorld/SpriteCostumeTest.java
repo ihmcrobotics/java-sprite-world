@@ -13,7 +13,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import us.ihmc.javaSpriteWorld.javaFX.JavaFXApplicationCreator;
-import us.ihmc.javaSpriteWorld.javaFX.PixelatedImageView;
 
 @Tag("gui")
 public class SpriteCostumeTest
@@ -27,8 +26,10 @@ public class SpriteCostumeTest
 //      String filename = "sampleImages/BackgammonBoard.jpg";
       
       SpriteCostume costume = SpriteCostume.createFromFile(filename);
-      
-      ImageView imageView = new PixelatedImageView(costume.getImage());
+
+      // TODO There was a hack for disabling the smoothing of the image, but it is no longer applicable since JFX 9. 
+      // https://stackoverflow.com/questions/16089304/javafx-imageview-without-any-smoothing
+      ImageView imageView = new ImageView(costume.getImage());
       final Node node = imageView;
       
 //      System.out.println(costume.getImageHeightPixels());

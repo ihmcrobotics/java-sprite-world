@@ -62,9 +62,11 @@ public class SpriteJavaFXGroup extends Group
             
             if (javaFXNode == null)
             {
-                ImageView imageView = new PixelatedImageView(costume.getImage());
-                javaFXNode = imageView;
-                mapFromCostumesToNodes.put(costume, javaFXNode);
+               // TODO There was a hack for disabling the smoothing of the image, but it is no longer applicable since JFX 9. 
+               // https://stackoverflow.com/questions/16089304/javafx-imageview-without-any-smoothing
+               ImageView imageView = new ImageView(costume.getImage());
+               javaFXNode = imageView;
+               mapFromCostumesToNodes.put(costume, javaFXNode);
             }
          }
 
