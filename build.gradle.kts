@@ -7,8 +7,8 @@ plugins {
 ihmc {
    group = "us.ihmc"
    version = "0.0.3"
-   vcsUrl = "https://stash.ihmc.us/projects/ICSL/repos/javaspriteworld"
-   openSource = false
+   vcsUrl = "https://bitbucket.ihmc.us/projects/LIBS/repos/java-sprite-world"
+   openSource = true
 
    configureDependencyResolution()
    configurePublications()
